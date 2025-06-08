@@ -17,7 +17,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('auth.login');
+        $action = 'login';
+        return view('frontend.pages.login', ['action' => $action]);
     }
 
     /**
@@ -28,10 +29,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        if(Auth::user()->role == 'user')
-            return redirect()->intended(RouteServiceProvider::HOME); 
-        else if(Auth::user()->role = 'vendor') return 
-            redirect()->route("vendor.profile");  
+        if (Auth::user()->role == 'user')
+            return redirect()->intended(RouteServiceProvider::HOME);
+        else if (Auth::user()->role = 'vendor') return
+            redirect()->route("vendor.profile");
         else return redirect()->route("admin.profile");
     }
 
