@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Cart;
-use Darryldecode\Cart\Cart as CartCart;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Product;
 use App\Models\ShopProfile;
 use Carbon\Carbon;
 
@@ -75,7 +73,6 @@ class CartController extends Controller
     }
     public function get(Request $request)
     {
-        Cart::session("checked")->clear();
         Cart::session("checked")->clear();
         Cart::session(Auth::user()->id);
         if ($request->type == "all") {
