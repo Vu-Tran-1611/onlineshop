@@ -53,9 +53,9 @@
                             </div>
                             <ul
                                 class="mt-5 border-t-2 border-slate-200 group-hover:block text-base gap-y-6   text-black ">
-                                <a href="{{ route('user.profile') }}"
+                                <a href="{{ route('user.profile.account') }}"
                                     class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Manage Account</a>
-                                <a href=""
+                                <a href="{{ route('user.profile.orders') }}"
                                     class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Historic
                                     Order</a>
                                 <a href=""
@@ -145,9 +145,10 @@
                     <h1 class="cursor-pointer text-base">{{ $user->name }} / {{ $user->email }}</h1>
                     <ul
                         class="group-hover:block hidden leading-8 shadow-2xl rounded-lg absolute top-[50px] z-10 bg-slate-100 text-black p-3  w-[180px]">
-                        <a href="{{ route('user.profile') }}"
+                        <a href="{{ route('user.profile.account') }}"
                             class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Manage Account</a>
-                        <a href="" class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Historic
+                        <a href="{{ route('user.profile.orders') }}"
+                            class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">
                             Order</a>
                         <a href="" class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Favorite
                             Items</a>

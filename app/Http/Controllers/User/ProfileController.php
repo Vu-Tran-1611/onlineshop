@@ -4,68 +4,76 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Order;
 use App\Traits\UploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserAddresses;
 use Illuminate\Support\Facades\Session;
+
 class ProfileController extends Controller
 {
     use UploadTrait;
-    public function index(){
+    public function index()
+    {
         $title = "Profile";
         $user = Auth::user();
         $categories = Category::get();
-        $addresses = UserAddresses::orderBy("created_at",'desc')->where("user_id",Auth::user()->id)->get();
-        return view("frontend.pages.profile",compact("title","user","categories","addresses"));
+        $addresses = UserAddresses::orderBy("created_at", 'desc')->where("user_id", Auth::user()->id)->get();
+        $orders = Order::where("user_id", $user->id)->with("orderProducts")->get();
+        return view(
+            "frontend.pages.profile-account",
+            compact("title", "user", "categories", "addresses", "orders")
+        );
     }
     // Update Profile
-    public function updateProfile(Request $request){
+    public function updateProfile(Request $request)
+    {
         $user = Auth::user();
-     
-        if($request->image) {
+
+        if ($request->image) {
             $request->validate([
                 "image" => ["image"],
             ]);
-            $image = $this->updateImage($request,$user->image,"uploads","image");
+            $image = $this->updateImage($request, $user->image, "uploads", "image");
             $user->update([
                 "image" => $image,
             ]);
-        }
-        else{
-      
+        } else {
+
             $request->validate([
-                "username" => ["required"], 
-                "name" => ["required"], 
-                "email" => ["required","unique:users,email,".$user->id],
+                "username" => ["required"],
+                "name" => ["required"],
+                "email" => ["required", "unique:users,email," . $user->id],
                 "phone" => ["required"],
             ]);
             $user->update([
                 "username" => $request->username,
-                "email" => $request->email, 
-                "phone" => $request->phone, 
+                "email" => $request->email,
+                "phone" => $request->phone,
                 "name" => $request->name,
             ]);
-        }; 
+        };
         return redirect()->back();
     }
 
     // Update Password 
-    public function updatePassword(Request $request){
+    public function updatePassword(Request $request)
+    {
         $user = Auth::user();
         $request->validate([
-            "current_password" => ["required","current_password"], 
+            "current_password" => ["required", "current_password"],
             "password" => [
                 "required",
                 "confirmed",
                 "string",
-                "min:8", 
+                "min:8",
                 'regex:/^(?=.*[A-Z])(?=.*\d).+$/',
-            ],  
+            ],
         ]);
-        $user->update(["password" =>bcrypt($request->password)]);
-        Session::flash("status","Update Password Successfully");
+        $user->update(["password" => bcrypt($request->password)]);
+        Session::flash("status", "Update Password Successfully");
         return redirect()->back();
     }
 }

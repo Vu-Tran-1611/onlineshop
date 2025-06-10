@@ -5,14 +5,24 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\CheckOutController;
+use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserMessageController;
 
+
+
+
 // Profile -------------------------------------------------
-Route::post("update-password", [ProfileController::class, "updatePassword"])->name("update-password");
-Route::post("update-profile", [ProfileController::class, "updateProfile"])->name("update-profile");
-Route::get("profile", [ProfileController::class, "index"])->name("profile");
+Route::prefix("profile")->name('profile.')->group(function () {
+    Route::post("update-password", [ProfileController::class, "updatePassword"])->name("update-password");
+    Route::post("update-profile", [ProfileController::class, "updateProfile"])->name("update-profile");
+    Route::get("account", [ProfileController::class, "index"])->name("account");
+    Route::get("address", [ProfileController::class, "index"])->name("address");
+    Route::get("orders", [OrderController::class, "index"])->name("orders");
+    Route::get("favorite", [OrderController::class, "index"])->name("favorite");
+});
+
 // Profile -------------------------------------------------
 
 // Cart   -------------------------------------------------
@@ -44,6 +54,9 @@ Route::get("payment/payment-cancel", [PaymentController::class, "paymentCancel"]
 Route::get("/check-out", [CheckOutController::class, "index"])->name("check-out");
 
 // Check out   ------------------------------------------------- 
+
+
+
 
 // Address ------------------------------------------------- 
 Route::put("/address/{id}/set-default", [AddressController::class, "setDefault"])->name("address.set-default");

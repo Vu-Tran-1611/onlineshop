@@ -18,4 +18,13 @@ class OrderProduct extends Model
         "unit_price",
         "qty",
     ];
+    /**
+     * Get the user that owns the OrderProduct
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
