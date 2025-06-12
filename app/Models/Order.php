@@ -30,4 +30,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderProduct::class);
     }
+    public function userAddress()
+    {
+        return $this->belongsTo(UserAddresses::class);
+    }
 }

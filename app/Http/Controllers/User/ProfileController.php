@@ -20,11 +20,10 @@ class ProfileController extends Controller
         $title = "Profile";
         $user = Auth::user();
         $categories = Category::get();
-        $addresses = UserAddresses::orderBy("created_at", 'desc')->where("user_id", Auth::user()->id)->get();
-        $orders = Order::where("user_id", $user->id)->with("orderProducts")->get();
+
         return view(
             "frontend.pages.profile-account",
-            compact("title", "user", "categories", "addresses", "orders")
+            compact("title", "user", "categories")
         );
     }
     // Update Profile

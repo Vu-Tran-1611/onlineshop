@@ -18,8 +18,9 @@ Route::prefix("profile")->name('profile.')->group(function () {
     Route::post("update-password", [ProfileController::class, "updatePassword"])->name("update-password");
     Route::post("update-profile", [ProfileController::class, "updateProfile"])->name("update-profile");
     Route::get("account", [ProfileController::class, "index"])->name("account");
-    Route::get("address", [ProfileController::class, "index"])->name("address");
+    Route::get("address", [AddressController::class, "index"])->name("address");
     Route::get("orders", [OrderController::class, "index"])->name("orders");
+    Route::get("orders/{id}", [OrderController::class, "show"])->name("orders.show");
     Route::get("favorite", [OrderController::class, "index"])->name("favorite");
 });
 

@@ -1,5 +1,6 @@
 @extends('frontend.layout.mastercart')
 @section('content')
+    {{-- Order --}}
     <div class ="py-8 relative min-h-screen">
         {{-- Loading --}}
         <div role="status" class="loading absolute w-full h-full hidden items-center justify-center bg-[#eeeeee7d]">
@@ -17,7 +18,13 @@
         {{-- Loading --}}
 
         @if (\Cart::getTotalQuantity() > 0)
-            <div class="bg-white py-3 px-5 ">
+            <a href="/"
+                class="inline-flex items-center gap-2 mb-6 text-sky-600 hover:text-sky-800 transition text-sm font-medium">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Home Page
+            </a>
+            <div class="bg-white py-3 px-5 rounded-lg shadow-md mb-5">
+
                 <ul class="flex justify-between">
 
                     <li class="w-[45%]">
@@ -32,8 +39,9 @@
 
             </div>
             @foreach ($vendors as $vendor)
-                <div class="bg-white py-3 my-3 px-5">
-                    <h1 class="border-b-2 border-slate-200 py-4">
+                <div class="bg-white py-3 my-3 px-5 rounded-xl shadow-md">
+                    {{-- Vendor Name --}}
+                    <h1 class="border-b border-slate-200 py-4">
                         <input type="checkbox" data-select="shop" data-id="{{ $vendor['id'] }}" /> &emsp;<i
                             class="fa-solid fa-shop"></i>&emsp;{{ $vendor['name'] }}
                     </h1>
@@ -43,7 +51,7 @@
                                 $product = App\Models\Product::findOrFail($cartItem->attributes['product_id']);
                             @endphp
                             @if ($cartItem->attributes['vendor_id'] == $vendor['id'])
-                                <div class="my-5 flex justify-between items-center pb-3 border-b-2 border-slate-200">
+                                <div class="my-5 flex justify-between items-center pb-3 border-b border-slate-200">
                                     <div class="w-[50%] flex items-center gap-10">
                                         <span class="w-[15%] flex items-center">
 
@@ -56,12 +64,12 @@
                                             &emsp;
                                             <img width="100"
                                                 src="{{ asset($cartItem->attributes['imageURL']) }}" /></span>
-                                        <span class="flex-1">{{ $cartItem->name }}</span>
+                                        <b class="flex-1">{{ $cartItem->name }}</b>
                                         <div class="flex-1">
                                             @foreach ($cartItem->attributes as $key => $item)
                                                 @if ($key != 'brand_id' && $key != 'product_id' && $key != 'vendor_id' && $key != 'imageURL')
                                                     <span
-                                                        class="capitalize">{{ $key }}:&emsp;{{ $item }}</span>
+                                                        class="capitalize"><b>{{ $key }}</b>:&emsp;{!! $item !!}</span>
                                                     </br />
                                                 @endif
                                             @endforeach
@@ -108,27 +116,36 @@
         @endif
     </div>
 
-    <div class="bg-slate-800 text-white flex justify-between p-5 items-center fixed bottom-0 w-[1200px]">
-        <div class="flex items-center">
-            <input type="checkbox" data-select="all" />&emsp;
-            <label>Select All</label>
-        </div>
-        <div class="relative w-[300px] h-[50px] ">
-            <input type="text" class="coupon p-3 w-full text-black" placeholder="Enter Shuty's Shop Voucher" />&emsp;
-            <button
-                class="cursor-pointer apply right-0 top-0  h-full absolute bg-sky-600 px-3 py-3 rounded-sm hover:bg-sky-800">Apply</button>
-        </div>
 
-        <div class="flex gap-x-5 items-center">
-            <div class="flex flex-col"><code class="message text-sky-400"></code>
-                <p class="text-center">Total (<span class="total-quantity">0</span> item): $<span
-                        class="total-price text-xl">0</span></p>
+
+    {{-- Checkout Section --}}
+    @if (\Cart::getTotalQuantity() > 0)
+        <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-6xl z-40">
+            <div
+                class="backdrop-blur bg-black/40 border border-white/10 rounded-t-2xl shadow-2xl flex flex-col md:flex-row justify-between items-center px-8 py-6 gap-6">
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" data-select="all" class="accent-sky-700 scale-125" />
+                    <label class="text-sky-200 font-semibold">Select All</label>
+                </div>
+                <div class="relative w-full md:w-[320px]">
+                    <input type="text"
+                        class="coupon w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-sky-300 focus:ring-2 focus:ring-sky-500 focus:outline-none transition"
+                        placeholder="Enter Shop Voucher" />
+                    <button
+                        class="apply absolute right-2 top-2 bottom-2 px-5 bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600 text-white rounded-lg font-semibold shadow hover:scale-105 transition">Apply</button>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                    <code class="message text-sky-700 text-sm"></code>
+                    <p class="text-sky-200 font-semibold text-lg">Total (<span class="total-quantity">0</span> item): <span
+                            class="total-price text-2xl text-sky-600 font-bold">$0</span></p>
+                </div>
+                <a href="{{ route('user.check-out') }}"
+                    class="check-out bg-gradient-to-r from-pink-700 to-sky-700 hover:from-pink-600 hover:to-sky-600 text-white px-10 py-3 rounded-xl shadow-lg font-bold text-lg transition hover:scale-105">
+                    <i class="fa-solid fa-credit-card mr-2"></i>Check out
+                </a>
             </div>
-            <a href="{{ route('user.check-out') }}"
-                class="check-out bg-sky-600 px-10 py-3 rounded-sm hover:bg-sky-800">Check out</a>
         </div>
-
-    </div>
+    @endif
 @endsection
 @push('scripts')
     <script>

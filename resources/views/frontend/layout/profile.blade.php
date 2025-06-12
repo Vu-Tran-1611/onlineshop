@@ -3,7 +3,7 @@
 @section('content')
     <div class="py-5 relative min-h-screen flex flex-col md:flex-row gap-6">
         {{-- Sidebar tabs --}}
-        <ul class="rounded-xl w-[300px] bg-white border border-slate-200">
+        <ul class="rounded-xl w-[400px] bg-white border border-slate-200">
             @php
                 $routes = [
                     ['route' => 'user.profile.account', 'icon' => 'fa-circle-user', 'label' => 'Account'],
@@ -12,6 +12,7 @@
                     ['route' => 'user.profile.favorite', 'icon' => 'fa-heart', 'label' => 'Favorite Items'],
                 ];
             @endphp
+
 
             @foreach ($routes as $item)
                 <li>
@@ -33,3 +34,35 @@
         </div>
     </div>
 @endsection
+
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            const tabID = localStorage.getItem("tab");
+            $(".tab-link-" + tabID).addClass("active");
+            $("#tabs").tabs({
+                active: tabID - 1
+            });
+            $(".file").on("change", function() {
+                $(this).closest("form").submit();
+            })
+
+            $(".upload-file ").on("click", function(e) {
+                e.preventDefault();
+                $(".file").click();
+            });
+
+            $(".tab-link").on("click", function() {
+                const id = $(this).data("id");
+
+                // Save tab into cookie 
+                localStorage.setItem('tab', id);
+
+                $('.tab-link').removeClass("active");
+                $(this).addClass("active");
+            });
+
+        });
+    </script>
+@endpush

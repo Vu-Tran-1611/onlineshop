@@ -8,10 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\ShopProfile;
+use App\Models\Order;
+use App\Models\UserAddresses;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable,Billable;
+    use HasApiTokens, HasFactory, Notifiable, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -25,6 +28,7 @@ class User extends Authenticatable
         'phone',
         'image',
         'username',
+
     ];
 
     /**
@@ -51,4 +55,60 @@ class User extends Authenticatable
     {
         return $this->hasOne(ShopProfile::class);
     }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function addresses()
+    {
+        return $this->hasMany(UserAddresses::class);
+    }
+    // public function wishlists()
+    // {
+    //     return $this->hasMany(Wishlist::class);
+    // }
+    // public function reviews()
+    // {
+    //     return $this->hasMany(Review::class);
+    // }
+    // public function notifications()
+    // {
+    //     return $this->hasMany(Notification::class);
+    // }
+    // public function cart()
+    // {
+    //     return $this->hasOne(Cart::class);
+    // }
+    // public function paymentMethods()
+    // {
+    //     return $this->hasMany(PaymentMethod::class);
+    // }
+    // public function subscriptions()
+    // {
+    //     return $this->hasMany(Subscription::class);
+    // }
+    // public function invoices()
+    // {
+    //     return $this->hasMany(Invoice::class);
+    // }
+    // public function coupons()
+    // {
+    //     return $this->hasMany(Coupon::class);
+    // }
+    // public function shippingAddresses()
+    // {
+    //     return $this->hasMany(ShippingAddress::class);
+    // }
+    // public function billingAddresses()
+    // {
+    //     return $this->hasMany(BillingAddress::class);
+    // }
+    // public function paymentMethods()
+    // {
+    //     return $this->hasMany(PaymentMethod::class);
+    // }
+    // public function transactions()
+    // {
+    //     return $this->hasMany(Transaction::class);
+    // }
 }

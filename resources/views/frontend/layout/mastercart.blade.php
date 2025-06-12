@@ -24,7 +24,7 @@
             <div class="md:w-[1200px] p-3 mx-auto">
                 <nav class=" flex justify-between md:gap-5 lg:gap-0 lg:justify-between text-white  items-center">
                     <h1 class="text-2xl">
-                        <a href="/" class="hidden md:block">ShuTy's Shop | {{ $title }}</a>
+                        <a href="/" class="hidden md:block">OShop | {{ $title }}</a>
 
                     </h1>
                     <div class="hidden md:flex  items-center  group gap-2 relative">
@@ -33,16 +33,20 @@
                                 $user = Auth::user();
                             @endphp
                             @if ($user->image)
-                                <img class=" rounded-full cursor-pointer" alt="avatar" width="50"
-                                    src="{{ asset($user->image) }}" />
+                                <div class="w-10 h-10 rounded-full overflow-hidden">
+                                    <img src="{{ asset($user->image) }}" class="w-full h-full object-cover"
+                                        alt="Avatar" />
+                                </div>
                             @else
-                                <img class=" rounded-full cursor-pointer" alt="avatar" width="50"
-                                    src="{{ asset('uploads/user-avatar.png') }}" />
+                                <div class="w-10 h-10 rounded-full overflow-hidden">
+                                    <img src="{{ asset('uploads/user-avatar.png') }}" class="w-full h-full object-cover"
+                                        alt="Avatar" />
+                                </div>
                             @endif
                             <h1 class="cursor-pointer text-base">{{ $user->name }} / {{ $user->email }}</h1>
                             <ul
                                 class="group-hover:block hidden leading-8 shadow-2xl rounded-lg absolute top-[50px] z-10 bg-slate-100 text-black p-3  w-[180px]">
-                                <a href="{{ route('user.profile') }}"
+                                <a href="{{ route('user.profile.account') }}"
                                     class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Manage Account</a>
                                 <a href=""
                                     class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Historic
