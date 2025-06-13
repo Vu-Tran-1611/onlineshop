@@ -4,9 +4,9 @@
         data-brandid = "{{ $product->brand->id }}" data-vendorid = "{{ $product->shopProfile->id }}"
         data-imageurl = "{{ $product->thumb_image }}">
     </div>
-    <div class="py-10 ">
+    <div class="py-10  ">
 
-        <div class="relative grid grid-cols-[450px_500px] gap-x-10 bg-white p-5">
+        <div class="rounded-xl relative grid grid-cols-[450px_500px] gap-x-10 bg-white p-5">
             {{-- Loading --}}
             <div role="status"
                 class="loading z-[100] absolute w-full h-full hidden items-center justify-center bg-[#eeeeee7d]">
@@ -46,49 +46,71 @@
                     </div>
                 </div>
             </div>
-            <!-- Information -->
+            <!-- Product Information -->
             <div>
-                <h1 class="text-2xl">{{ $product->name }}</h1>
-                <div class="rounded-lg text-3xl text-sky-600 my-4 flex items-center gap-3 bg-slate-200 p-4">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ $product->name }}</h1>
+
+                <div class="rounded-2xl text-3xl text-sky-600 my-6 flex items-center gap-4 bg-slate-100 p-3 shadow-sm">
                     @if (checkSale($product))
-                        <span class="text-slate-400 text-xl line-through">
-                            ${{ $product->price }}</span> <span class="price">${{ $product->offer_price }}</span>
-                        <span class="text-sm bg-sky-500 text-white p-1">{{ calculateSalePercent($product) }}%
-                            Sale</span>
-                    @else
-                        <span class="price"> ${{ $product->price }}</span>
-                    @endif
-                </div>
-                <div class="">
-                    <div class="flex my-10">
-                        <span class="text-slate-500 min-w-[100px]">Deliver</span>
-                        <span>
-                            <span class="text-slate-500"><i class="fa-solid fa-truck"></i> Deliver to &ensp;</span> 6320
-                            Creekbend Drive<br />
-                            <span class="text-slate-500"> Shipping Fee &ensp;</span> $0
+                        {{-- Original Price (crossed out) --}}
+                        <span class="text-gray-400 text-2xl line-through">
+                            ${{ $product->price }}
                         </span>
 
+                        {{-- Discounted Price --}}
+                        <span class="price font-semibold text-sky-700">
+                            ${{ $product->offer_price }}
+                        </span>
+
+                        {{-- Discount Badge --}}
+                        <span class="text-xs bg-sky-500 text-white font-semibold px-2 py-1 rounded-full shadow-sm">
+                            -{{ calculateSalePercent($product) }}%
+                        </span>
+                    @else
+                        {{-- Regular Price --}}
+                        <span class="price font-semibold text-sky-700">
+                            ${{ $product->price }}
+                        </span>
+                    @endif
+                </div>
+
+                <div class="">
+                    {{-- Delivery Section --}}
+                    <div class="flex my-10">
+                        <span class="text-slate-500 min-w-[100px]">Delivery</span>
+                        <span>
+                            <span class="text-slate-500"><i class="fa-solid fa-truck"></i> Delivering to &ensp;</span> 6320
+                            Creekbend Drive<br />
+                            <span class="text-slate-500">Shipping Fee &ensp;</span> $0
+                        </span>
                     </div>
-                    {{-- Variant --}}
+
+                    {{-- Variant Selection --}}
                     <div class="relative">
+                        {{-- Overlay message for variant not selected --}}
                         <div
                             class="variant-select hidden absolute rounded-lg top-[50%] left-[50%] -translate-y-[50%] -translate-x-[50%] w-[110%] h-[140%] bg-[#ffc3c34d]">
-                            <div class="absolute bottom-0 w-full text-center text-red-600">Please Select Variant First</div>
-
+                            <div class="absolute bottom-0 w-full text-center text-red-600">Please select a variant first
+                            </div>
                         </div>
+
                         @foreach ($product->productVariants as $variant)
                             @if ($variant->status == 1)
-                                <div class="flex  my-10 variant">
-                                    <span class="text-slate-500  min-w-[100px] capitalize">{{ $variant->name }}</span>
-                                    <div class="flex flex-wrap gap-4 ">
+                                <div class="flex my-10 variant">
+                                    {{-- Variant name (e.g., Size, Color) --}}
+                                    <span class="text-slate-500 min-w-[100px] capitalize">{{ $variant->name }}</span>
+
+                                    {{-- Variant items --}}
+                                    <div class="flex flex-wrap gap-4">
                                         @foreach ($variant->product_variant_item as $item)
                                             @if ($item->status == 1)
-                                                <p data-price="{{ $item->price }}" data-isswipe={{ $variant->is_swipe }}
+                                                <p data-price="{{ $item->price }}"
+                                                    data-isswipe="{{ $variant->is_swipe }}"
                                                     data-variantid="{{ $variant->id }}" data-name="{{ $item->name }}"
-                                                    data-variantname = "{{ $variant->name }}"
-                                                    data-id = "{{ $item->id }}"
-                                                    class="variant-{{ $variant->id }} variant-item-button border-2  text-sm  px-3 py-2 cursor-pointer">
-                                                    {{ $item->name }} </p>
+                                                    data-variantname="{{ $variant->name }}" data-id="{{ $item->id }}"
+                                                    class="variant-{{ $variant->id }} variant-item-button border-2 text-sm px-3 py-2 cursor-pointer">
+                                                    {{ $item->name }}
+                                                </p>
                                             @endif
                                         @endforeach
                                     </div>
@@ -96,20 +118,30 @@
                             @endif
                         @endforeach
                     </div>
-                    {{-- Variant --}}
-                    <div class="flex  my-10 items-center">
+
+                    {{-- Quantity Selector --}}
+                    <div class="flex my-10 items-center">
                         <span class="text-slate-500 min-w-[100px] capitalize">Quantity</span>
                         <div class="flex">
+                            {{-- Decrease quantity --}}
                             <p class="decrease cursor-pointer border-2 border-slate-200 py-1 px-3">-</p>
+
+                            {{-- Quantity input --}}
                             <input value="1" type="text"
                                 class="quantity text-center w-[80px] border-x-0 border-y-2 border-slate-200 focus:ring-0 focus:border-slate-200"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
 
+                            {{-- Increase quantity --}}
                             <p data-max="{{ $product->qty }}"
-                                class="increase cursor-pointer border-2 border-slate-200 py-1 px-3">+</p>
+                                class="increase cursor-pointer border-2 border-slate-200 py-1 px-3">
+                                +
+                            </p>
                         </div>
-                        <p class="text-sm text-slate-500">&emsp;{{ $product->qty }} is Available</p>
+
+                        {{-- Stock message --}}
+                        <p class="text-sm text-slate-500">&emsp;{{ $product->qty }} available</p>
                     </div>
+
                     <div class="flex gap-7">
                         <form>
                             <input type="hidden" name="temp_id" value="{{ $product->id }}" />
@@ -119,13 +151,30 @@
                                 value="{{ checkSale($product) ? $product->offer_price : $product->price }}" />
                             <input type="hidden" name="quantity" value="1" />
                             <input type="hidden" name="attributes" />
-                            <button
-                                class="add-to-cart hover:bg-white hover:text-sky-600 border-2 hover:border-sky-600 transition-all text-white bg-sky-600 text-xl rounded-sm border-sky-600 py-2 px-6"><i
-                                    class="fa-solid fa-cart-shopping "></i>&ensp;Add To
-                                Cart</button>
-                            <button
-                                class="hover:bg-sky-600 transition-all hover:text-white text-xl rounded-sm text-sky-600 border-2 border-sky-600 py-2 px-6">
-                                <i class="fa-solid fa-money-bill-wave"></i>&ensp;Check Out</button>
+                            <div class="flex flex-col md:flex-row gap-3 mt-6">
+                                {{-- Add to Cart --}}
+                                <button
+                                    class="add-to-cart flex items-center justify-center gap-2 text-white bg-sky-600 border-2 border-sky-600 hover:bg-white hover:text-sky-600 transition-all font-semibold text-sx rounded-xl px-3 py-2 shadow-md hover:shadow-lg min-w-[180px]">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    Add to Cart
+                                </button>
+
+                                {{-- Check Out --}}
+                                <button
+                                    class="flex items-center justify-center gap-2 text-sky-600 bg-white border-2 border-sky-600 hover:bg-sky-600 hover:text-white transition-all font-semibold text-sx rounded-xl px-3 py-2 shadow-md hover:shadow-lg min-w-[180px]">
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                    Check Out
+                                </button>
+
+                                {{-- Add to Wishlist --}}
+                                <button onclick="event.preventDefault()"
+                                    class="add-to-wishlist flex items-center justify-center gap-2 text-pink-600 bg-white border-2 border-pink-500 hover:bg-pink-500 hover:text-white transition-all font-semibold text-sx rounded-xl px-3 py-2 shadow-md hover:shadow-lg min-w-[180px]"
+                                    data-id="{{ $product->id }}">
+                                    <i class="fa-solid fa-heart"></i>
+                                    Add to Wishlist
+                                </button>
+                            </div>
+
                         </form>
 
                     </div>
@@ -136,75 +185,100 @@
             </div>
         </div>
 
-        <div class="bg-white p-5 my-7 flex items-center gap-5">
-
-            <div class="flex items-center gap-5">
-                <div><img src="{{ asset($shop->banner) }}" width="100" /></div>
-                <div class="flex flex-col justify-between border-r-2 pr-5 border-slate-200">
-                    <span class="text-2xl">{{ $shop->name }}</span>
-                    <span class="text-sm">Online 2 hours ago</span>
-                    <span class="my-3 flex">
-                        <button data-id="{{ $shop->user->id }}" data-banner = "{{ $shop->banner }}"
-                            data-name = "{{ $shop->name }}"
-                            class="show-chat-pannel text-sky-600 border-sky-600 border-2 w-[150px] py-1 px-3"><i
-                                class="fa-brands fa-rocketchat"></i>&ensp;Chat</button>&ensp;
-                        <button class="text-sky-600 border-sky-600 border-2 w-[150px] py-1 px-3"><i
-                                class="fa-solid fa-shop"></i>&ensp;View Shop</button>
+        {{-- Shop Information --}}
+        <div
+            class="bg-gradient-to-r from-slate-100 to-white p-7 my-10 flex flex-col md:flex-row items-center gap-8 rounded-2xl shadow-lg border border-sky-100">
+            <div class="flex items-center gap-6 ">
+                <div class="rounded-full overflow-hidden border-4 border-sky-200 shadow w-[100px] h-[100px]">
+                    <img src="{{ asset($shop->banner) }}" width="100" height="100"
+                        class="object-cover w-[100px] h-[100px]" />
+                </div>
+                <div class="flex flex-col justify-between border-r-2 pr-7 border-sky-100 h-full">
+                    <span class="text-2xl font-bold text-sky-700">{{ $shop->name }}</span>
+                    <span class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                        <i class="fa-solid fa-circle text-green-400 text-[8px]"></i> Online 2 hours ago
                     </span>
-
+                    <div class="my-4 flex gap-3">
+                        <button data-id="{{ $shop->user->id }}" data-banner="{{ $shop->banner }}"
+                            data-name="{{ $shop->name }}"
+                            class="show-chat-pannel flex items-center gap-2 text-sky-600 border border-sky-600 hover:bg-sky-600 hover:text-white transition px-4 py-2 rounded-lg font-semibold shadow">
+                            <i class="fa-brands fa-rocketchat"></i> Chat
+                        </button>
+                        <button
+                            class="flex items-center gap-2 text-sky-600 border border-sky-600 hover:bg-sky-600 hover:text-white transition px-4 py-2 rounded-lg font-semibold shadow">
+                            <i class="fa-solid fa-shop"></i> View Shop
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="grid grid-cols-3 gap-x-10 gap-y-5 ">
-                <div>
-                    <span>Vote</span> &emsp;
-                    <span class="text-sky-600">94K</span>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-4 w-full md:pl-10">
+                <div class="flex flex-col items-start">
+                    <span class="text-slate-500 text-sm">Vote</span>
+                    <span class="text-xl font-bold text-sky-600">94K</span>
                 </div>
-                <div>
-                    <span>Feedback Rate</span>&emsp;
-                    <span class="text-sky-600">85%</span>
+                <div class="flex flex-col items-start">
+                    <span class="text-slate-500 text-sm">Feedback Rate</span>
+                    <span class="text-xl font-bold text-sky-600">85%</span>
                 </div>
-                <div>
-                    <span>Join</span>&emsp;
-                    <span class="text-sky-600">5 Years ago</span>
+                <div class="flex flex-col items-start">
+                    <span class="text-slate-500 text-sm">Join</span>
+                    <span class="text-xl font-bold text-sky-600">5 Years ago</span>
                 </div>
-                <div>
-                    <span>Products</span>&emsp;
-                    <span class="text-sky-600">94</span>
+                <div class="flex flex-col items-start">
+                    <span class="text-slate-500 text-sm">Products</span>
+                    <span class="text-xl font-bold text-sky-600">94</span>
                 </div>
-                <div>
-                    <span>Response Time</span>&emsp;
-                    <span class="text-sky-600">In hours</span>
+                <div class="flex flex-col items-start">
+                    <span class="text-slate-500 text-sm">Response Time</span>
+                    <span class="text-xl font-bold text-sky-600">In hours</span>
                 </div>
-                <div>
-                    <span>Follower</span>&emsp;
-                    <span class="text-sky-600">100K</span>
+                <div class="flex flex-col items-start">
+                    <span class="text-slate-500 text-sm">Follower</span>
+                    <span class="text-xl font-bold text-sky-600">100K</span>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-12 gap-5">
+        <div class="grid grid-cols-12 gap-5 rounded-xl">
             <div class="bg-white p-5 my-7 gap-5 col-span-9">
-                <div>
-                    <div class="bg-slate-100 p-3 font-semibold text-lg">PRODUCT DETAIL</div>
-                    <div class="my-10 leading-10 p-3">
-                        <div class="flex gap-16">
-                            <span class="text-slate-500 min-w-[100px]">Category</span>
-                            <span>{{ $product->category->name }}
-                                {{ !empty($product->subCategory->name) ? ' - ' . $product->subCategory->name : '' }}
+                <div class="mb-8">
+                    <div
+                        class="bg-gradient-to-r to-white from-slate-100 p-4 font-semibold text-lg rounded-lg shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-info-circle text-sky-500"></i>
+                        <span class="tracking-wide text-sky-700">PRODUCT DETAIL</span>
+                    </div>
+                    <div class="my-10 leading-10 p-6 bg-white rounded-xl shadow flex flex-col gap-6">
+                        <div class="flex gap-10 items-center">
+                            <span class="text-slate-500 min-w-[120px] font-medium flex items-center gap-2">
+                                <i class="fa-solid fa-layer-group text-sky-700"></i> Category
+                            </span>
+                            <span class="text-slate-700 font-semibold">
+                                {{ $product->category->name }}
+                                @if (!empty($product->subCategory->name))
+                                    <span class="text-slate-400"> - {{ $product->subCategory->name }}</span>
+                                @endif
                             </span>
                         </div>
-                        <div class="flex gap-16">
-                            <span class="text-slate-500 min-w-[100px]">Quantity</span>
-                            <span>{{ $product->qty }}</span>
+                        <div class="flex gap-10 items-center">
+                            <span class="text-slate-500 min-w-[120px] font-medium flex items-center gap-2">
+                                <i class="fa-solid fa-boxes-stacked text-sky-700"></i> Quantity
+                            </span>
+                            <span class="text-slate-700 font-semibold">{{ $product->qty }}</span>
                         </div>
-                        <div class="flex gap-16">
-                            <span class="text-slate-500 min-w-[100px]">Brand</span>
-                            <span>{{ $product->brand->name }}</span>
+                        <div class="flex gap-10 items-center">
+                            <span class="text-slate-500 min-w-[120px] font-medium flex items-center gap-2">
+                                <i class="fa-solid fa-certificate text-sky-700"></i> Brand
+                            </span>
+                            <span class="text-slate-700 font-semibold">{{ $product->brand->name }}</span>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <div class="bg-slate-100 p-3 font-semibold text-lg">PRODUCT DESCRIPTION</div>
+                    <div
+                        class="bg-gradient-to-r to-white from-slate-100 p-4 font-semibold text-lg rounded-lg shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-info-circle text-sky-500"></i>
+                        <span class="tracking-wide text-sky-700">PRODUCT DESCRIPTION</span>
+                    </div>
                     <div class="my-10 leading-10 p-3">
                         <div class="gap-16">
                             {!! $product->short_description !!}
@@ -253,11 +327,15 @@
 
         </div>
         <div>
-            <h1 class="text-slate-500 uppercase">From the same shop</h1>
+            <div class="flex items-center gap-3 my-8">
+                <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">From the same shop</h1>
+                <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
+            </div>
             <div class="grid grid-cols-5 gap-4 pt-5">
                 @foreach ($productsBelongsToShop as $p)
                     <li data-url="{{ route('product', ['product' => $p->slug]) }}"
-                        class="product cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
+                        class=" cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
                         <div class="relative">
                             <img class="min-h-[180px] w-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 src="{{ asset($p->thumb_image) }}" />
@@ -273,7 +351,9 @@
                                 @endif
                             </div>
                             <div class="absolute top-2 right-2">
-                                <button class="bg-white/80 hover:bg-sky-100 rounded-full p-2 shadow transition">
+                                <button
+                                    class="bg-white/80 hover:bg-sky-100 rounded-full p-2 shadow transition add-to-wishlist"
+                                    data-id="{{ $p->id }}">
                                     <i class="fa-regular fa-heart text-sky-600"></i>
                                 </button>
                             </div>
@@ -296,8 +376,8 @@
                                 @endfor
                                 <span class="text-xs text-slate-400 ml-1">(120)</span>
                             </div>
-                            <button
-                                class="mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
+                            <button data-url="{{ route('product', ['product' => $p->slug]) }}"
+                                class="product mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
                                 View Details
                             </button>
                         </div>
@@ -307,11 +387,15 @@
         </div>
 
         <div>
-            <h1 class="text-slate-500 uppercase  my-5">You may also like</h1>
+            <div class="flex items-center gap-3 my-8">
+                <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">You may also like</h1>
+                <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
+            </div>
             <div class="grid gap-4 pt-5 grid-cols-5">
                 @foreach ($productsBelongsToSameCategory as $p)
                     <li data-url="{{ route('product', ['product' => $p->slug]) }}"
-                        class="product cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
+                        class=" cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
                         <div class="relative">
                             <img class="min-h-[180px] w-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 src="{{ asset($p->thumb_image) }}" />
@@ -327,7 +411,9 @@
                                 @endif
                             </div>
                             <div class="absolute top-2 right-2">
-                                <button class="bg-white/80 hover:bg-sky-100 rounded-full p-2 shadow transition">
+                                <button
+                                    class="bg-white/80 hover:bg-sky-100 rounded-full p-2 shadow transition add-to-wishlist"
+                                    data-id="{{ $p->id }}">
                                     <i class="fa-regular fa-heart text-sky-600"></i>
                                 </button>
                             </div>
@@ -350,8 +436,8 @@
                                 @endfor
                                 <span class="text-xs text-slate-400 ml-1">(120)</span>
                             </div>
-                            <button
-                                class="mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
+                            <button data-url="{{ route('product', ['product' => $p->slug]) }}"
+                                class="product mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
                                 View Details
                             </button>
                         </div>
@@ -368,12 +454,49 @@
     @endpush
     @push('scripts')
         <!-- Swiper JS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
         <!-- Initialize Swiper -->
         <script>
             $(document).ready(function() {
+                // Add to Wishlist button handler
+
+                $(".add-to-wishlist").on("click", function(e) {
+                    e.preventDefault();
+                    const productId = $(this).data("id");
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('user.profile.wishlist.add-to-wishlist') }}",
+                        data: {
+                            product_id: productId
+                        },
+                        dataType: "json",
+                        success: function(response, textStatus, jqXHR) {
+                            console.log(response);
+                            // Not in wishlist
+                            if (response.success == true) {
+                                Toastify({
+                                    text: response.message,
+                                    duration: 3000,
+                                    backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)", // green
+
+                                }).showToast();
+                            }
+                            // Already in wishlist
+                            else {
+                                Toastify({
+                                    text: response.message,
+                                    backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
+                                }).showToast();
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.table(jqXHR)
+                        }
+                    });
+                });
+
                 function init() {
                     let allVarNames = [];
                     const imageURL = $(".product-information").data("imageurl");

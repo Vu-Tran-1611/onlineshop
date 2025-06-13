@@ -23,3 +23,48 @@
     {{-- Featured product --}}
     @include('frontend.sections.featured-product')
 @endsection
+
+
+@push('scripts')
+    <script>
+        $(".product").on("click", function() {
+            const url = $(this).data("url");
+            window.location.replace(url);
+        });
+    </script>
+    <script>
+        $(".add-to-wishlist").on("click", function() {
+            const productId = $(this).data("id");
+            $.ajax({
+                type: "POST",
+                url: "{{ route('user.profile.wishlist.add-to-wishlist') }}",
+                data: {
+                    product_id: productId
+                },
+                dataType: "json",
+                success: function(response, textStatus, jqXHR) {
+                    console.log(response);
+                    // Not in wishlist
+                    if (response.success == true) {
+                        Toastify({
+                            text: response.message,
+                            duration: 3000,
+                            backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)", // green
+
+                        }).showToast();
+                    }
+                    // Already in wishlist
+                    else {
+                        Toastify({
+                            text: response.message,
+                            backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
+                        }).showToast();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.table(jqXHR)
+                }
+            });
+        });
+    </script>
+@endpush

@@ -22,10 +22,10 @@
                     </h2>
                 </div>
                 <span title="This order is currently '{{ $order->status }}'"
-                    class="px-4 py-1.5 rounded-full font-semibold text-sm shadow-md
+                    class= "animate-pulse px-4 py-1.5 rounded-full font-semibold text-sm shadow-md
                     {{ $order->status === 'completed' ? 'bg-green-100 text-green-700' : ($order->status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
                     <i
-                        class="fa-solid fa-circle mr-1 text-xs {{ $order->status === 'completed' ? 'text-green-500' : ($order->status === 'cancelled' ? 'text-red-500' : 'text-yellow-500') }}"></i>
+                        class=" fa-solid fa-circle mr-1 text-xs {{ $order->status === 'completed' ? 'text-green-500' : ($order->status === 'cancelled' ? 'text-red-500' : 'text-yellow-500') }}"></i>
                     {{ ucfirst($order->status ?? 'Pending') }}
                 </span>
             </div>

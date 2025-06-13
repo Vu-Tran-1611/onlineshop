@@ -3,8 +3,8 @@
     <h1 class="text-2xl p-2">TOP PRODUCT</h1>
     <ul class="grid  grid-cols-5 py-5 gap-5 ccursor-pointer ">
         @foreach ($topProducts as $p)
-            <li data-url="{{ route('product', ['product' => $p->slug]) }}"
-                class="product cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
+            <li
+                class=" cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
                 <div class="relative">
                     <img class="min-h-[180px] w-full object-cover group-hover:scale-105 transition-transform duration-300"
                         src="{{ asset($p->thumb_image) }}" />
@@ -19,7 +19,8 @@
                         @endif
                     </div>
                     <div class="absolute top-2 right-2">
-                        <button class="bg-white/80 hover:bg-sky-100 rounded-full p-2 shadow transition">
+                        <button class="bg-white/80 hover:bg-sky-100 rounded-full p-2 shadow transition add-to-wishlist"
+                            data-id="{{ $p->id }}">
                             <i class="fa-regular fa-heart text-sky-600"></i>
                         </button>
                     </div>
@@ -42,8 +43,8 @@
                         @endfor
                         <span class="text-xs text-slate-400 ml-1">(120)</span>
                     </div>
-                    <button
-                        class="mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
+                    <button data-url="{{ route('product', ['product' => $p->slug]) }}"
+                        class="product mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
                         View Details
                     </button>
                 </div>
@@ -51,13 +52,3 @@
         @endforeach
     </ul>
 </div>
-
-
-@push('scripts')
-    <script>
-        $(".product").on("click", function() {
-            const url = $(this).data("url");
-            window.location.replace(url);
-        });
-    </script>
-@endpush

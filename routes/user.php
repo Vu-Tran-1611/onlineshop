@@ -9,6 +9,7 @@ use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserMessageController;
+use App\Http\Controllers\User\WishlistController;
 
 
 
@@ -21,7 +22,13 @@ Route::prefix("profile")->name('profile.')->group(function () {
     Route::get("address", [AddressController::class, "index"])->name("address");
     Route::get("orders", [OrderController::class, "index"])->name("orders");
     Route::get("orders/{id}", [OrderController::class, "show"])->name("orders.show");
-    Route::get("favorite", [OrderController::class, "index"])->name("favorite");
+
+    // Wishlist   ------------------------------------------------- 
+    Route::get("wishlist", [WishlistController::class, "index"])->name("wishlist");
+    Route::post("wishlist/add-to-wishlist", [WishlistController::class, "addToWishlist"])->name("wishlist.add-to-wishlist");
+    Route::delete("wishlist/remove-from-wishlist", [WishlistController::class, "removeFromWishlist"])->name("wishlist.remove-from-wishlist");
+    // Wishlist   ------------------------------------------------- 
+
 });
 
 // Profile -------------------------------------------------
@@ -38,6 +45,7 @@ Route::post("/add-to-cart", [CartController::class, "addToCart"])->name("add-to-
 Route::put("/apply-coupon", [CartController::class, "applyCoupon"])->name("apply-coupon");
 
 // Cart   ------------------------------------------------- 
+
 
 
 

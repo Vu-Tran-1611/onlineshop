@@ -169,7 +169,8 @@
                         <a href="{{ route('user.profile.orders') }}"
                             class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">
                             Order</a>
-                        <a href="" class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Favorite
+                        <a href="{{ route('user.profile.wishlist') }}"
+                            class="hover:bg-slate-300 cursor-pointer block rounded-lg p-2">Favorite
                             Items</a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf

@@ -9,7 +9,7 @@
                     ['route' => 'user.profile.account', 'icon' => 'fa-circle-user', 'label' => 'Account'],
                     ['route' => 'user.profile.address', 'icon' => 'fa-location-dot', 'label' => 'Addresses'],
                     ['route' => 'user.profile.orders', 'icon' => 'fa-cart-shopping', 'label' => 'Your Purchase'],
-                    ['route' => 'user.profile.favorite', 'icon' => 'fa-heart', 'label' => 'Favorite Items'],
+                    ['route' => 'user.profile.wishlist', 'icon' => 'fa-heart', 'label' => 'Favorite Items'],
                 ];
             @endphp
 

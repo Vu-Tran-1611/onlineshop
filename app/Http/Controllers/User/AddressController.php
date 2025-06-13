@@ -19,7 +19,7 @@ class AddressController extends Controller
             ->orderByDesc("is_default")
             ->orderBy("created_at", 'desc')
             ->paginate(4);
-        $categories = \App\Models\Category::all(); // Add this line
+        $categories = \App\Models\Category::all();
         return view("frontend.pages.profile-address", compact("title", "addresses", "categories")); // Pass to view
     }
 
