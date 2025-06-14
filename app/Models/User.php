@@ -67,10 +67,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Wishlist::class);
     }
-    // public function reviews()
-    // {
-    //     return $this->hasMany(Review::class);
-    // }
+    public function userReviews()
+    {
+        return $this->hasMany(UserReviews::class);
+    }
     // public function notifications()
     // {
     //     return $this->hasMany(Notification::class);

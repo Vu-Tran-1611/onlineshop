@@ -85,6 +85,37 @@
                         </span>
                     </div>
 
+
+                    {{-- Guarantee Section --}}
+                    <div class="flex my-6 items-start">
+                        <span class="text-slate-500 min-w-[100px]">Guarantee</span>
+                        <span class="flex-1">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-shield-halved text-green-500 text-xl"></i>
+                                <span class="font-semibold text-slate-700">Buy now, worry-free!</span>
+                            </div>
+                            <div class="text-slate-600 text-sm mt-1">
+                                Trust in us – your satisfaction is our priority. Enjoy <span
+                                    class="font-bold text-sky-600">free
+                                    return within 15 days</span> if you're not happy with your purchase.
+                            </div>
+                            <details class="mt-2 group">
+                                <summary class="cursor-pointer text-sky-600 hover:underline flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span>Return & Guarantee Policy Details</span>
+                                </summary>
+                                <div class="mt-2 text-slate-500 text-sm bg-slate-50 rounded-lg p-3 border border-sky-100">
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Free returns accepted within 15 days of delivery.</li>
+                                        <li>Product must be unused and in original packaging.</li>
+                                        <li>Contact our support for a hassle-free return process.</li>
+                                        <li>Full refund or replacement available as per your preference.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                        </span>
+                    </div>
+
                     {{-- Variant Selection --}}
                     <div class="relative">
                         {{-- Overlay message for variant not selected --}}
@@ -241,6 +272,7 @@
 
         <div class="grid grid-cols-12 gap-5 rounded-xl">
             <div class="bg-white p-5 my-7 gap-5 col-span-9">
+                {{-- Product detail --}}
                 <div class="mb-8">
                     <div
                         class="bg-gradient-to-r to-white from-slate-100 p-4 font-semibold text-lg rounded-lg shadow-sm flex items-center gap-2">
@@ -273,6 +305,7 @@
                         </div>
                     </div>
                 </div>
+                {{-- Product Description --}}
                 <div>
                     <div
                         class="bg-gradient-to-r to-white from-slate-100 p-4 font-semibold text-lg rounded-lg shadow-sm flex items-center gap-2">
@@ -290,6 +323,7 @@
                     </div>
                 </div>
             </div>
+            {{-- Top Pick from shop --}}
             <div class=" bg-white p-5 my-7 gap-5 col-span-3">
                 <h2 class="text-slate-500">Top picks from Shop</h2>
 
@@ -326,6 +360,166 @@
 
 
         </div>
+        {{-- Review Section --}}
+        <div class="my-12 reviews-section">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="block w-10 h-1 bg-gradient-to-r from-pink-400 to-sky-700 rounded"></span>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">Customer Reviews</h1>
+                <span class="block flex-1 h-1 bg-gradient-to-l from-pink-400 to-sky-700 rounded"></span>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-8 start">
+                {{-- Overall Rating --}}
+                <div class="flex items-center gap-6 mb-8">
+                    <div class="flex items-center gap-2">
+                        <span class="text-4xl font-bold text-yellow-400">4.7</span>
+                        <div class="flex gap-1">
+                            @for ($i = 0; $i < 5; $i++)
+                                <i
+                                    class="fa-star {{ $i < 4 ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
+                            @endfor
+                        </div>
+                    </div>
+                    <span class="text-slate-500 text-lg">(234 reviews)</span>
+                </div>
+                <div class="divide-y divide-slate-100 ">
+                    @if (Auth::check() && $userReview)
+                        {{-- Review 1 --}}
+                        <div class="py-6 flex gap-5">
+                            <div class="flex-shrink-0">
+                                <img src="{{ asset($userReview->user->image) }}" alt="User"
+                                    class="w-14 h-14 rounded-full border-2 border-sky-200 shadow">
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold text-slate-800">{{ $userReview->user->name }}</span>
+                                    <span
+                                        class="text-xs text-slate-400">{{ $userReview->created_at->format('M d, Y') }}</span>
+                                </div>
+                                <div class="flex gap-1 my-1">
+                                    @php
+                                        $rating = intval($userReview->rating);
+                                    @endphp
+                                    @for ($i = 0; $i < 5; $i++)
+                                        <i
+                                            class="fa-star {{ $i < $rating ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
+                                    @endfor
+                                </div>
+                                <p class="text-slate-700 mt-2">
+                                    {{ $userReview->review }}
+                                </p>
+                                <div class="flex gap-2 mt-3">
+                                    @if ($userReview->images)
+                                        @foreach ($userReview->images as $image)
+                                            <img src="{{ asset($image) }}"
+                                                class="w-20 h-20 object-cover rounded-lg border cursor-pointer review-image"
+                                                alt="Review Image" tabindex="0" data-full="{{ asset($image) }}" />
+                                        @endforeach
+                                    @endif
+
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    @foreach ($otherReviews as $otherReview)
+                        <div class="py-6 flex gap-5">
+                            <div class="flex-shrink-0">
+                                <img src="{{ asset($otherReview->image) }}" alt="User"
+                                    class="w-14 h-14 rounded-full border-2 border-sky-200 shadow">
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold text-slate-800">{{ $otherReview->name }}</span>
+                                    <span
+                                        class="text-xs text-slate-400">{{ $otherReview->created_at->format('M d, Y') }}</span>
+                                </div>
+                                <div class="flex gap-1 my-1">
+                                    @php
+                                        $rating = intval($otherReview->rating);
+                                    @endphp
+                                    @for ($i = 0; $i < 5; $i++)
+                                        <i
+                                            class="fa-star {{ $i < $rating ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
+                                    @endfor
+                                </div>
+                                <p class="text-slate-700 mt-2">
+                                    {{ $otherReview->review }}
+                                </p>
+                                <div class="flex gap-2 mt-3">
+                                    @if ($otherReview->images)
+                                        @foreach ($otherReview->images as $image)
+                                            <img src="{{ asset($image) }}"
+                                                class="w-20 h-20 object-cover rounded-lg border cursor-pointer review-image"
+                                                alt="Review Image" tabindex="0" data-full="{{ asset($image) }}" />
+                                        @endforeach
+                                    @endif
+
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                    {!! $otherReviews->withQueryString()->links() !!}
+
+
+
+
+                    <!-- Modal for enlarged image -->
+                    <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 review-image-modal">
+                        <div class="relative">
+                            <img src="" alt="Enlarged Review Image"
+                                class="max-w-[100vw] max-h-[100vh] rounded-lg shadow-2xl modal-img" />
+                            <button type="button"
+                                class="absolute top-2 right-2 text-white text-2xl font-bold close-modal"
+                                aria-label="Close">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Write a Review --}}
+                <div class="mt-10 border-t pt-6">
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Write a Review</h3>
+                    <form class="space-y-4 submit-review">
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        @csrf
+                        <div class="flex gap-2 items-center">
+                            <span class="text-slate-600">Your Rating:</span>
+                            <div class="flex gap-1 rating-stars" data-selected="0">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <i class="fa-star fa-regular text-yellow-400 cursor-pointer hover:scale-110 transition"
+                                        data-value="{{ $i }}"></i>
+                                @endfor
+                            </div>
+                            <input type="hidden" name="rating" value="0">
+                        </div>
+
+                        <textarea name="review" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-sky-400 resize-none"
+                            rows="3" placeholder="Share your thoughts about the product..."></textarea>
+                        {{-- Icon Picker --}}
+                        <div class="flex gap-2 items-center my-2">
+                            <button type="button" class="icon-picker-btn text-xl p-2 rounded hover:bg-sky-100"
+                                title="😊"><span>😊</span></button>
+                            <button type="button" class="icon-picker-btn text-xl p-2 rounded hover:bg-sky-100"
+                                title="😍"><span>😍</span></button>
+                            <button type="button" class="icon-picker-btn text-xl p-2 rounded hover:bg-sky-100"
+                                title="👍"><span>👍</span></button>
+                            <button type="button" class="icon-picker-btn text-xl p-2 rounded hover:bg-sky-100"
+                                title="🎉"><span>🎉</span></button>
+                            <button type="button" class="icon-picker-btn text-xl p-2 rounded hover:bg-sky-100"
+                                title="😢"><span>😢</span></button>
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <input type="file" name="images[]" accept="image/*"
+                                class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+                                multiple>
+                            <button type="submit"
+                                class= "bg-sky-600 hover:bg-sky-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">Submit
+                                Review</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{-- From the same shop --}}
         <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
@@ -385,7 +579,7 @@
                 @endforeach
             </div>
         </div>
-
+        {{-- You may also like   --}}
         <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
@@ -454,12 +648,47 @@
     @endpush
     @push('scripts')
         <!-- Swiper JS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
         <!-- Initialize Swiper -->
         <script>
             $(document).ready(function() {
+                // Submit Review
+                $(".submit-review").on("submit", function(e) {
+                    e.preventDefault();
+                    let formData = new FormData(this);
+                    console.log(formData);
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('user.review.create') }}",
+                        data: formData,
+                        dataType: "json",
+                        processData: false,
+                        contentType: false,
+                        success: function(response, textStatus, jqXHR) {
+                            console.log(response);
+                            // Not Review Yet
+                            if (response.success == true) {
+                                location.reload();
+                            }
+                            // Already Reviewed
+                            else {
+                                Toastify({
+                                    text: response.message,
+                                    backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
+                                }).showToast();
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            Toastify({
+                                text: "You need to login first",
+                                backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)", // orange/yellow
+                            }).showToast();
+                        }
+                    });
+                });
+
                 // Add to Wishlist button handler
 
                 $(".add-to-wishlist").on("click", function(e) {
@@ -475,7 +704,7 @@
                         success: function(response, textStatus, jqXHR) {
                             console.log(response);
                             // Not in wishlist
-                            if (response.success == true) {
+                            if (jqXHR.status == 200) {
                                 Toastify({
                                     text: response.message,
                                     duration: 3000,
@@ -492,7 +721,10 @@
                             }
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
-                            console.table(jqXHR)
+                            Toastify({
+                                text: "You need to login first",
+                                backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)", // orange/yellow
+                            }).showToast();
                         }
                     });
                 });
@@ -703,6 +935,134 @@
                 $(".product").on("click", function() {
                     const url = $(this).data("url");
                     window.location.replace(url);
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.icon-picker-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        const icon = this.querySelector('span').textContent;
+                        const textarea = this.closest('form').querySelector('textarea');
+                        textarea.value += icon;
+                        textarea.focus();
+                    });
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const stars = document.querySelectorAll('.rating-stars i');
+                const ratingInput = document.querySelector('input[name="rating"]');
+                stars.forEach(function(star, idx) {
+                    star.addEventListener('mouseenter', function() {
+                        for (let i = 0; i <= idx; i++) {
+                            stars[i].classList.remove('fa-regular');
+                            stars[i].classList.add('fa-solid');
+                        }
+                        for (let i = idx + 1; i < stars.length; i++) {
+                            stars[i].classList.remove('fa-solid');
+                            stars[i].classList.add('fa-regular');
+                        }
+                    });
+                    star.addEventListener('mouseleave', function() {
+                        const selected = parseInt(document.querySelector('.rating-stars').dataset
+                            .selected);
+                        stars.forEach(function(s, i) {
+                            if (i < selected) {
+                                s.classList.remove('fa-regular');
+                                s.classList.add('fa-solid');
+                            } else {
+                                s.classList.remove('fa-solid');
+                                s.classList.add('fa-regular');
+                            }
+                        });
+                    });
+                    star.addEventListener('click', function() {
+                        document.querySelector('.rating-stars').dataset.selected = idx + 1;
+                        ratingInput.value = idx + 1;
+                        stars.forEach(function(s, i) {
+                            if (i <= idx) {
+                                s.classList.remove('fa-regular');
+                                s.classList.add('fa-solid');
+                            } else {
+                                s.classList.remove('fa-solid');
+                                s.classList.add('fa-regular');
+                            }
+                        });
+                    });
+                });
+                // Reset stars on mouseleave from the whole container
+                document.querySelector('.rating-stars').addEventListener('mouseleave', function() {
+                    const selected = parseInt(this.dataset.selected);
+                    stars.forEach(function(s, i) {
+                        if (i < selected) {
+                            s.classList.remove('fa-regular');
+                            s.classList.add('fa-solid');
+                        } else {
+                            s.classList.remove('fa-solid');
+                            s.classList.add('fa-regular');
+                        }
+                    });
+                });
+            });
+        </script>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Only add modal logic once
+                if (!window.__reviewImageModalBound) {
+                    window.__reviewImageModalBound = true;
+                    document.body.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('review-image')) {
+                            const modal = document.querySelector('.review-image-modal');
+                            const modalImg = modal.querySelector('.modal-img');
+                            modalImg.src = e.target.dataset.full;
+                            modal.classList.remove('hidden');
+                            modal.classList.add('flex');
+                        }
+                        if (e.target.classList.contains('close-modal') || e.target.classList.contains(
+                                'review-image-modal')) {
+                            const modal = document.querySelector('.review-image-modal');
+                            modal.classList.add('hidden');
+                            modal.classList.remove('flex');
+                        }
+                    });
+                    // Optional: close modal with ESC key
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') {
+                            const modal = document.querySelector('.review-image-modal');
+                            if (modal && !modal.classList.contains('hidden')) {
+                                modal.classList.add('hidden');
+                                modal.classList.remove('flex');
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+
+        {{-- Scroll to review section --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // If the URL contains #reviews, scroll to the review section
+                if (window.location.hash === '#reviews') {
+                    const reviewSection = document.querySelector('.reviews-section');
+                    if (reviewSection) {
+                        reviewSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+
+                // Add #reviews to pagination links
+                document.querySelectorAll('.reviews-section nav[role="navigation"] a').forEach(function(link) {
+                    link.addEventListener('click', function(e) {
+                        // Append #reviews to the link's href
+                        link.href = link.href.split('#')[0] + '#reviews';
+                    });
                 });
             });
         </script>

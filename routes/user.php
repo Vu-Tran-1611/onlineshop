@@ -9,6 +9,7 @@ use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserMessageController;
+use App\Http\Controllers\User\UserReviewsController;
 use App\Http\Controllers\User\WishlistController;
 
 
@@ -80,3 +81,9 @@ Route::resource("address", AddressController::class);
 Route::post("message/send-message", [UserMessageController::class, 'sendMessage'])->name("message.send-message");
 Route::get('message/get-message', [UserMessageController::class, "getMessage"])->name("message.get-message");
 // Chat ------------------------------------------------- 
+
+
+
+// User Reviews -------------------------------------------------
+Route::post("review", [UserReviewsController::class, "create"])->name("review.create");  
+// User Reviews -------------------------------------------------

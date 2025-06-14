@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         "name",
         "slug",
@@ -47,11 +48,16 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    public function productImageGalleries(){
+    public function productImageGalleries()
+    {
         return $this->hasMany(ProductImageGallery::class);
     }
     public function productVariants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+    public function userReviews()
+    {
+        return $this->hasMany(UserReviews::class);
     }
 }

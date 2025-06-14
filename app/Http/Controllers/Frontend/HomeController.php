@@ -78,13 +78,29 @@ class HomeController extends Controller
                 ->where("status", 1)
                 ->where("is_approved", 1)->get()->take(30);
 
+            $reviewsQuery = $product->userReviews()->with("user");
+            $userReview = null;
+            if (Auth::check()) {
+                $userId = Auth::id();
+                $userReview = $reviewsQuery->where('user_id', $userId)->first();
+                $reviewsQuery = $product->userReviews()
+                    ->with('user')
+                    ->where('user_id', '!=', $userId);
+            }
+
+            // Paginate các review còn lại
+            $otherReviews = $reviewsQuery->paginate(1);
+            // $averageRating = $reviews->avg("rating");
             // Get Chat -----------------------------
+            // dd($otherReviews->userReview);
             return view("frontend.pages.product", [
                 "categories" => $allCategories,
                 "product" => $product,
                 "shop" => $shop,
                 "productsBelongsToShop" => $productsBelongsToShop,
                 "productsBelongsToSameCategory" => $productsBelongsToSameCategory,
+                "userReview" => $userReview,
+                "otherReviews" => $otherReviews,
             ]);
         }
         // Product based on category filter
