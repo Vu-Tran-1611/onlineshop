@@ -60,4 +60,24 @@ class Product extends Model
     {
         return $this->hasMany(UserReviews::class);
     }
+    public function orderProducts()
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
+
+    // Average Rating
+    public function averageRating()
+    {
+        return $this->userReviews()->avg('rating');
+    }
+    // Number of Reviews
+    public function numberOfReviews()
+    {
+        return $this->userReviews()->count();
+    }
+    // Sold Count
+    public function soldCount()
+    {
+        return $this->orderProducts()->sum('qty');
+    }
 }

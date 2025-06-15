@@ -48,9 +48,12 @@
             </div>
             <!-- Product Information -->
             <div>
-                <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ $product->name }}</h1>
+                <h1 class="text-3xl font-bold text-gray-900 mb-6 tracking-tight leading-snug">
+                    {{ $product->name }}
+                </h1>
 
-                <div class="rounded-2xl text-3xl text-sky-600 my-6 flex items-center gap-4 bg-slate-100 p-3 shadow-sm">
+                <div
+                    class="flex items-center gap-4 bg-gradient-to-r from-sky-50 via-white to-sky-50 p-5 rounded-2xl shadow-md text-3xl text-sky-700">
                     @if (checkSale($product))
                         {{-- Original Price (crossed out) --}}
                         <span class="text-gray-400 text-2xl line-through">
@@ -58,32 +61,24 @@
                         </span>
 
                         {{-- Discounted Price --}}
-                        <span class="price font-semibold text-sky-700">
+                        <span class="font-bold text-sky-700">
                             ${{ $product->offer_price }}
                         </span>
 
                         {{-- Discount Badge --}}
-                        <span class="text-xs bg-sky-500 text-white font-semibold px-2 py-1 rounded-full shadow-sm">
+                        <span class="text-xs font-bold text-white bg-sky-600 px-3 py-1 rounded-full shadow">
                             -{{ calculateSalePercent($product) }}%
                         </span>
                     @else
                         {{-- Regular Price --}}
-                        <span class="price font-semibold text-sky-700">
+                        <span class="font-bold text-sky-700">
                             ${{ $product->price }}
                         </span>
                     @endif
                 </div>
 
+
                 <div class="">
-                    {{-- Delivery Section --}}
-                    <div class="flex my-10">
-                        <span class="text-slate-500 min-w-[100px]">Delivery</span>
-                        <span>
-                            <span class="text-slate-500"><i class="fa-solid fa-truck"></i> Delivering to &ensp;</span> 6320
-                            Creekbend Drive<br />
-                            <span class="text-slate-500">Shipping Fee &ensp;</span> $0
-                        </span>
-                    </div>
 
 
                     {{-- Guarantee Section --}}
@@ -371,19 +366,26 @@
                 {{-- Overall Rating --}}
                 <div class="flex items-center gap-6 mb-8">
                     <div class="flex items-center gap-2">
-                        <span class="text-4xl font-bold text-yellow-400">4.7</span>
+                        <span class="text-4xl font-bold text-yellow-400">{{ $averageRating }}</span>
                         <div class="flex gap-1">
                             @for ($i = 0; $i < 5; $i++)
                                 <i
-                                    class="fa-star {{ $i < 4 ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
+                                    class="fa-star {{ $i < $averageRating ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
                             @endfor
                         </div>
                     </div>
-                    <span class="text-slate-500 text-lg">(234 reviews)</span>
+                    <span class="text-slate-500 text-lg">({{ $numberOfReviews }} Reviews)</span>
                 </div>
                 <div class="divide-y divide-slate-100 ">
+                    {{-- No review --}}
+                    @if ($otherReviews->isEmpty() && !$userReview)
+                        <div class="py-8 text-center text-slate-400 text-lg">
+                            <i class="fa-regular fa-face-smile-beam text-3xl mb-2"></i>
+                            <div>No reviews yet. Be the first to review this product!</div>
+                        </div>
+                    @endif
                     @if (Auth::check() && $userReview)
-                        {{-- Review 1 --}}
+                        {{-- Authenticated User Review --}}
                         <div class="py-6 flex gap-5">
                             <div class="flex-shrink-0">
                                 <img src="{{ asset($userReview->user->image) }}" alt="User"
@@ -391,7 +393,7 @@
                             </div>
                             <div class="flex-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-semibold text-slate-800">{{ $userReview->user->name }}</span>
+                                    <span class="font-semibold text-slate-800">{{ $userReview->user->username }}</span>
                                     <span
                                         class="text-xs text-slate-400">{{ $userReview->created_at->format('M d, Y') }}</span>
                                 </div>
@@ -423,12 +425,12 @@
                     @foreach ($otherReviews as $otherReview)
                         <div class="py-6 flex gap-5">
                             <div class="flex-shrink-0">
-                                <img src="{{ asset($otherReview->image) }}" alt="User"
+                                <img src="{{ asset($otherReview->user->image) }}" alt="User"
                                     class="w-14 h-14 rounded-full border-2 border-sky-200 shadow">
                             </div>
                             <div class="flex-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-semibold text-slate-800">{{ $otherReview->name }}</span>
+                                    <span class="font-semibold text-slate-800">{{ $otherReview->user->username }}</span>
                                     <span
                                         class="text-xs text-slate-400">{{ $otherReview->created_at->format('M d, Y') }}</span>
                                 </div>
@@ -555,20 +557,23 @@
                         <div class="p-4 flex flex-col gap-2">
                             <h1 class="font-semibold text-base text-slate-800 group-hover:text-sky-700 truncate"
                                 title="{{ $p->name }}">{{ $p->name }}</h1>
-                            <p class="font-semibold text-base text-slate-800 group-hover:text-sky-700 truncate">
-                                {!! $p->short_description !!}</p>
+
                             <div class="flex items-center justify-between mt-2">
                                 <span class="text-orange-700 font-bold text-lg">${{ $p->price }}</span>
                                 <span class="text-xs text-slate-500 flex items-center gap-1">
-                                    <i class="fa-solid fa-fire text-orange-700"></i> 30 Sold
+                                    <i class="fa-solid fa-fire text-orange-700"></i> {{ $p->soldCount() }} Sold
                                 </span>
                             </div>
                             <div class="flex gap-1 mt-1">
+                                @php
+                                    $avgRating = $p->averageRating();
+                                    $numberOfReviews = $p->numberOfReviews();
+                                @endphp
                                 @for ($i = 0; $i < 5; $i++)
                                     <i
-                                        class="fa-star {{ $i < 4 ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
+                                        class="fa-star {{ $i < $avgRating ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
                                 @endfor
-                                <span class="text-xs text-slate-400 ml-1">(120)</span>
+                                <span class="text-xs text-slate-400 ml-1">({{ $numberOfReviews }})</span>
                             </div>
                             <button data-url="{{ route('product', ['product' => $p->slug]) }}"
                                 class="product mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
@@ -615,20 +620,23 @@
                         <div class="p-4 flex flex-col gap-2">
                             <h1 class="font-semibold text-base text-slate-800 group-hover:text-sky-700 truncate"
                                 title="{{ $p->name }}">{{ $p->name }}</h1>
-                            <p class="font-semibold text-base text-slate-800 group-hover:text-sky-700 truncate">
-                                {!! $p->short_description !!}</p>
+
                             <div class="flex items-center justify-between mt-2">
                                 <span class="text-orange-700 font-bold text-lg">${{ $p->price }}</span>
                                 <span class="text-xs text-slate-500 flex items-center gap-1">
-                                    <i class="fa-solid fa-fire text-orange-700"></i> 30 Sold
+                                    <i class="fa-solid fa-fire text-orange-700"></i> {{ $p->soldCount() }} Sold
                                 </span>
                             </div>
                             <div class="flex gap-1 mt-1">
+                                @php
+                                    $avgRating = $p->averageRating();
+                                    $numberOfReviews = $p->numberOfReviews();
+                                @endphp
                                 @for ($i = 0; $i < 5; $i++)
                                     <i
-                                        class="fa-star {{ $i < 4 ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
+                                        class="fa-star {{ $i < $avgRating ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}"></i>
                                 @endfor
-                                <span class="text-xs text-slate-400 ml-1">(120)</span>
+                                <span class="text-xs text-slate-400 ml-1">({{ $numberOfReviews }})</span>
                             </div>
                             <button data-url="{{ route('product', ['product' => $p->slug]) }}"
                                 class="product mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
@@ -648,7 +656,7 @@
     @endpush
     @push('scripts')
         <!-- Swiper JS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
         <!-- Initialize Swiper -->
@@ -669,7 +677,10 @@
                         success: function(response, textStatus, jqXHR) {
                             console.log(response);
                             // Not Review Yet
-                            if (response.success == true) {
+                            if (jqXHR.status == 200) {
+                                // Reset formdata
+                                $(".submit-review")[0].reset();
+                                $(".rating-stars").data("selected", 0);
                                 location.reload();
                             }
                             // Already Reviewed
@@ -680,9 +691,9 @@
                                 }).showToast();
                             }
                         },
-                        error: function(jqXHR, textStatus, errorThrown) {
+                        error: function(response, textStatus, jqXHR) {
                             Toastify({
-                                text: "You need to login first",
+                                text: response.responseJSON.message,
                                 backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)", // orange/yellow
                             }).showToast();
                         }
@@ -704,7 +715,7 @@
                         success: function(response, textStatus, jqXHR) {
                             console.log(response);
                             // Not in wishlist
-                            if (jqXHR.status == 200) {
+                            if (response.success == true) {
                                 Toastify({
                                     text: response.message,
                                     duration: 3000,

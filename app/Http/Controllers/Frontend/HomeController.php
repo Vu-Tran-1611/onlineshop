@@ -44,6 +44,7 @@ class HomeController extends Controller
             ->get()->take(12);
 
         $flashSellProducts = FlashSellItem::with("product")->get();
+
         return view(
             "frontend.pages.home",
             compact(
@@ -79,6 +80,7 @@ class HomeController extends Controller
                 ->where("is_approved", 1)->get()->take(30);
 
             $reviewsQuery = $product->userReviews()->with("user");
+            $numberOfReviews = $reviewsQuery->count();
             $userReview = null;
             if (Auth::check()) {
                 $userId = Auth::id();
@@ -88,11 +90,10 @@ class HomeController extends Controller
                     ->where('user_id', '!=', $userId);
             }
 
-            // Paginate các review còn lại
-            $otherReviews = $reviewsQuery->paginate(1);
-            // $averageRating = $reviews->avg("rating");
-            // Get Chat -----------------------------
-            // dd($otherReviews->userReview);
+
+            $otherReviews = $reviewsQuery->paginate(10);
+            $averageRating = round($product->userReviews()->avg('rating'), 1);
+
             return view("frontend.pages.product", [
                 "categories" => $allCategories,
                 "product" => $product,
@@ -101,21 +102,26 @@ class HomeController extends Controller
                 "productsBelongsToSameCategory" => $productsBelongsToSameCategory,
                 "userReview" => $userReview,
                 "otherReviews" => $otherReviews,
+                "numberOfReviews" => $numberOfReviews,
+                "averageRating" => $averageRating,
             ]);
-        }
-        // Product based on category filter
-        else {
+        } else {
+            // Product based on category filter
+
             $subCategory = null;
             $activeSub = null;
             $brandSlugs = null;
             $brandSlugsID = null;
             $priceRange = null;
+
+
             // if Price Order was chosen 
             $order = $request->order ?  $request->order : "asc";
             // If Price was chosen 
             if ($request->price_range) {
                 $priceRange = explode(",", $request->price_range);
             }
+
             // if brand filter was chosen 
 
             if ($request->brand_slug) {
@@ -162,7 +168,7 @@ class HomeController extends Controller
                 ->where("is_approved", 1)
                 ->where("status", 1)
                 ->orderBy("price", $order)
-                ->paginate(3);
+                ->paginate(10);
             return view("frontend.pages.category", [
                 "categories" => $allCategories,
                 "category" => $category,

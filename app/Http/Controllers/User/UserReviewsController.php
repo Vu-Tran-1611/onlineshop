@@ -15,7 +15,7 @@ class UserReviewsController extends Controller
     {
         $request->validate([
             "product_id" => "required|exists:products,id",
-            "rating" => "required|integer|min:1|max:5",
+            "rating" => "nullable|integer|min:0|max:5",
             "review" => "nullable|string",
         ]);
 
@@ -35,8 +35,7 @@ class UserReviewsController extends Controller
                 "images.*" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048"
             ]);
 
-            $paths = $this->uploadMultiImage($request, "images", "uploads");
-            $images = json_encode($paths);
+            $images = $this->uploadMultiImage($request, "images", "uploads");
         }
         $review = $user->userReviews()->create([
             "product_id" => $request->product_id,
