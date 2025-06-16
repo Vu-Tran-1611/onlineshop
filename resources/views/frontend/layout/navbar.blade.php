@@ -134,15 +134,17 @@
                 </div>
             </h1>
             {{-- Search --}}
-            <div class="md:w-[20%] lg:w-[40%] w-full ml-8 flex items-center relative">
-                <input
+            <form class="md:w-[20%] lg:w-[40%] w-full ml-8 flex items-center relative"
+                action="{{ route('product-by-search') }}" method="GET">
+
+                <input value="{{ request()->input('keyword') }}"
                     class="text-black border border-gray-300 focus:ring-2 focus:ring-sky-500 focus:outline-none w-full rounded-lg py-2 px-4"
-                    type="search" placeholder="Search for products, categories..." />
+                    type="search" name="keyword" id="search" placeholder="Search for any products ....." />
                 <button
                     class="absolute right-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg px-4 py-2 flex items-center">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-            </div>
+            </form>
 
 
             {{-- User | Login --}}

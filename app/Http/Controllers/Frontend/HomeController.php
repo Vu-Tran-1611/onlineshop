@@ -181,6 +181,75 @@ class HomeController extends Controller
         }
     }
 
+
+    // Products by search
+    // Search products based on keyword, categories, subcategories, brands,
+
+    public function productBySearch(Request $request)
+    {
+        $keyword = $request->keyword;
+        $categorySlug = $request->category ? $request->category : "";
+        $from = $request->from ? $request->from : 0;
+        $to = $request->to ? $request->to : 10000000;
+        $order = $request->order ? $request->order : "asc";
+        $priceRange = [$from, $to];
+        $brandsSlugsArray =  $request->brand;
+        $products = Product::query()
+            ->where(function ($query) use ($keyword) {
+                $query->where("name", "LIKE", "%$keyword%")
+                    ->orWhere("short_description", "LIKE", "%$keyword%")
+                    ->orWhere("long_description", "LIKE", "%$keyword%");
+            })
+            ->whereBetween("price", $priceRange)
+            ->where("is_approved", 1)
+            ->where("status", 1)
+            ->where(function ($query) use ($categorySlug) {
+                $query->whereHas("category", function ($q) use ($categorySlug) {
+                    $q->where("slug", "LIKE", "%$categorySlug%");
+                })
+                    ->orWhereHas("subCategory", function ($q) use ($categorySlug) {
+                        $q->where("slug", "LIKE", "%$categorySlug%");
+                    });
+            })
+            ->when(!empty($brandsSlugsArray), function ($query) use ($brandsSlugsArray) {
+                $query->whereHas("brand", function ($q) use ($brandsSlugsArray) {
+                    $q->whereIn("slug", $brandsSlugsArray);
+                });
+            })
+            ->with(["category", "brand"])
+            ->orderBy("price", $order)
+            ->paginate(12);
+
+
+        // Get categories and brands that have products matching the search keyword
+        $categories = Category::whereHas("products", function ($query) use ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where("name", "LIKE", "%$keyword%")
+                    ->orWhere("short_description", "LIKE", "%$keyword%")
+                    ->orWhere("long_description", "LIKE", "%$keyword%");
+            })
+                ->where("status", 1)
+                ->where("is_approved", 1);
+        })->with("subCategories")->get();
+
+        $brands = Brand::whereHas("products", function ($query) use ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where("name", "LIKE", "%$keyword%")
+                    ->orWhere("short_description", "LIKE", "%$keyword%")
+                    ->orWhere("long_description", "LIKE", "%$keyword%");
+            })
+                ->where("status", 1)
+                ->where("is_approved", 1);
+        })->get();
+
+        return view("frontend.pages.product-by-search", [
+            "categories" => $categories,
+            "products" => $products,
+            "keyword" => $keyword,
+            "brands" => $brands,
+        ]);
+    }
+    // 404 page
     public function notFound()
     {
         $title = "Not FOund";

@@ -22,6 +22,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -33,4 +37,8 @@ Route::get("get-slug-url/", [HomeController::class, "getSlugUrl"])->name("get-sl
 Route::get("/product", [HomeController::class, "product"])->name("product");
 
 Route::get("/not-found", [HomeController::class, "notFound"])->name("not-found");
+
+// Product by search
+Route::get("/product-by-search", [HomeController::class, "productBySearch"])->name("product-by-search");
+
 require __DIR__ . '/auth.php';
