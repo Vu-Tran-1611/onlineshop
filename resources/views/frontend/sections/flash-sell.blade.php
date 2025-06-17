@@ -93,10 +93,12 @@
 </div>
 @push('scripts')
     <script>
+        const flashSellEndDate = @json($flashSellEndDate->end_date);
+        console.log(flashSellEndDate)
         // Countdown Timer for Demo: 5 minutes from page load
         function startFlashSellTimerDemo() {
             const now = new Date();
-            const end = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes from now
+            const end = new Date(flashSellEndDate);
 
             function pad(n) {
                 return n < 10 ? '0' + n : n;

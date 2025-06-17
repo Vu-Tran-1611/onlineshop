@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Chat;
+use App\Models\FlashSell;
 use App\Models\FlashSellItem;
 use App\Models\Product;
 use App\Models\ShopProfile;
@@ -44,6 +45,7 @@ class HomeController extends Controller
             ->get()->take(12);
 
         $flashSellProducts = FlashSellItem::with("product")->get();
+        $flashSellEndDate = FlashSell::first();
 
         return view(
             "frontend.pages.home",
@@ -57,7 +59,8 @@ class HomeController extends Controller
                 "newProducts",
                 "flashSellProducts",
                 "featuredProducts",
-                "bestProducts"
+                "bestProducts",
+                "flashSellEndDate"
             )
         );
     }
@@ -65,7 +68,9 @@ class HomeController extends Controller
     // {product?}/{type?}/{subcategory?}/{category?}/{brand?}/{vendor?}
     public function product(Request $request)
     {
+
         $allCategories = Category::with("subCategories")->get();
+
         // Product Detail 
         $product = Product::where("slug", $request->product)->first();
         if ($product) {
@@ -187,6 +192,7 @@ class HomeController extends Controller
 
     public function productBySearch(Request $request)
     {
+        $allCategories = Category::with("subCategories")->get();
         $keyword = $request->keyword;
         $categorySlug = $request->category ? $request->category : "";
         $from = $request->from ? $request->from : 0;
@@ -222,7 +228,7 @@ class HomeController extends Controller
 
 
         // Get categories and brands that have products matching the search keyword
-        $categories = Category::whereHas("products", function ($query) use ($keyword) {
+        $relatedCategories = Category::whereHas("products", function ($query) use ($keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where("name", "LIKE", "%$keyword%")
                     ->orWhere("short_description", "LIKE", "%$keyword%")
@@ -243,7 +249,8 @@ class HomeController extends Controller
         })->get();
 
         return view("frontend.pages.product-by-search", [
-            "categories" => $categories,
+            "categories" => $allCategories,
+            "relatedCategories" => $relatedCategories,
             "products" => $products,
             "keyword" => $keyword,
             "brands" => $brands,

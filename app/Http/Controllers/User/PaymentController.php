@@ -67,6 +67,7 @@ class PaymentController extends Controller
         foreach ($ids as $id) {
             Cart::remove($id);
         };
+        session()->forget('user_delivery_address');
         return view("frontend.pages.payment-success", [
             "title" => "Payment Success"
         ]);
@@ -119,7 +120,7 @@ class PaymentController extends Controller
 
     public function paymentCancel()
     {
-        return view("frontend.pages.payment-success", [
+        return view("frontend.pages.payment-cancel", [
             "title" => "Payment Cancel"
         ]);
     }

@@ -68,8 +68,9 @@
                                         <div class="flex-1">
                                             @foreach ($cartItem->attributes as $key => $item)
                                                 @if ($key != 'brand_id' && $key != 'product_id' && $key != 'vendor_id' && $key != 'imageURL')
-                                                    <span
-                                                        class="capitalize"><b>{{ $key }}</b>:&emsp;{!! $item !!}</span>
+                                                    <span class="capitalize">
+                                                        <b>{{ str_replace('_', ' ', $key) }}</b>:&emsp;{!! $item !!}
+                                                    </span>
                                                     </br />
                                                 @endif
                                             @endforeach

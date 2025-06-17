@@ -102,7 +102,8 @@
                                                     <ul class="text-base text-gray-500 mt-1 space-y-1">
                                                         @foreach ($cartItem->attributes as $key => $val)
                                                             @if (!in_array($key, ['brand_id', 'product_id', 'vendor_id', 'imageURL']))
-                                                                <li>{{ ucfirst($key) }}: {{ $val }}</li>
+                                                                <b
+                                                                    class="capitalize">{{ str_replace('_', ' ', $key) }}</b>:&emsp;{!! $val !!}
                                                             @endif
                                                         @endforeach
                                                     </ul>
@@ -151,7 +152,12 @@
                 </div>
                 <div id="tabs-2" class="tab-content hidden">
                     <div class="text-gray-700">
-
+                        <span class="text-sky-600 font-semibold">Credit / Debit Card</span>
+                        <span class="block">Pay securely using your card via Stripe.</span>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Please note that you will be redirected to Stripe's secure payment page to complete your
+                            transaction.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -166,10 +172,13 @@
                 <div class="text-3xl text-sky-700 font-bold">Total: ${{ \Cart::getTotal() }}</div>
             </div>
             <div class="mt-6 flex justify-between items-center text-sm text-gray-500">
-                <p>
-                    By clicking "Place Order", you agree to
-                    <a href="#" class="underline text-sky-600 hover:text-sky-800">ShuTy’s Terms of Use</a>
-                </p>
+                {{-- Policy --}}
+                <span>
+                    By clicking "Place Order", you agree to our
+                    <a href="" class="underline text-sky-600 hover:text-sky-800">Terms of Service</a> and
+                    <a href= ""class="underline text-sky-600 hover:text-sky-800">Privacy Policy</a>.
+                </span>
+
                 <form action="{{ route('user.payment.make-payment') }}" method="POST">
                     @csrf
                     <input type="hidden" name="payment_method" id="payment_method" value="cash" />
@@ -223,10 +232,10 @@
                 $(".select-address-panel").hide();
                 $(".freeze-screen").hide();
                 $.ajax({
-                    type: "GET",
-                    url: "{{ route('user.address.get') }}",
+                    type: "POST",
+                    url: "{{ route('user.check-out.set-user-delivery-address') }}",
                     data: {
-                        id: id
+                        address_id: id
                     },
                     dataType: "JSON",
                     beforeSend: function() {
@@ -236,8 +245,8 @@
                         if (response.status == 'success') {
                             const address = response.address;
                             $(".deliver-name").html(`
-    ${address.name} (+1) ${address.phone }
-    `)
+                            ${address.name} (+1) ${address.phone }
+                            `)
                             $(".deliver-address").html(`
     ${address.address}, ${address.city} City, ${address.state} State, ${address.zip}
     `);

@@ -94,6 +94,9 @@ function getReceivers(): array
 }
 function getUserOrderAddress()
 {
+    $addr = session()->get('user_delivery_address');
+    if ($addr) return $addr;
+    // If address not set in session, get the default address
     $addr =  UserAddresses::where('user_id', auth()->user()->id)->where('is_default', 1)->first();
     return $addr->id;
 }

@@ -23,7 +23,7 @@
                             class="w-full  appearance-none rounded-2xl border border-slate-300 bg-white px-4 py-2 pr-10 text-sm text-slate-700 shadow-md transition-all duration-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:outline-none group-hover:border-sky-400">
                             <option value="" class="font-semibold">All Categories</option>
 
-                            @foreach ($categories as $cat)
+                            @foreach ($relatedCategories as $cat)
                                 <option value="{{ $cat->slug }}" class="font-semibold"
                                     {{ request('category') == $cat->slug ? 'selected' : '' }}>
                                     {{ $cat->name }}
