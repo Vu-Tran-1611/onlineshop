@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendWelcomeEmailJob;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 
 class RegisteredUserController extends Controller
 {
@@ -46,7 +48,8 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
-
+        // Dispatch a job to send a welcome email 
+        SendWelcomeEmailJob::dispatch(Auth::user());
         return redirect(RouteServiceProvider::HOME);
     }
 }

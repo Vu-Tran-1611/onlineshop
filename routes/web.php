@@ -3,7 +3,10 @@
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Jobs\SendWelcomeEmailJob;
 use Illuminate\Support\Facades\Route;
+use App\Jobs\TestRabbitJob;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,5 +43,14 @@ Route::get("/not-found", [HomeController::class, "notFound"])->name("not-found")
 
 // Product by search
 Route::get("/product-by-search", [HomeController::class, "productBySearch"])->name("product-by-search");
+
+
+Route::get('/test-rabbit', function () {
+    $user = User::where("email", "tranmy0122english@gmail.com")->first();
+    SendWelcomeEmailJob::dispatch($user);
+    return ' Đã gửi job vào RabbitMQ!';
+});
+
+
 
 require __DIR__ . '/auth.php';
