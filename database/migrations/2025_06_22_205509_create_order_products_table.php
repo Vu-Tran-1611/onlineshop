@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer("variant_total")->nullable();
             $table->string("unit_price");
             $table->integer("qty");
+            $table->string("status")->default('pending');
             $table->timestamps();
         });
     }

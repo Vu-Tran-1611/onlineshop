@@ -10,23 +10,25 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+
 class MessageEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
     public $receiver_id;
-    public $date_time; 
-
+    public $date_time;
+    public $sender_id;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($message,$receiver_id,$date_time)
+    public function __construct($message, $sender_id, $receiver_id, $date_time)
     {
         $this->message = $message;
         $this->receiver_id = $receiver_id;
-        $this->date_time = $date_time; 
+        $this->date_time = $date_time;
+        $this->sender_id = $sender_id;
     }
 
     /**
@@ -37,15 +39,16 @@ class MessageEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('message.'.$this->receiver_id),
+            new PrivateChannel('message.' . $this->receiver_id),
         ];
     }
-    function broadcastWith():array{
+    function broadcastWith(): array
+    {
         return [
             'message' => $this->message,
             'receiver_id' => $this->receiver_id,
-            'sender_id' => Auth::user()->id, 
-            'created_at' => $this->date_time, 
+            'sender_id' => $this->sender_id,
+            'created_at' => $this->date_time,
         ];
     }
 }

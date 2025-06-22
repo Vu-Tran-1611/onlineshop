@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendOrderNotificationMailJob;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use Carbon\Carbon;
@@ -67,6 +68,11 @@ class PaymentController extends Controller
         foreach ($ids as $id) {
             Cart::remove($id);
         };
+        SendOrderNotificationMailJob::dispatch(
+            $order,
+            auth()->user(),
+            'order-pending'
+        );
         session()->forget('user_delivery_address');
         return view("frontend.pages.payment-success", [
             "title" => "Payment Success"

@@ -22,7 +22,8 @@ return new class extends Migration
             $table->integer("payment_status");
             $table->integer("user_address_id");
             $table->text("coupon");
-            $table->text("order_status");
+            $table->string("order_status")->default('pending');
+            $table->text("note")->nullable();
             $table->timestamps();
         });
     }

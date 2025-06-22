@@ -57,8 +57,8 @@
                                         src="{{ asset('uploads/user-avatar.png') }}" />
                                 @endif
 
-                                <h1 class="cursor-pointer text-xl p-2 overflow-hidden">{{ $user->name }}
-                                    {{ $user->email }}</h1>
+                                <p class="cursor-pointer text-xl p-2 overflow-hidden">{{ $user->name }}</p>
+
                             </div>
                             <ul
                                 class="mt-5 border-t-2 border-slate-200 group-hover:block text-base gap-y-6   text-black ">
@@ -163,7 +163,7 @@
                                 alt="Avatar" />
                         </div>
                     @endif
-                    <h1 class="cursor-pointer text-base">{{ $user->name }} / {{ $user->email }}</h1>
+                    <p class="cursor-pointer text-base">{{ $user->name }}</p>
                     <ul
                         class="group-hover:block hidden leading-8 shadow-2xl rounded-lg absolute top-[40px] z-10 bg-slate-100 text-black p-3  w-[180px]">
                         <a href="{{ route('user.profile.account') }}"

@@ -74,24 +74,25 @@ function getAllType()
 // Chat -------------------------------------
 function getReceivers(): array
 {
-    $receivers = array();
-    $id = auth()->user()->id;
-    // Case 1 $id in sender
-    $receiverIDs = Chat::where("sender_id", $id)->groupBy('receiver_id')->pluck('receiver_id')->toArray();
-    // Case 2 $id in receiver
-    $senderIDs = Chat::where("receiver_id", $id)->groupBy('sender_id')->pluck('sender_id')->toArray();
-    $mergeIDs = array_unique(array_merge($receiverIDs, $senderIDs));
-    if (auth()->user()->role == 'user') {
-        foreach ($mergeIDs as $id) {
-            $receivers[] = ShopProfile::where("user_id", $id)->first();
-        };
+    $user = auth()->user();
+    $userId = $user->id;
+
+    // Get all unique user IDs that have chatted with the current user
+    $receiverIds = Chat::where('sender_id', $userId)->pluck('receiver_id')->toArray();
+    $senderIds = Chat::where('receiver_id', $userId)->pluck('sender_id')->toArray();
+    $chatUserIds = array_unique(array_merge($receiverIds, $senderIds));
+    $chatUserIds = array_diff($chatUserIds, [$userId]); // Remove self if present
+
+    if ($user->role === 'user') {
+        // Get shop profiles for each user ID
+        return ShopProfile::whereIn('user_id', $chatUserIds)->get()->all();
     } else {
-        foreach ($mergeIDs as $id) {
-            $receivers[] = User::findOrFail($id);
-        };
+        // Get users for each user ID
+        return User::whereIn('id', $chatUserIds)->get()->all();
     }
-    return $receivers;
 }
+
+
 function getUserOrderAddress()
 {
     $addr = session()->get('user_delivery_address');
