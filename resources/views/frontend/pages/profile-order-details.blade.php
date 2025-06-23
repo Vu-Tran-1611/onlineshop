@@ -21,12 +21,22 @@
                         <i class="fa-solid"></i> Order #{{ $order->id }}
                     </h2>
                 </div>
-                <span title="This order is currently '{{ $order->status }}'"
-                    class= "animate-pulse px-4 py-1.5 rounded-full font-semibold text-sm shadow-md
-                    {{ $order->status === 'completed' ? 'bg-green-100 text-green-700' : ($order->status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
-                    <i
-                        class=" fa-solid fa-circle mr-1 text-xs {{ $order->status === 'completed' ? 'text-green-500' : ($order->status === 'cancelled' ? 'text-red-500' : 'text-yellow-500') }}"></i>
-                    {{ ucfirst($order->status ?? 'Pending') }}
+
+                <span title="This order is currently '{{ $order->order_status }}'"
+                    class= "animate-pulse px-4 py-1.5 rounded-full font-semibold text-sm shadow-md">
+                    @if ($order->order_status === 'pending')
+                        <span
+                            class="bg-yellow-100 text-yellow-700 text-sm font-semibold px-3 py-1 rounded-full shadow-sm">Pending</span>
+                    @elseif ($order->order_status === 'processing' || $order->order_status === 'confirmed')
+                        <span
+                            class="bg-blue-100 text-blue-700 text-sm font-semibold px-3 py-1 rounded-full shadow-sm">Processing</span>
+                    @elseif ($order->order_status === 'completed' || $order->order_status === 'delivered')
+                        <span
+                            class="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full shadow-sm ">Completed</span>
+                    @elseif ($order->order_status === 'cancelled')
+                        <span
+                            class="bg-red-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full shadow-sm">Cancelled</span>
+                    @endif
                 </span>
             </div>
 

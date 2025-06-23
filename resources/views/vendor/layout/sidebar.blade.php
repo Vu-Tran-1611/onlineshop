@@ -23,6 +23,9 @@
                            href="{{ route('vendor.shop-profile.index') }}">Shop
                            Profile</a>
                    </li>
+                   <li class="{{ setActive(['vendor.orders.*']) }}"><a class=" nav-link"
+                           href="{{ route('vendor.orders.index') }}">Orders</a>
+                   </li>
                </ul>
            </aside>
        </div>

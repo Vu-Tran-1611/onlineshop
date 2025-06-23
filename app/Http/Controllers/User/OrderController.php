@@ -49,7 +49,6 @@ class OrderController extends Controller
         $order = auth()->user()->orders()->with(['orderProducts', 'userAddress'])->findOrFail($id);
         $quantity = $order->orderProducts->sum('qty');
         $order->quantity = $quantity; // Add quantity to the order object
-
         // Ensure the order has a valid payment method      
         return view('frontend.pages.profile-order-details', compact('title', 'user', 'order', 'categories'));
     }

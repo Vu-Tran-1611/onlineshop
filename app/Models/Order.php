@@ -34,4 +34,19 @@ class Order extends Model
     {
         return $this->belongsTo(UserAddresses::class);
     }
+
+    // Get order product that belongs to specific vendor
+    public function orderProductsByVendor($vendorId)
+    {
+        return $this->orderProducts()->where('vendor_id', $vendorId);
+    }
+
+    // Get Order Product total by vendor
+    public function orderProductTotalByVendor($vendorId)
+    {
+        // Unit price multiplied by quantity for each product
+        return $this->orderProductsByVendor($vendorId)->get()->sum(function ($orderProduct) {
+            return $orderProduct->unit_price * $orderProduct->qty;
+        });
+    }
 }

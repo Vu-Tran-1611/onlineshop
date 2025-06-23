@@ -21,22 +21,22 @@
                         <td class="py-3 px-4">{{ $order->created_at->format('Y-m-d') }}</td>
                         <td class="py-3 px-4">${{ number_format($order->total, 2) }}</td>
                         <td class="py-3 px-4">
-                            @if ($order->order_status == 'pending')
-                                <span
-                                    class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                                    Pending
-                                </span>
-                            @elseif ($order->order_status == 'declined')
-                                <span
-                                    class="bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                                    Declined
-                                </span>
-                            @else
-                                <span
-                                    class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                                    Success
-                                </span>
-                            @endif
+                            <span title="This order is currently '{{ $order->order_status }}'"
+                                class= "animate-pulse  rounded-full font-semibold text-sm shadow-md">
+                                @if ($order->order_status === 'pending')
+                                    <span
+                                        class="bg-yellow-100 text-yellow-700 text-xs  px-3 py-1 font-semibold  rounded-full shadow-sm">Pending</span>
+                                @elseif ($order->order_status === 'processing' || $order->order_status === 'confirmed')
+                                    <span
+                                        class="bg-blue-100 text-blue-700 text-xs  px-3 py-1 font-semibold  rounded-full shadow-sm">Processing</span>
+                                @elseif ($order->order_status === 'completed' || $order->order_status === 'delivered')
+                                    <span
+                                        class="bg-green-100 text-green-700 text-xs  px-3 py-1 font-semibold  rounded-full shadow-sm">Completed</span>
+                                @elseif ($order->order_status === 'cancelled')
+                                    <span
+                                        class="bg-red-100 text-red-700 text-xs px-3 py-1  font-semibold  rounded-full shadow-sm">Cancelled</span>
+                                @endif
+                            </span>
                         </td>
                         <td class="py-3 px-4">
                             <a href="{{ route('user.profile.orders.show', $order->id) }}"

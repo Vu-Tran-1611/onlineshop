@@ -35,19 +35,19 @@ class SendOrderNotificationMailJob implements ShouldQueue
     {
         // Send the appropriate email based on the notification type
         switch ($this->notificationType) {
-            case 'order-canceled':
+            case 'cancelled':
                 // Send order canceled email
                 Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-canceled'));
                 break;
-            case 'order-delivered':
+            case 'delivered':
                 // Send order delivered email
                 Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-delivered'));
                 break;
-            case 'order-pending':
+            case 'pending':
                 // Send order pending email
                 Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-pending'));
                 break;
-            case 'order-verified':
+            case 'confirmed':
                 // Send order verified email
                 Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-verified'));
                 break;

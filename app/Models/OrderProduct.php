@@ -17,6 +17,7 @@ class OrderProduct extends Model
         "variant_total",
         "unit_price",
         "qty",
+        "status"
     ];
     /**
      * Get the user that owns the OrderProduct
