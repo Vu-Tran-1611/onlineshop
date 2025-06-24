@@ -17,14 +17,14 @@ class SendOrderNotificationMailJob implements ShouldQueue
     /**
      * Create a  job instance.
      */
-    public $order;
     public $user;
+    public $order;
     public $notificationType;
-    public function __construct($order, $user, $notificationType)
+    public function __construct($user, $order, $notificationType)
     {
         // Initialize properties if needed
-        $this->order = $order;
         $this->user = $user;
+        $this->order = $order;
         $this->notificationType = $notificationType;
     }
 
@@ -37,19 +37,19 @@ class SendOrderNotificationMailJob implements ShouldQueue
         switch ($this->notificationType) {
             case 'cancelled':
                 // Send order canceled email
-                Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-canceled'));
+                Mail::to($this->user->email)->send(new OrderNotificationMail($this->user, $this->order, 'order-cancelled'));
                 break;
             case 'delivered':
                 // Send order delivered email
-                Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-delivered'));
+                Mail::to($this->user->email)->send(new OrderNotificationMail($this->user, $this->order, 'order-delivered'));
                 break;
             case 'pending':
                 // Send order pending email
-                Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-pending'));
+                Mail::to($this->user->email)->send(new OrderNotificationMail($this->user, $this->order, 'order-pending'));
                 break;
             case 'confirmed':
                 // Send order verified email
-                Mail::to($this->user->email)->send(new OrderNotificationMail($this->order, $this->user, 'order-verified'));
+                Mail::to($this->user->email)->send(new OrderNotificationMail($this->user, $this->order, 'order-verified'));
                 break;
         }
     }

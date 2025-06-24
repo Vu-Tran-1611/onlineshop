@@ -3,22 +3,22 @@
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h1>Table</h1>
-            <div class="section-header-breadcrumb">
+            <h1>Product</h1>
+            {{-- <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
                 <div class="breadcrumb-item"><a href="#">Components</a></div>
                 <div class="breadcrumb-item">Table</div>
-            </div>
+            </div> --}}
         </div>
 
         <div class="section-body">
-            <h2 class="section-title">Product</h2>
+            <h2 class="section-title">Add New Product</h2>
 
             <div class="row">
                 <div class="col-12 ">
                     <div class="card">
                         <div class="card-header">
-                            <h4>Create Product</h4>
+                            <h4>Product Information</h4>
                         </div>
                         <div class="card-body">
                             <form enctype="multipart/form-data" action="{{ route('vendor.product.store') }}" method="POST">
@@ -106,8 +106,8 @@
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="">Offer End Price</label>
-                                        <input value="{{ old('offer_end_price') }}" name="offer_end_price"
-                                            type="date" class="form-control">
+                                        <input value="{{ old('offer_end_price') }}" name="offer_end_price" type="date"
+                                            class="form-control">
                                     </div>
                                 </div>
 

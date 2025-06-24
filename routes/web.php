@@ -19,7 +19,7 @@ use App\Models\User;
 |
 */
 
-Route::get('/', [HomeController::class, "home"]);
+Route::get('/', [HomeController::class, "home"])->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

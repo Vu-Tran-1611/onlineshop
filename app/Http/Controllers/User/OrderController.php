@@ -17,7 +17,7 @@ class OrderController extends Controller
         $categories = Category::get();
 
         // Fetch orders for the authenticated user
-        $orders = auth()->user()->orders()->with('orderProducts')->paginate(5);
+        $orders = auth()->user()->orders()->with('orderProducts')->orderBy('created_at', 'desc')->paginate(5);
         return view('frontend.pages.profile-orders', compact('title', 'orders', 'categories'));
     }
 

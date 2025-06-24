@@ -25,7 +25,7 @@
             </p>
 
             <div style="text-align: center; margin-bottom: 40px;">
-                <a href="{{ url('/') }}"
+                <a href="{{ route('home') }}"
                     style="background-color: #0077B6; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-size: 15px; font-weight: bold;">
                     Visit Our Store
                 </a>

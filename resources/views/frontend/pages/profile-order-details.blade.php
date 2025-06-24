@@ -9,10 +9,50 @@
             <i class="fa-solid fa-arrow-left mr-1"></i> Back to previous page
         </a>
 
-        <h1 class="text-4xl font-bold text-center mb-1 text-slate-900">
-            <i class="fa-solid fa-receipt mr-2"></i> Order Details
-        </h1>
-        <p class="text-center text-sm text-gray-500 mb-8">Placed on {{ $order->created_at->format('F j, Y') }}</p>
+        <div class="flex justify-center items-center mb-8">
+            @php
+                $stages = config('order.stages');
+                $currentStatus = $order->order_status;
+                $statusOrder = config('order.statuses');
+                $currentIndex = array_search($currentStatus, $statusOrder);
+            @endphp
+            @foreach ($stages as $index => $stage)
+                @php
+                    $isActive = false;
+                    if ($currentStatus === 'cancelled') {
+                        $isActive = $stage['key'] === 'cancelled';
+                    } else {
+                        $isActive = $index <= $currentIndex && $stage['key'] !== 'cancelled';
+                    }
+                    $circleColors = config('order.circle_colors');
+                    $borderColors = config('order.border_colors');
+                @endphp
+                <div class="flex flex-col items-center">
+                    <div class="relative">
+                        <div
+                            class="w-14 h-14 flex items-center justify-center rounded-full border-4 {{ $isActive ? $borderColors[$stage['color']] ?? '' : 'border-gray-300' }} {{ $isActive ? $circleColors[$stage['color']] ?? '' : 'bg-gray-200 text-gray-400' }} shadow-lg text-2xl transition-all duration-300">
+                            <i class="fa-solid {{ $stage['icon'] }}"></i>
+                        </div>
+                        @if ($isActive)
+                            <span
+                                class="absolute -top-2 -right-2 bg-white rounded-full border border-gray-200 p-1
+                            w-7 h-7 flex items-center justify-center shadow-lg">
+                                <i class="fa-solid fa-check text-green-500"></i>
+                            </span>
+                        @endif
+                    </div>
+                    <span class="mt-2 text-sm font-semibold {{ $isActive ? 'text-slate-900' : 'text-gray-400' }}">
+                        {{ $stage['label'] }}
+                    </span>
+                </div>
+                @if ($index < count($stages) - 1)
+                    <div
+                        class="flex-1 h-1 mx-2 {{ $currentStatus === 'cancelled' && $index < 2 ? 'bg-gray-200' : ($index < $currentIndex && $currentStatus !== 'cancelled' ? 'bg-blue-400' : 'bg-gray-200') }} rounded">
+                    </div>
+                @endif
+            @endforeach
+        </div>
+        <p class="text-center text-sm text-gray-500 mb-8">Placed on {{ $order->created_at->format('F j, Y, g:i A') }}</p>
 
         <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
             <div class="bg-[#1E293B] py-6 px-8 flex justify-between items-center">
@@ -91,8 +131,9 @@
                     <table class="w-full bg-white">
                         <thead class="bg-[#1E293B] text-white">
                             <tr>
-                                <th class="py-3 px-4 text-left">Product</th>
                                 <th class="py-3 px-4 text-center">Image</th>
+                                <th class="py-3 px-4 text-left">Product</th>
+                                <th class="py-3 px-4 text-left">Variant</th>
                                 <th class="py-3 px-4 text-center">Quantity</th>
                                 <th class="py-3 px-4 text-right">Price</th>
                                 <th class="py-3 px-4 text-right">Total</th>
@@ -101,6 +142,11 @@
                         <tbody>
                             @foreach ($order->orderProducts as $item)
                                 <tr class="border-t hover:bg-gray-100">
+                                    <td class="py-4 px-4 text-center">
+                                        <img class="w-12 h-12 rounded-lg object-cover inline-block border border-gray-200"
+                                            src="{{ asset($item->product->thumb_image) }}"
+                                            alt="{{ $item->product->name }}">
+                                    </td>
                                     <td class="py-4 px-4 text-gray-700">
                                         <div class="font-semibold">{{ $item->product->name }}</div>
                                         @if ($item->product->short_description)
@@ -108,10 +154,19 @@
                                                 {!! Str::limit($item->product->short_description, 60) !!}</div>
                                         @endif
                                     </td>
-                                    <td class="py-4 px-4 text-center">
-                                        <img class="w-12 h-12 rounded-lg object-cover inline-block border border-gray-200"
-                                            src="{{ asset($item->product->thumb_image) }}"
-                                            alt="{{ $item->product->name }}">
+                                    <td class="py-4 px-4 text-gray-700">
+                                        @if ($item->variants)
+                                            <div class="text-sm text-gray-500">
+                                                @foreach (json_decode($item->variants, true) as $key => $value)
+                                                    <div>
+                                                        <b> {{ $key }}: &emsp;</b>
+                                                        {{ $value }}
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <span class="text-sm text-gray-500">No variant selected</span>
+                                        @endif
                                     </td>
                                     <td class="py-4 px-4 text-center font-semibold">{{ $item->qty }}</td>
                                     <td class="py-4 px-4 text-right">${{ number_format($item->unit_price, 2) }}</td>

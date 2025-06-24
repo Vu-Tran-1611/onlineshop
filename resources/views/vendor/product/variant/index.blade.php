@@ -9,12 +9,12 @@
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h1>Product Variant table</h1>
-            <div class="section-header-breadcrumb">
+            <h1>Product Variant</h1>
+            {{-- <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
                 <div class="breadcrumb-item"><a href="#">Components</a></div>
                 <div class="breadcrumb-item">Product Variant</div>
-            </div>
+            </div> --}}
         </div>
         <a class="btn btn-primary" href="{{ $route }}"><i class="fa-solid fa-backward"></i> </a>
         <div class="section-body">
@@ -24,7 +24,7 @@
                 <div class="col-12 ">
                     <div class="card">
                         <div class="card-header">
-                            <h4>Simple Table</h4>
+                            <h4>Product Variant Table</h4>
                             @if ($role != 'admin')
                                 <div class="card-header-action">
                                     <a href="{{ route('vendor.product.variant.create', $product->id) }}"

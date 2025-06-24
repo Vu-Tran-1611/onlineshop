@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-    <title>General Dashboard &mdash; Stisla</title>
+    <title>General Dashboard &mdash; {{ env('APP_NAME', 'OShop') }}</title>
     {{-- Icon picker --}}
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" />
@@ -74,12 +74,10 @@
 
             <footer class="main-footer">
                 <div class="footer-left">
-                    Copyright &copy; 2018 <div class="bullet"></div> Design By <a href="https://nauval.in/">Muhamad
-                        Nauval
-                        Azhar</a>
+                    &copy; {{ date('Y') }} <a href="{{ url('/') }}">OnlineShop</a>. All rights reserved.
                 </div>
                 <div class="footer-right">
-
+                    Powered by <a href="https://laravel.com/" target="_blank">Laravel</a>
                 </div>
             </footer>
         </div>

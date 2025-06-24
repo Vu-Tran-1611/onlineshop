@@ -79,15 +79,13 @@
                                                     <td>{{ $key + 1 }}</td>
                                                     <td>{{ $product->product_name }}</td>
                                                     <td>
-                                                        @if (empty($variants))
+                                                        @if (empty($product->variants))
                                                             None
                                                         @else
-                                                            @foreach ($variants as $key => $item)
+                                                            @foreach (json_decode($product->variants, true) as $key => $item)
                                                                 <div>
                                                                     <b> {{ $key }}: </b>
-                                                                    <span class="ml-2"> {{ $item->name }} &emsp;
-                                                                        ${{ $item->price }}
-                                                                    </span>
+                                                                    {{ $item }}
                                                                 </div>
                                                             @endforeach
                                                         @endif
@@ -111,9 +109,9 @@
                                                                 {{ $product->status == 'pending' ? 'selected' : '' }}>
                                                                 Pending
                                                             </option>
-                                                            <option value="canceled"
-                                                                {{ $product->status == 'canceled' ? 'selected' : '' }}>
-                                                                Canceled
+                                                            <option value="cancelled"
+                                                                {{ $product->status == 'cancelled' ? 'selected' : '' }}>
+                                                                Cancelled
                                                             </option>
                                                             <option value="confirmed"
                                                                 {{ $product->status == 'confirmed' ? 'selected' : '' }}>

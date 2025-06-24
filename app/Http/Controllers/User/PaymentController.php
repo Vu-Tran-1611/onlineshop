@@ -92,7 +92,7 @@ class PaymentController extends Controller
             $product =  $stripe->products->create([
                 'name' => $item->name,
                 'images' => [$item->attributes->imageURL],
-                'description' => strip_tags($item->attributes->product_description),
+
             ]);
             $price = $stripe->prices->create([
                 'product' => $product->id,

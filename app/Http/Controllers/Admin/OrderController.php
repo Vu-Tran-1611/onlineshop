@@ -14,12 +14,14 @@ class OrderController extends Controller
     public static function updateOrderStatus($id)
     {
         $order = Order::findOrFail($id);
+
+
         // Get Order Products by order ID 
         $orderProducts = OrderProduct::where("order_id", $id)->get();
         //Case 1 Pending - Default 
         //Case 2 Processing - If all order products are processing 
         if ($orderProducts->every(fn($item) => $item->status === 'confirmed' || $item->status === 'processing')) {
-            $order->order_status = 'processing';
+            $order->order_status = 'confirmed';
             SendOrderNotificationMailJob::dispatch($order->user, $order, 'confirmed');
         }
         //Case 3 Completed - If all order products are completed

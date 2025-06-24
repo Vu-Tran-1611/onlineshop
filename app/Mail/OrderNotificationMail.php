@@ -16,14 +16,14 @@ class OrderNotificationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public $order;
     public $user;
+    public $order;
     public $notificationType;
-
-    public function __construct($order, $user, $notificationType)
+    public function __construct($user, $order, $notificationType)
     {
-        $this->order = $order;
+        // Initialize properties if needed
         $this->user = $user;
+        $this->order = $order;
         $this->notificationType = $notificationType;
     }
 

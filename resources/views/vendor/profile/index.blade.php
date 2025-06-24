@@ -3,13 +3,13 @@
     <section class="section">
         <div class="section-header">
             <h1>Profile</h1>
-            <div class="section-header-breadcrumb">
+            {{-- <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
                 <div class="breadcrumb-item">Profile</div>
-            </div>
+            </div> --}}
         </div>
         <div class="section-body">
-            <h2 class="section-title">Hi, {{ $user->first_name }}</h2>
+            <h2 class="section-title">Hi, {{ $user->username }}</h2>
             <p class="section-lead">
                 Change information about yourself on this page.
             </p>
