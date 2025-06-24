@@ -44,6 +44,7 @@ class UserMessageController extends Controller
     {
         $senderID = $request->sender_id;
         $receiverID = $request->receiver_id;
+        $receiverName = User::find($receiverID)->name;
         $chat = Chat::whereIn('receiver_id', [$senderID, $receiverID])
             ->whereIn('sender_id', [$senderID, $receiverID])
             ->orderBy('created_at', 'asc')
@@ -56,6 +57,7 @@ class UserMessageController extends Controller
             'status' => "success",
             "chat" => $chat,
             "lastChat" => $lastChat,
+            "receiverName" => $receiverName,
         ]);
     }
 }

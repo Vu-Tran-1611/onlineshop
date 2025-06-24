@@ -18,7 +18,7 @@
         }
     </script>
     @vite(['resources/js/app.js', 'resources/js/frontend.js'])
-    <title>Shuty Shop Chat System</title>
+    <title>OShop Chat System</title>
 </head>
 
 <body>
@@ -27,7 +27,7 @@
 
         <!-- Main Content -->
         <div class=" bg-slate-100">
-            <div class="main-content lg:w-[1200px] mx-auto">
+            <div class="main-content  mx-auto">
                 @yield('content')
             </div>
         </div>

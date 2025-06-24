@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\Brand;
 use App\Models\ProductImageGallery;
 use App\Http\Controllers\User\UserMessageController;
+use App\Http\Controllers\Vendor\ChatController as VendorChatController;
 use App\Http\Controllers\Vendor\OrderController;
 
 // Profile -------------------------------------------------
@@ -74,7 +75,7 @@ Route::resource("product.variant.item", ProductVariantItemController::class);
 // Chat ------------------------------------------------- 
 Route::post("message/send-message", [UserMessageController::class, 'sendMessage'])->name("message.send-message");
 Route::get('message/get-message', [UserMessageController::class, "getMessage"])->name("message.get-message");
-Route::get("chat", [ChatController::class, "index"])->name("chat.index");
+Route::get("chat", [VendorChatController::class, "index"])->name("chat.index");
 // Chat ------------------------------------------------- 
 
 

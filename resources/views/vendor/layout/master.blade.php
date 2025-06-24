@@ -48,7 +48,14 @@
         gtag('config', 'UA-94034622-3');
     </script>
     <!-- /END GA -->
+
     @stack('styles')
+    <script>
+        const USER = {
+            id: "{{ auth()->check() ? auth()->user()->id : ' ' }}"
+        }
+    </script>
+    @vite(['resources/js/app.js', 'resources/js/vendor.js'])
 </head>
 
 
@@ -72,6 +79,8 @@
             </div>
             {{-- main-content --}}
 
+
+            {{-- Footer --}}
             <footer class="main-footer">
                 <div class="footer-left">
                     &copy; {{ date('Y') }} <a href="{{ url('/') }}">OnlineShop</a>. All rights reserved.
