@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Product extends Model
 {
@@ -68,16 +69,22 @@ class Product extends Model
     // Average Rating
     public function averageRating()
     {
-        return $this->userReviews()->avg('rating');
+        return Cache::remember("product_{$this->id}_average_rating", 60 * 60, function () {
+            return $this->userReviews()->avg('rating');
+        });
     }
     // Number of Reviews
     public function numberOfReviews()
     {
-        return $this->userReviews()->count();
+        return Cache::remember("product_{$this->id}_number_of_reviews", 60 * 60, function () {
+            return $this->userReviews()->count();
+        });
     }
     // Sold Count
     public function soldCount()
     {
-        return $this->orderProducts()->sum('qty');
+        return Cache::remember("product_{$this->id}_sold_count", 60 * 60, function () {
+            return $this->orderProducts()->where('status', 'delivered')->sum('qty');
+        });
     }
 }

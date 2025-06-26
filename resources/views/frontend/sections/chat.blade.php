@@ -25,7 +25,7 @@
                             <span class="text-xs">4/2/2024</span>
                         </p>
                         <p class="flex justify-between overflow-hidden text-sm">
-                            <span class="last-message whitespace-nowrap ">Lorem ipsum ipsum</span>
+                            <span class="last-message whitespace-nowrap "></span>
                             <span class="hidden unseen-{{ $receiver->user_id }}  text-sky-600 text-xs "><i
                                     class="fa-solid fa-circle"></i></span>
                         </p>
@@ -36,9 +36,15 @@
         </div>
         {{-- Message --}}
         <div class="message overflow-y-scroll  bg-slate-200 max-h-[550px]  gap-y-3">
-            <div class="bg-white p-3 text-xl text-sky-600 cursor-pointer message-receiver-name">
+            <div class="bg-white p-3 fixed w-full  text-xl text-sky-600 cursor-pointer message-receiver-name ">
+                {{-- Receiver Name --}}
+                @if (isset($receiver))
+                    {{ $receiver->name }}
+                @else
+                    Select a receiver
+                @endif
             </div>
-            <div class="message-area flex flex-col gap-y-3  p-5">
+            <div class="message-area flex flex-col gap-y-3  p-5 mt-10">
 
             </div>
         </div>
@@ -49,12 +55,13 @@
         <form action="" class="send-message">
             <input type="hidden" name="sender_id" value="{{ Auth::user()->id }}" />
             <input type="hidden" name="receiver_id" />
-            <input name="message_content" id="message_content" placeholder="Type Something ....."
+            <input required name="message_content" id="message_content" placeholder="Type Something ....."
                 class="text-sm w-full h-full focus:ring-0 ring-transparent border-none " />
 
 
-            <div class=" text-end px-4 py-1 border-t-2 border-gray-200 text-sky-600 text-xl"><button><i
-                        class="fa-solid fa-paper-plane"></i></button></div>
+            <div class=" text-end px-4 py-1 border-t-2 border-gray-200 text-sky-600 text-xl">
+                <button id="send_message"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
         </form>
     </div>
 </div>
@@ -65,20 +72,31 @@
         // Chat -----------------------------------
         const senderId = "{{ Auth::check() ? auth()->user()->id : ' ' }}";
 
+        function disableChat(flag) {
+            if (flag === true) {
+                $("#message_content").attr("disabled", true);
+                $("#send_message").attr("disabled", true);
+            } else {
+                $("#message_content").removeAttr("disabled");
+                $("#send_message").removeAttr("disabled");
+            }
+        }
+
         function init() {
             $(".receiver").each(function(i, v) {
                 $(v).removeClass("bg-slate-100");
             });
             const messagePatternHTML = `
                         <div class="message overflow-y-scroll  bg-slate-200 max-h-[550px]  gap-y-3">
-                            <div class="bg-white p-3 text-xl text-sky-600 cursor-pointer message-receiver-name">${name}
+                            <div class="bg-white fixed w-full p-3 text-xl text-sky-600 cursor-pointer message-receiver-name">${name}
                             </div>
-                            <div class="message-area flex flex-col gap-y-3  p-5">
+                            <div class="message-area flex flex-col gap-y-3  p-5 mt-10">
                             </div>
                         </div>
                     `
             $(".message").replaceWith(messagePatternHTML);
         }
+        disableChat(true);
         init();
 
 
@@ -167,12 +185,11 @@
                                         <div><img class="rounded-full" width="50"
                                                 src="{{ asset('${receiver.banner}') }}" />
                                         </div>
-                                        <div class="flex flex-col p-1">
+                                        <div class="flex flex-col p-1 flex-1">
                                             <p class="flex justify-between"><span class="font-semibold text-sm receiver-name">${receiver.name}</span>
                                                 <span class='text-xs'>4/2/2024</span>
                                             </p>
-                                            <p class="last-chat">Lorem, ipsum dolor sit
-                                            </p>
+                                        
                                         </div>
                                 </div>
                             `
@@ -194,6 +211,7 @@
         }
         // Change Message Receiver
         $("body").on("click", ".receivers .receiver", function() {
+            disableChat(false);
             init();
             const receiverID = $(this).data('id');
             getMessage(senderId, receiverID);
@@ -204,6 +222,7 @@
         })
         // Show chat with shop
         $(".show-chat-pannel").on("click", function() {
+            disableChat(false);
             const name = $(this).data("name");
             const banner = $(this).data("banner");
             const receiverID = $(this).data("id");
@@ -216,16 +235,19 @@
                 };
             })
             setInputReceiverID(receiverID);
+            $(".message-receiver-name").html(name);
             $(".chat-pannel").show(500);
 
         });
         $(".close-chat-pannel").on("click", function() {
             init();
+            disableChat(true);
             $(".chat-pannel").hide(500);
         });
 
         $(".open-chat-pannel").on("click", function() {
             init();
+            disableChat();
             $(".chat-pannel").show(500);
         });
         $(".send-message").on("submit", function(e) {

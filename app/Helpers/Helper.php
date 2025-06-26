@@ -5,6 +5,7 @@ use App\Models\Chat;
 use App\Models\ShopProfile;
 use App\Models\User;
 use App\Models\UserAddresses;
+use App\Models\Category;
 
 function setActive(array $routes)
 {

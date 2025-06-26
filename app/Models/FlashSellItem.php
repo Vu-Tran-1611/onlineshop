@@ -9,7 +9,8 @@ class FlashSellItem extends Model
 {
     use HasFactory;
     protected $fillable = [
-        "show_at_home", "product_id",
+        "show_at_home",
+        "product_id",
     ];
 
     public function product()

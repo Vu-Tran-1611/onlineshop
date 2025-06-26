@@ -17,7 +17,7 @@
                 <div class="col-lg-4">
                     <div class="card" style="min-height: 600px">
                         <div class="card-header">
-                            <h4>Who's Online?</h4>
+                            <h4>Your Customers</h4>
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled list-unstyled-border">
@@ -27,8 +27,8 @@
                                     @foreach (getReceivers() as $receiver)
                                         <li data-id="{{ $receiver->id }}"
                                             class="receiver list-group-item d-flex align-items-center border-0 shadow-sm mb-3 rounded-3 cursor-pointer py-3 bg-white hover-bg-light">
-                                            <div class="me-3 position-relative">
-                                                <img class="rounded-circle border border-3 border-primary shadow"
+                                            <div class="me-3 position-relative mr-2 ">
+                                                <img class="rounded-circle border border- border-primary shadow"
                                                     width="60" height="60" src="{{ asset($receiver->image) }}"
                                                     alt="{{ $receiver->name }}">
 
@@ -41,9 +41,9 @@
                                                         class="text-muted">{{ \Carbon\Carbon::now()->format('d/m/Y') }}</small>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="text-truncate text-secondary small last-message"
-                                                        style="max-width: 180px;">Lorem ipsum ipsum</span>
-                                                    <span class="ms-2 d-none unseen-{{ $receiver->user_id }} text-info">
+                                                    <span></span>
+                                                    <span class="ms-2 unseen-{{ $receiver->id }} text-info"
+                                                        style="display: none">
                                                         <i class="fa-solid fa-circle"></i>
                                                     </span>
                                                 </div>
@@ -64,9 +64,9 @@
                         </div>
                         <div class="card-body chat-content p-0">
                             <div class="message" style="height: 480px; overflow-y: auto;">
-                                <div class="bg-white p-3 h5 text-primary cursor-pointer message-receiver-name">
+                                <div class="bg-white p-3 h5 fixed w-full text-primary cursor-pointer message-receiver-name">
                                 </div>
-                                <div class="message-area d-flex flex-column gap-3 p-4">
+                                <div class="message-area d-flex flex-column gap-3 p-4 mt-10">
                                 </div>
                             </div>
                         </div>
@@ -74,11 +74,11 @@
                             <form id="chat-form" class="send-message">
                                 <input type="hidden" name="sender_id" value="{{ Auth::user()->id }}" />
                                 <input type="hidden" name="receiver_id" />
-                                <input name="message_content" id="message_content" placeholder="Type Something ....."
-                                    class=" form-control "type="text" />
+                                <input required name="message_content" id="message_content"
+                                    placeholder="Type Something ....." class=" form-control "type="text" />
 
 
-                                <button class="btn btn-primary">
+                                <button id="send_message" class="btn btn-primary">
                                     <i class="far fa-paper-plane"></i>
                                 </button>
                             </form>
@@ -94,10 +94,19 @@
 @endsection
 
 @push('scripts')
- 
     <script>
         // Chat -----------------------------------
         const senderId = "{{ Auth::check() ? auth()->user()->id : ' ' }}";
+
+        function disableChat(flag) {
+            if (flag === true) {
+                $("#message_content").attr("disabled", true);
+                $("#send_message").attr("disabled", true);
+            } else {
+                $("#message_content").removeAttr("disabled");
+                $("#send_message").removeAttr("disabled");
+            }
+        }
 
         function init() {
             $(".receiver").each(function(i, v) {
@@ -105,12 +114,13 @@
             });
             const messagePatternHTML = `
                 <div class="message" style="height: 480px; overflow-y: auto;">
-                    <div class="message-area d-flex flex-column gap-3 p-4">
+                    <div class="message-area d-flex flex-column gap-3 p-4 mt-10">
                     </div>
                 </div>
             `
             $(".message").replaceWith(messagePatternHTML);
         }
+        disableChat(true);
         init();
 
         // Scroll message to the bottom 
@@ -190,7 +200,6 @@
                 dataType: "JSON",
                 success: function(response) {
                     const receiver = response.receiver;
-                    console.log(receiver.id);
                     if (response.status == "success") {
                         if (response.isNewConversation) {
                             const receiverHTML = `
@@ -228,6 +237,7 @@
         // Change Message Receiver
         $("body").on("click", ".receivers .receiver", function() {
             init();
+            disableChat(false);
             const receiverID = $(this).data('id');
             getMessage(senderId, receiverID);
             setInputReceiverID(receiverID);

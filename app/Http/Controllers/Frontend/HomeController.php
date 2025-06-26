@@ -15,34 +15,55 @@ use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \Cart;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
     public function home()
     {
+        $sliders = Cache::remember('sliders', 60 * 60, function () {
+            return Slider::where("status", 1)->get();
+        });
+        $categoryBanners = Cache::remember('category_banners', 60 * 60, function () {
+            return Category::where("banner", "!=", null)
+                ->where("status", 1)
+                ->get()->take(6);
+        });
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
 
-        $sliders = Slider::get()->sortBy("serial");
-        $categoryBanners = Category::get()->take(6);
-        $categories = Category::with("subCategories")->get();
-        $hotCategories = Category::get()->take(6);
-        $brands = Brand::get()->take(10);
+        $hotCategories = Cache::remember('hot_categories', 60 * 60, function () {
+            return Category::get()->take(6);
+        });
+        $brands = Cache::remember('brands', 60 * 60, function () {
+            return Brand::where("status", 1)->get()->take(20);
+        });
+        $featuredProducts = Cache::remember('featured_products', 60 * 60, function () {
+            return Product::where("product_type", "featured")
+                ->where("status", 1)
+                ->where("is_approved", 1)
+                ->get()->take(20);
+        });
+        $topProducts = Cache::remember('top_products', 60 * 60, function () {
+            return Product::where("product_type", "top")
+                ->where("status", 1)
+                ->where("is_approved", 1)
+                ->get()->take(20);
+        });
+        $newProducts = Cache::remember('new_products', 60 * 60, function () {
+            return Product::where("product_type", "new")
+                ->where("status", 1)
+                ->where("is_approved", 1)
+                ->get()->take(20);
+        });
+        $bestProducts = Cache::remember('best_products', 60 * 60, function () {
+            return Product::where("product_type", "best")
+                ->where("status", 1)
+                ->where("is_approved", 1)
+                ->get()->take(20);
+        });
 
-        $featuredProducts = Product::where("product_type", "featured")
-            ->where("status", 1)
-            ->where("is_approved", 1)
-            ->get()->take(12);
-        $topProducts = Product::where("product_type", "top")
-            ->where("status", 1)
-            ->where("is_approved", 1)
-            ->get()->take(12);
-        $newProducts = Product::where("product_type", "new_arrival")
-            ->where("status", 1)
-            ->where("is_approved", 1)
-            ->get()->take(12);
-        $bestProducts = Product::where("product_type", "best")
-            ->where("status", 1)
-            ->where("is_approved", 1)
-            ->get()->take(12);
 
         $flashSellProducts = FlashSellItem::with("product")->get();
         $flashSellEndDate = FlashSell::first();
