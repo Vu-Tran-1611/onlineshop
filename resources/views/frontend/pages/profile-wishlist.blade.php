@@ -10,7 +10,11 @@
             </p>
         @else
             <ul class="grid  grid-cols-4 py-5 gap-5 ccursor-pointer ">
-                @foreach ($wishlists as $p)
+                @include('frontend.partials.filtered-product-list', [
+                    'products' => $wishlists,
+                    'isWishlist' => true,
+                ])
+                {{-- @foreach ($wishlists as $p)
                     <li data-id="{{ $p->id }}"
                         class=" cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
                         <div class="relative">
@@ -58,7 +62,7 @@
                             </button>
                         </div>
                     </li>
-                @endforeach
+                @endforeach --}}
             </ul>
             <div class="mt-8 col-span-2">
                 {{ $wishlists->links('vendor.pagination.tailwind') }}

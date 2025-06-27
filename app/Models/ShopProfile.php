@@ -9,7 +9,17 @@ class ShopProfile extends Model
 {
     use HasFactory;
     protected $fillable = [
-        "name", "banner", "phone", "email", "address", "description", "fb_link", "tw_link", "insta_link", "user_id"
+        "name",
+        "slug",
+        "banner",
+        "phone",
+        "email",
+        "address",
+        "description",
+        "fb_link",
+        "tw_link",
+        "insta_link",
+        "user_id"
     ];
     public function user()
     {

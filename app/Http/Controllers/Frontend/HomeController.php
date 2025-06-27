@@ -52,7 +52,7 @@ class HomeController extends Controller
                 ->get()->take(20);
         });
         $newProducts = Cache::remember('new_products', 60 * 60, function () {
-            return Product::where("product_type", "new")
+            return Product::where("product_type", "new_arrival")
                 ->where("status", 1)
                 ->where("is_approved", 1)
                 ->get()->take(20);
@@ -85,6 +85,8 @@ class HomeController extends Controller
             )
         );
     }
+
+
     // return product page 
     // {product?}/{type?}/{subcategory?}/{category?}/{brand?}/{vendor?}
     public function product(Request $request)
@@ -157,8 +159,8 @@ class HomeController extends Controller
                 }
             }
             // If type was chosen 
+            $type = "";
             if ($request->type) $type = $request->type;
-            else $type = "featured";
 
             // If subcategory was chosen 
             if ($request->subcategory) {
@@ -173,7 +175,6 @@ class HomeController extends Controller
 
             $products = Product::where([
                 ["category_id", $category->id],
-                ["product_type", $type]
             ])
                 ->where(function ($query) use ($subCategory) {
                     if ($subCategory) $query->where("sub_category_id", $subCategory->id);
@@ -190,6 +191,9 @@ class HomeController extends Controller
                         else
                             $query->where('price', "<=", $priceRange);
                     };
+                })
+                ->when($type, function ($query) use ($type) {
+                    $query->where("product_type", $type);
                 })
                 ->where("is_approved", 1)
                 ->where("status", 1)
@@ -277,12 +281,168 @@ class HomeController extends Controller
             "brands" => $brands,
         ]);
     }
+
+
+    // More Products based on type
+    public function moreProductsByType(Request $request)
+    {
+
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
+
+        $type = $request->type ? $request->type : "featured";
+        if ($type == "top") $title = "Top Products";
+        else if ($type == "new_arrival") $title = "New Arrival Products";
+        else if ($type == "best") $title = "Best Products";
+        else if ($type == "featured") $title = "Featured Products";
+        else $title = "More Products";
+        $filteredProducts = Product::where("product_type", $type)
+            ->where("status", 1)
+            ->where("is_approved", 1)
+            ->with("category", "subCategory", "brand")
+            ->orderBy("created_at", "desc")
+            ->paginate(40);
+
+        return view("frontend.pages.more-products", [
+            "filteredProducts" => $filteredProducts,
+            "type" => $type,
+            "title" => $title,
+            "categories" => $categories,
+        ]);
+    }
+
+
+    // More Products based on brand
+    public function moreProductsByBrand(Request $request)
+    {
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
+
+        $brandSlug = $request->brand;
+        $brand = Brand::where("slug", $brandSlug)->first();
+        if (!$brand) {
+            return redirect()->route("not-found");
+        }
+        $title = "More Products by " . $brand->name;
+
+        $filteredProducts = Product::where("brand_id", $brand->id)
+            ->where("status", 1)
+            ->where("is_approved", 1)
+            ->with("category", "subCategory")
+            ->orderBy("created_at", "desc")
+            ->paginate(40);
+
+        return view("frontend.pages.more-products", [
+            "filteredProducts" => $filteredProducts,
+            "type" => "brand",
+            "title" => $title,
+            "categories" => $categories,
+        ]);
+    }
+
+
+    // More Products based on flash sale
+    public function moreProductsByFlashSale(Request $request)
+    {
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
+
+        $title = "More Products by Flash Sale";
+        $filteredProducts = Cache::remember('flash_sale_products', 60 * 60, function () {
+            return FlashSellItem::with("product")
+                ->whereHas("product", function ($query) {
+                    $query->where("status", 1)
+                        ->where("is_approved", 1);
+                })
+                ->paginate(40);
+        });
+        return view("frontend.pages.more-products", [
+            "filteredProducts" => $filteredProducts,
+            "type" => "flash_sale",
+            "title" => $title,
+            "categories" => $categories,
+            "isFlashSell" => true
+        ]);
+    }
+
+    // View Shop Page
+    public function shop(Request $request)
+    {
+        $activeSub = null;
+
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
+        $title = "Shop";
+        $shop = ShopProfile::where("slug", $request->shop)->first();
+        if (!$shop) {
+            return redirect()->route("not-found");
+        }
+
+        // If type was chosen 
+        $type = "";
+        if ($request->type) $type = $request->type;
+        // If subcategory was chosen
+        $subCategory = null;
+        if ($request->subcategory) {
+            $subCategory = SubCategory::where("slug", $request->subcategory)->first();
+            $activeSub = $subCategory->slug;
+            if (!$subCategory) {
+                return redirect()->route("not-found");
+            }
+        }
+
+        // Products from shop
+        $shopProducts =  Product::where("shop_profile_id", $shop->id)
+            ->where("status", 1)
+            ->where("is_approved", 1)
+            ->when($type, function ($query) use ($type) {
+                $query->where("product_type", $type);
+            })
+            ->when($subCategory, function ($query) use ($subCategory) {
+                $query->where("sub_category_id", $subCategory->id);
+            })
+            ->with("category", "subCategory", "brand")
+            ->orderBy("created_at", "desc")
+            ->paginate(20);
+
+        // Get distinct sub categories from shop products
+        $shopCategories = Cache::remember("shop_categories_" . $shop->id, 60 * 60, function () use ($shop) {
+            return Product::where("shop_profile_id", $shop->id)
+                ->where("status", 1)
+                ->where("is_approved", 1)
+                ->with("category", "subCategory")
+                ->get()
+                ->pluck('subCategory')
+                ->unique('id');
+        });
+
+
+        return view("frontend.pages.shop", [
+            "categories" => $categories,
+            "shopCategories" => $shopCategories,
+            "type" => $type,
+            "shopSlug" => $shop->slug,
+            "shop" => $shop,
+            "shopProducts" => $shopProducts,
+            "activeType" => $type,
+            "title" => $title,
+            "activeSub" => $activeSub,
+        ]);
+    }
+
+
     // 404 page
     public function notFound()
     {
-        $title = "Not FOund";
+        $title = "Not Found";
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
         $user = Auth::user();
-        $categories = Category::get();
         return view("frontend.pages.not-found", compact("title", "user", "categories"));
     }
 }

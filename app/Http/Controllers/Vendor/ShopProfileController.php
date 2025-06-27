@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Vendor;
 use App\Http\Controllers\Controller;
 use App\Models\ShopProfile;
 use Illuminate\Http\Request;
-use App\Traits\UploadTrait; 
-use Illuminate\Support\Facades\Auth; 
+use App\Traits\UploadTrait;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+
 class ShopProfileController extends Controller
 {
     use UploadTrait;
@@ -46,6 +48,7 @@ class ShopProfileController extends Controller
 
         $vendor->update([
             "name" => $request->name,
+            "slug" => Str::slug($request->name),
             "banner" => $newBanner,
             "email" => $request->email,
             "phone" => $request->phone,
@@ -90,4 +93,4 @@ class ShopProfileController extends Controller
     {
         //
     }
-}   
+}

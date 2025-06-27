@@ -164,6 +164,7 @@
                                 > </a>
                 </div>
             </div>
+            {{-- Filtered Products --}}
             <div class="grid grid-cols-4 gap-3 z-[1] relative">
                 @include('frontend.partials.filtered-product-list', ['products' => $products])
 

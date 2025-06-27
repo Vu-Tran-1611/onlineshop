@@ -8,13 +8,16 @@
     </h1>
     <ul class="py-6 flex flex-wrap gap-6 justify-center">
         @foreach ($brands as $br)
-            <li
-                class="group cursor-pointer bg-white bg-opacity-80 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border border-cyan-100 w-40 h-40 flex items-center justify-center relative overflow-hidden">
-                <div class="absolute inset-0 bg-cover bg-center opacity-80 group-hover:opacity-100 transition-all duration-300"
-                    style="background-image: url('{{ asset($br->logo) }}')"></div>
-                <div class="absolute inset-0 bg-cyan-900 bg-opacity-0 group-hover:bg-opacity-10 transition-all"></div>
+            <a href="{{ route('more-products-by-brand', ['brand' => $br->slug]) }}">
+                <li
+                    class="group cursor-pointer bg-white bg-opacity-80 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border border-cyan-100 w-40 h-40 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-cover bg-center opacity-80 group-hover:opacity-100 transition-all duration-300"
+                        style="background-image: url('{{ asset($br->logo) }}')"></div>
+                    <div class="absolute inset-0 bg-cyan-900 bg-opacity-0 group-hover:bg-opacity-10 transition-all">
+                    </div>
 
-            </li>
+                </li>
+            </a>
         @endforeach
     </ul>
 </div>

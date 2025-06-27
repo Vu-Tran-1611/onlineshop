@@ -46,6 +46,8 @@
 
     </div>
 
+
+
     {{-- Sweetalert --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{-- Jquery UI --}}
@@ -57,6 +59,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     {{-- Toastify --}}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <script>
         @if ($errors->any())
             @foreach ($errors->all() as $err)
@@ -87,6 +90,78 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+    </script>
+    {{-- Product Card Scripts --}}
+    <script>
+        // Add To Wishlist
+        $(".add-to-wishlist").on("click", function() {
+            const productId = $(this).data("id");
+            const productCard = $(this).closest('li');
+            $.ajax({
+                type: "POST",
+                url: "{{ route('user.profile.wishlist.add-to-wishlist') }}",
+                data: {
+                    product_id: productId
+                },
+                dataType: "json",
+                success: (response, textStatus, jqXHR) => {
+                    console.log(textStatus);
+                    if (response.success == true) {
+                        productCard.remove();
+                        Toastify({
+                            text: response.message,
+                            duration: 3000,
+                            backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)", // green
+                        }).showToast();
+                    } else {
+                        Toastify({
+                            text: response.message,
+                            backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
+                        }).showToast();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.table(jqXHR)
+                }
+            });
+        });
+        // Remove from wishlist 
+        $(".remove-from-wishlist").on("click", function() {
+            const productId = $(this).data("id");
+            const productCard = $(this).closest('li');
+            console.log(productCard);
+            $.ajax({
+                type: "DELETE",
+                url: "{{ route('user.profile.wishlist.remove-from-wishlist') }}",
+                data: {
+                    product_id: productId
+                },
+                dataType: "json",
+                success: (response, textStatus, jqXHR) => {
+                    console.log(textStatus);
+                    if (response.success == true) {
+                        productCard.remove();
+                        Toastify({
+                            text: response.message,
+                            duration: 3000,
+                            backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)", // green
+                        }).showToast();
+                    } else {
+                        Toastify({
+                            text: response.message,
+                            backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
+                        }).showToast();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.table(jqXHR)
+                }
+            });
+        });
+        $(".product").on("click", function() {
+            const url = $(this).data("url");
+            window.location.replace(url);
         });
     </script>
     @stack('scripts')

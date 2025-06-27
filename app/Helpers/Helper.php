@@ -69,7 +69,7 @@ function getProductType($product)
 
 function getAllType()
 {
-    return ["featured" => "Featured", "best" => "Best", "top" => "Top", "new" => "New Arrival"];
+    return ["" => "All", "featured" => "Featured", "best" => "Best", "top" => "Top", "new_arrival" => "New Arrival"];
 }
 
 // Chat -------------------------------------

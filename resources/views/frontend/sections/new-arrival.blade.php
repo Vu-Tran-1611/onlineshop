@@ -15,6 +15,13 @@
     <ul class="grid  grid-cols-5 py-5 gap-5 ccursor-pointer ">
         @include('frontend.partials.filtered-product-list', ['products' => $newProducts])
     </ul>
+    {{-- See more button --}}
+    <div class="flex justify-center">
+        <a href="{{ route('more-products-by-type', ['type' => 'new_arrival']) }}"
+            class="bg-sky-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-sky-800 transition">
+            See More
+        </a>
+    </div>
 </div>
 
 

@@ -14,4 +14,11 @@
     <ul class="grid grid-cols-5 py-5 gap-5">
         @include('frontend.partials.filtered-product-list', ['products' => $bestProducts])
     </ul>
+    {{-- See more button --}}
+    <div class="flex justify-center">
+        <a href="{{ route('more-products-by-type', ['type' => 'best']) }}"
+            class="bg-sky-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-sky-800 transition">
+            See More
+        </a>
+    </div>
 </div>

@@ -137,7 +137,7 @@
             <form class="md:w-[20%] lg:w-[40%] w-full ml-8 flex items-center relative"
                 action="{{ route('product-by-search') }}" method="GET">
 
-                <input value="{{ request()->input('keyword') }}"
+                <input required value="{{ request()->input('keyword') }}"
                     class="text-black border border-gray-300 focus:ring-2 focus:ring-sky-500 focus:outline-none w-full rounded-lg py-2 px-4"
                     type="search" name="keyword" id="search" placeholder="Search for any products ....." />
                 <button
