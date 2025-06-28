@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\FlashSellItem; 
+use App\Models\FlashSellItem;
 use App\DataTables\FlashSellItemDataTable;
 use App\Models\Product;
 use Illuminate\Support\Facades\Session;
 use App\Models\FlashSell;
+
 class FlashSellController extends Controller
 {
     public function index(FlashSellItemDataTable $dataTable)
     {
         $productsFromSaleItems = FlashSellItem::get("product_id");
-        $endDate = FlashSell::first("end_date");  
-      
+        $endDate = FlashSell::first("end_date");
         $products = Product::where("status", 1)
             ->where("is_approved", 1)
             ->whereNotIn("id", $productsFromSaleItems)

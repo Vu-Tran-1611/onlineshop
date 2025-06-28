@@ -122,7 +122,10 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.table(jqXHR)
+                    Toastify({
+                        text: "You need to login first",
+                        backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
+                    }).showToast();
                 }
             });
         });

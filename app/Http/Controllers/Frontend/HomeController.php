@@ -21,6 +21,7 @@ class HomeController extends Controller
 {
     public function home()
     {
+
         $sliders = Cache::remember('sliders', 60 * 60, function () {
             return Slider::where("status", 1)->get();
         });
@@ -68,6 +69,8 @@ class HomeController extends Controller
         $flashSellProducts = FlashSellItem::with("product")->get();
         $flashSellEndDate = FlashSell::first();
 
+
+
         return view(
             "frontend.pages.home",
             compact(
@@ -81,7 +84,7 @@ class HomeController extends Controller
                 "flashSellProducts",
                 "featuredProducts",
                 "bestProducts",
-                "flashSellEndDate"
+                "flashSellEndDate",
             )
         );
     }

@@ -67,13 +67,11 @@
 
             {{-- Footer --}}
             <footer class="main-footer">
-
                 <div class="footer-left">
-                    Copyright &copy; 2018 <div class="bullet"></div> Design By <a href="https://nauval.in/">Muhamad
-                        Nauval Azhar</a>
+                    &copy; {{ date('Y') }} <a href="{{ url('/') }}">OnlineShop</a>. All rights reserved.
                 </div>
                 <div class="footer-right">
-
+                    Powered by <a href="https://laravel.com/" target="_blank">Laravel</a>
                 </div>
             </footer>
         </div>
