@@ -390,6 +390,7 @@ class HomeController extends Controller
         if ($request->type) $type = $request->type;
         // If subcategory was chosen
         $subCategory = null;
+
         if ($request->subcategory) {
             $subCategory = SubCategory::where("slug", $request->subcategory)->first();
             $activeSub = $subCategory->slug;
@@ -422,7 +423,8 @@ class HomeController extends Controller
                 ->pluck('subCategory')
                 ->unique('id');
         });
-
+        // Check if the shop is followed by the user, fall if not logged in and not followed 
+        $isFollowed = !Auth::check() ? false : $shop->shop_followers()->where("user_id", Auth::id())->exists();
 
         return view("frontend.pages.shop", [
             "categories" => $categories,
@@ -434,6 +436,7 @@ class HomeController extends Controller
             "activeType" => $type,
             "title" => $title,
             "activeSub" => $activeSub,
+            "isFollowed" => $isFollowed,
         ]);
     }
 

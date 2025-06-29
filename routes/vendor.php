@@ -86,3 +86,8 @@ Route::get("orders/{id}", [OrderController::class, "show"])->name("orders.show")
 // Update order status
 Route::put("orders/{id}/status", [OrderController::class, "updateStatus"])->name("orders.update.status");
 // Orders -------------------------------------------------
+
+
+// Dashboard Pages -------------------------------------------------
+Route::get('dashboard', [\App\Http\Controllers\Vendor\DashboardController::class, 'index'])->name('dashboard');
+// Dashboard Pages -------------------------------------------------

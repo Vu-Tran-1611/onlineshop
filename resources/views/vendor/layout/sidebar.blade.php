@@ -14,8 +14,8 @@
                            Profile</a>
                    </li>
                    <li class="menu-header">Dashboard</li>
-                   <li class="{{ setActive(['vendor.dashboard.*']) }}">
-                       <a href="#" class="nav-link "><span>Dashboard</span></a>
+                   <li class="{{ setActive(['vendor.dashboard']) }}">
+                       <a href="{{ route('vendor.dashboard') }}" class="nav-link "><span>Dashboard</span></a>
                    </li>
                    <li class="menu-header">Starter</li>
 

@@ -71,6 +71,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserReviews::class);
     }
+
+    public function shopFollows()
+    {
+        return $this->hasMany(ShopFollowers::class);
+    }
+
     // public function notifications()
     // {
     //     return $this->hasMany(Notification::class);

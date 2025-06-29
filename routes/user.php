@@ -8,6 +8,7 @@ use App\Http\Controllers\User\CheckOutController;
 use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\ShopFollowController;
 use App\Http\Controllers\User\UserMessageController;
 use App\Http\Controllers\User\UserReviewsController;
 use App\Http\Controllers\User\WishlistController;
@@ -86,5 +87,13 @@ Route::get('message/get-message', [UserMessageController::class, "getMessage"])-
 
 
 // User Reviews -------------------------------------------------
-Route::post("review", [UserReviewsController::class, "create"])->name("review.create");  
+Route::post("review", [UserReviewsController::class, "create"])->name("review.create");
 // User Reviews -------------------------------------------------
+
+
+
+// Shop Follow -------------------------------------------------
+Route::post("shop/follow", [ShopFollowController::class, "followUnfollow"])->name("shop.follow");
+
+
+// Shop Follow -------------------------------------------------

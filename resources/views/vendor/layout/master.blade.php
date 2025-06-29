@@ -139,7 +139,8 @@
     {{-- Datatable --}}
     <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
+    {{-- Chartjs --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         @if ($errors->any())
             @foreach ($errors->all() as $err)
