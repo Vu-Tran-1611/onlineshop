@@ -53,10 +53,12 @@ class DashboardController extends Controller
         $peakMonth = array_search($peakOrders, $ordersData);
         $averageOrders = $totalOrders > 0 ? $totalOrders / count($ordersData) : 0;
 
-        // Top Ten Selling Products
-        $topTenProducts = $shopProfile->getTopTenSellingProducts();
-        dd($topTenProducts);
-
+        // Order Status Data
+        $statuses = ['completed', 'pending', 'cancelled', 'delivered'];
+        $completedOrders = $shopProfile->getOrderCountByStatus('completed');
+        $pendingOrders = $shopProfile->getOrderCountByStatus('pending');
+        $cancelledOrders = $shopProfile->getOrderCountByStatus('cancelled');
+        $deliveredOrders = $shopProfile->getOrderCountByStatus('delivered');
         return view(
             'vendor.dashboard',
             [
@@ -71,6 +73,11 @@ class DashboardController extends Controller
                 'peakOrders' => $peakOrders,
                 'peakMonth' => $peakMonth,
                 'averageOrders' => $averageOrders,
+                'statuses' => $statuses,
+                'completedOrders' => $completedOrders,
+                'pendingOrders' => $pendingOrders,
+                'cancelledOrders' => $cancelledOrders,
+                'deliveredOrders' => $deliveredOrders,
             ]
         );
     }

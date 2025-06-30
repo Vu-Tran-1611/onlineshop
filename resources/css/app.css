@@ -43,3 +43,10 @@
 .focus-outline-none:focus {
     outline: none;
 }
+
+.swal2-actions {
+    background-color: #0284c7 !important;
+}
+.swal2-actions:hover {
+    background-color: #0b608b !important;
+}

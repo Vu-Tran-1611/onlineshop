@@ -12,6 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 use App\Models\Product;
+
 class ProductFromVendorDataTable extends DataTable
 {
     /**
@@ -64,7 +65,7 @@ class ProductFromVendorDataTable extends DataTable
             })
             ->addColumn('action', function ($query) {
                 $updateBtn = "<a href = '" . route("admin.product.edit", $query->id) . " ' class='btn btn-primary'><i class='fa-solid fa-pen-to-square'></i> </a> &emsp;";
-                $deleteBtn = "<button class='delete btn btn-danger' data-url='". route("admin.product.destroy", $query->id) ."'><i class='fa-solid fa-trash-can-arrow-up'></i></button>"; 
+                $deleteBtn = "<button class='delete btn btn-danger' data-url='" . route("admin.product.destroy", $query->id) . "'><i class='fa-solid fa-trash-can-arrow-up'></i></button>";
                 $moreBtn = ' <div class="ml-2 dropleft d-inline ">
             <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa-solid fa-gear"></i>
@@ -92,7 +93,7 @@ class ProductFromVendorDataTable extends DataTable
                 };
                 return "<div class=' form-group'><select data-id='$query->id' class='product_type form-control'>" . $typesHTML . "</select> </div>";
             })
-            ->addColumn('shopName',function($query){
+            ->addColumn('shopName', function ($query) {
                 return $query->shopProfile->name;
             })
             ->rawColumns(["product_type", "image", "action", "status", "isApproved"])
@@ -104,8 +105,7 @@ class ProductFromVendorDataTable extends DataTable
      */
     public function query(Product $model): QueryBuilder
     {
-        return $model->newQuery();
-
+        return $model->newQuery()->orderBy('id', 'desc');
     }
     /**
      * Optional method if you want to use the html builder.
@@ -113,20 +113,20 @@ class ProductFromVendorDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('productfromvendor-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('productfromvendor-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            //->dom('Bfrtip')
+            ->orderBy(1)
+            ->selectStyleSingle()
+            ->buttons([
+                Button::make('excel'),
+                Button::make('csv'),
+                Button::make('pdf'),
+                Button::make('print'),
+                Button::make('reset'),
+                Button::make('reload')
+            ]);
     }
 
     /**
@@ -135,6 +135,7 @@ class ProductFromVendorDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+
             Column::make('id'),
             Column::make("image"),
             Column::make("shopName"),

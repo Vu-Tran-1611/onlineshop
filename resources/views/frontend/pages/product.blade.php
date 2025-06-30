@@ -184,12 +184,6 @@
                                     Add to Cart
                                 </button>
 
-                                {{-- Check Out --}}
-                                <button
-                                    class="flex items-center justify-center gap-2 text-sky-600 bg-white border-2 border-sky-600 hover:bg-sky-600 hover:text-white transition-all font-semibold text-sx rounded-xl px-3 py-2 shadow-md hover:shadow-lg min-w-[180px]">
-                                    <i class="fa-solid fa-money-bill-wave"></i>
-                                    Check Out
-                                </button>
 
                                 {{-- Add to Wishlist --}}
                                 <button onclick="event.preventDefault()"
@@ -276,31 +270,10 @@
 
                 <div class="flex flex-col gap-4 pt-5">
                     @foreach ($productsBelongsToShop as $t)
-                        <li data-url="{{ route('product', ['product' => $t->slug]) }}"
-                            class= " product cursor-pointer shadow-lg relative hover:shadow-lg
-                             hover:shadow-slate-400 hover:-translate-y-1 transition-all  
-                             flex flex-col justify-between  leading-6 rounded-lg border
-                              border-slate-100 overflow-hidden">
-                            <img class="min-h-[100px] w-full" src="{{ asset($t->thumb_image) }}" />
-                            <div class="absolute w-full text-xs flex justify-between">
-                                <span class="bg-sky-600 rounded-sm text-white  p-1 ">
-                                    {{ getProductType($t) }}
-                                </span>
-                                @if (checkSale($t))
-                                    <span class="bg-sky-700 rounded-sm text-white p-1 ">
-                                        {{ calculateSalePercent($t) . '%' }}
-                                    </span>
-                                @endif
-                            </div>
-                            <div class=" p-2">
-                                <h1>{{ $t->name }}</h1>
-                                <p class="flex justify-between items-center mt-3">
-                                    <span class="text-orange-500 font-bold">${{ $t->price }}</span>
-                                    <span class="text-sm ">30 Sold</span>
-                                </p>
-                            </div>
-
-                        </li>
+                        @include('frontend.partials.product-card', [
+                            'p' => $t,
+                            'isWishlist' => $isWishlist ?? null,
+                        ])
                     @endforeach
                 </div>
             </div>
@@ -507,7 +480,7 @@
     @endpush
     @push('scripts')
         <!-- Swiper JS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
         <!-- Initialize Swiper -->
@@ -553,43 +526,43 @@
 
                 // Add to Wishlist button handler
 
-                $(".add-to-wishlist").on("click", function(e) {
-                    e.preventDefault();
-                    const productId = $(this).data("id");
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('user.profile.wishlist.add-to-wishlist') }}",
-                        data: {
-                            product_id: productId
-                        },
-                        dataType: "json",
-                        success: function(response, textStatus, jqXHR) {
-                            console.log(response);
-                            // Not in wishlist
-                            if (response.success == true) {
-                                Toastify({
-                                    text: response.message,
-                                    duration: 3000,
-                                    backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)", // green
+                // $(".add-to-wishlist").on("click", function(e) {
+                //     e.preventDefault();
+                //     const productId = $(this).data("id");
+                //     $.ajax({
+                //         type: "POST",
+                //         url: "{{ route('user.profile.wishlist.add-to-wishlist') }}",
+                //         data: {
+                //             product_id: productId
+                //         },
+                //         dataType: "json",
+                //         success: function(response, textStatus, jqXHR) {
+                //             console.log(response);
+                //             // Not in wishlist
+                //             if (response.success == true) {
+                //                 Toastify({
+                //                     text: response.message,
+                //                     duration: 3000,
+                //                     backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)", // green
 
-                                }).showToast();
-                            }
-                            // Already in wishlist
-                            else {
-                                Toastify({
-                                    text: response.message,
-                                    backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
-                                }).showToast();
-                            }
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            Toastify({
-                                text: "You need to login first",
-                                backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)", // orange/yellow
-                            }).showToast();
-                        }
-                    });
-                });
+                //                 }).showToast();
+                //             }
+                //             // Already in wishlist
+                //             else {
+                //                 Toastify({
+                //                     text: response.message,
+                //                     backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
+                //                 }).showToast();
+                //             }
+                //         },
+                //         error: function(jqXHR, textStatus, errorThrown) {
+                //             Toastify({
+                //                 text: "You need to login first",
+                //                 backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)", // orange/yellow
+                //             }).showToast();
+                //         }
+                //     });
+                // });
 
                 function init() {
                     let allVarNames = [];
@@ -666,10 +639,11 @@
                     });
                     // Add variant Price
                     if ($(this).data("price") > 0) {
-                        let price = parseInt($(".price").html());
-                        price += parseInt((this).data("price"));
-                        $(".price").html(price);
+                        let basePrice = parseInt($("input[name='price']").val());
+                        let price = basePrice + parseInt($(this).data("price"));
                         $("input[name='price']").val(price);
+                        // Optionally, update the price display if needed
+                        // $(".your-price-display-class").text('$' + price);
                     }
 
 
@@ -765,7 +739,7 @@
                                 <li class="flex hover:bg-slate-100 p-2 justify-between leading-[80px] items-center">
                                     <span class="flex gap-2 items-center">
                                         <span><img width="50" src="${response.variants['imageURL']}" /></span>
-                                        <span>${ response.name }</span>
+                                        <span>${ response.name.length > 30 ? response.name.substring(0, 30) + '...' : response.name }</span>
                                     </span>
                                     <span class="text-sky-600">$${response.price }</span>
                                 </li>

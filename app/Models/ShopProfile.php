@@ -55,7 +55,7 @@ class ShopProfile extends Model
     // Get Revenue By Month and Year
     public function getRevenueByMonthAndYear($month, $year)
     {
-        $vendor_id = $this->user_id;
+        $vendor_id = $this->id;
         return Order::whereHas('orderProducts', function ($query) use ($vendor_id) {
             $query->where('vendor_id', $vendor_id);
         })
@@ -68,7 +68,7 @@ class ShopProfile extends Model
     // Get Order Count By Month and Year
     public function getOrderCountByMonthAndYear($month, $year)
     {
-        $vendor_id = $this->user_id;
+        $vendor_id = $this->id;
         return Order::whereHas('orderProducts', function ($query) use ($vendor_id) {
             $query->where('vendor_id', $vendor_id);
         })
@@ -77,32 +77,15 @@ class ShopProfile extends Model
             ->count();
     }
 
-    // Get Top Ten Selling Products
-    public function getTopTenSellingProducts()
+
+    // Get Number of Orders By Status
+    public function getOrderCountByStatus($status)
     {
-        $vendor_id = $this->user_id;
+        $vendor_id = $this->id;
         return Order::whereHas('orderProducts', function ($query) use ($vendor_id) {
             $query->where('vendor_id', $vendor_id);
         })
-            ->with(['orderProducts' => function ($query) use ($vendor_id) {
-                $query->select('product_id', 'qty')
-                    ->where('vendor_id', $vendor_id)
-                    ->groupBy('product_id')
-                    ->orderByRaw('SUM(qty) DESC')
-                    ->limit(10);
-            }])
-            ->get()
-            ->pluck('orderProducts')
-            ->flatten()
-            ->groupBy('product_id')
-            ->map(function ($items) {
-                return [
-                    'product_id' => $items->first()->product_id,
-                    'total_qty' => $items->sum('qty'),
-                ];
-            })
-            ->sortByDesc('total_qty')
-            ->take(10)
-            ->values();
+            ->where('order_status', $status)
+            ->count();
     }
 }

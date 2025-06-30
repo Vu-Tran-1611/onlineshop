@@ -63,7 +63,7 @@ class ProductDataTable extends DataTable
                                 <a class="dropdown-item has-icon" href="' . route("vendor.product.variant.index", $query->id) . '"><i class="far fa-file"></i>Variants</a>
                             </div>
                             </div>';
-                return $moreBtn.$updateBtn . $deleteBtn;
+                return $moreBtn . $updateBtn . $deleteBtn;
             })
             ->addColumn('product_type', function ($query) {
                 $types = [
@@ -89,7 +89,7 @@ class ProductDataTable extends DataTable
      */
     public function query(Product $model): QueryBuilder
     {
-        return $model->where("shop_profile_id", auth()->user()->shop_profile->id);
+        return $model->where("shop_profile_id", auth()->user()->shop_profile->id)->orderBy('id', 'desc');
     }
 
 
@@ -99,20 +99,20 @@ class ProductDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('product-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('product-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            //->dom('Bfrtip')
+            ->orderBy(1)
+            ->selectStyleSingle()
+            ->buttons([
+                Button::make('excel'),
+                Button::make('csv'),
+                Button::make('pdf'),
+                Button::make('print'),
+                Button::make('reset'),
+                Button::make('reload')
+            ]);
     }
 
     /**

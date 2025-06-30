@@ -240,7 +240,7 @@
                                             <span class="flex gap-2 items-center">
                                                 <span><img width="50"
                                                         src="{{ asset($item->attributes['imageURL']) }}" /></span>
-                                                <span>{{ $item->name }}</span>
+                                                <span>{{ \Illuminate\Support\Str::limit($item->name, 30) }}</span>
                                             </span>
                                             {{-- |
                                                 @foreach ($item->attributes as $key => $v)
