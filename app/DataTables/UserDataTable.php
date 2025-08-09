@@ -22,7 +22,32 @@ class UserDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'user.action')
+            ->addColumn('role', function ($query) {
+                if($query->role == "admin") {
+                    return '<span class="badge badge-primary">Admin</span>';
+                } elseif($query->role == "vendor") {
+                    return '<span class="badge badge-success">Vendor</span>';
+                } else {
+                    return '<span class="badge badge-secondary">User</span>';
+                }
+            })
+            ->addColumn('action', function ($query) {
+                if ($query->status == "active") {
+                    return
+                        '<label class="custom-switch mt-2">
+                        <input type="checkbox" checked data-url=" ' . route("admin.user.change-status", $query->id) . '" class="status custom-switch-input">
+                        <span class="custom-switch-indicator"></span>
+                    </label>';
+                } else {
+                    return
+                        '<label class="custom-switch mt-2">
+                        <input type="checkbox" data-url=" ' . route("admin.user.change-status", $query->id) . '"  class="status custom-switch-input">
+                        <span class="custom-switch-indicator"></span>
+                    </label>';
+                }
+            })
+
+            ->rawColumns(["action","role"])
             ->setRowId('id');
     }
 
@@ -31,7 +56,13 @@ class UserDataTable extends DataTable
      */
     public function query(User $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()
+            ->orderByRaw("CASE
+                WHEN role = 'admin' THEN 1
+                WHEN role = 'vendor' THEN 2
+                WHEN role = 'user' THEN 3
+                ELSE 4
+            END");
     }
 
     /**
@@ -62,15 +93,12 @@ class UserDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
             Column::make('id'),
-            Column::make('add your columns'),
+            Column::make('role'),
+            Column::make('email'),
             Column::make('created_at'),
             Column::make('updated_at'),
+            Column::make('action')->title("Active/Inactive"),
         ];
     }
 
