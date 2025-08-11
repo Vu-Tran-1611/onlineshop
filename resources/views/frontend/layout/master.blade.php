@@ -95,20 +95,35 @@
     {{-- Product Card Scripts --}}
     <script>
         // Add To Wishlist
-        $(".add-to-wishlist").on("click", function() {
-            const productId = $(this).data("id");
-            const productCard = $(this).closest('li');
+        $(document).off('click', '.add-to-wishlist').on('click', '.add-to-wishlist', function(e) {
+            e.preventDefault();
+            const btn = $(this);
+            const productId = btn.data("id");
+
+            // Prevent double clicking
+            if (btn.hasClass('processing')) {
+                return;
+            }
+
+            btn.addClass('processing');
+
             $.ajax({
                 type: "POST",
                 url: "{{ route('user.profile.wishlist.add-to-wishlist') }}",
                 data: {
-                    product_id: productId
+                    product_id: productId,
+                    _token: '{{ csrf_token() }}'
                 },
                 dataType: "json",
                 success: (response, textStatus, jqXHR) => {
+                    btn.removeClass('processing');
                     console.log(textStatus);
                     if (response.success == true) {
-                        productCard.remove();
+                        // Update button state instead of removing product
+                        btn.find('i').removeClass('fa-regular text-sky-600').addClass('fa-solid text-pink-500');
+                        btn.removeClass('add-to-wishlist').addClass('in-wishlist');
+                        btn.attr('title', 'Added to wishlist');
+
                         Toastify({
                             text: response.message,
                             duration: 3000,
@@ -122,6 +137,7 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                    btn.removeClass('processing');
                     Toastify({
                         text: "You need to login first",
                         backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
@@ -129,7 +145,7 @@
                 }
             });
         });
-        // Remove from wishlist 
+        // Remove from wishlist
         $(".remove-from-wishlist").on("click", function() {
             const productId = $(this).data("id");
             const productCard = $(this).closest('li');

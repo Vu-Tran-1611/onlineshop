@@ -8,7 +8,7 @@
         </h1>
         <p class="text-center  text-green-600 ">Thank You For Shopping Us !</p>
         <div class="flex my-5 gap-x-8 ">
-            <a href="" class="py-3 px-5 rounded-sm border-sky-600 border-2 text-sky-600">
+            <a href="{{ route('user.profile.orders.show', $order->id) }}" class="py-3 px-5 rounded-sm border-sky-600 border-2 text-sky-600">
                 Go To Your Purchase
             </a>
             <a href="/" class=" py-3 px-5 rounded-sm bg-sky-600 text-white hover:bg-sky-700">

@@ -13,8 +13,8 @@
                 class="absolute top-3 left-3 bg-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">Best
                 Seller</span>
         @endif
-        <button class="absolute top-3 right-3 wishlist-btn text-gray-400 hover:text-pink-500 transition"
-            data-product-id="{{ $product->id }}">
+        <button class="absolute top-3 right-3 add-to-wishlist text-gray-400 hover:text-pink-500 transition"
+            data-id="{{ $product->id }}">
             <i class="fa-regular fa-heart text-xl"></i>
         </button>
     </a>
@@ -42,21 +42,4 @@
 </div>
 
 @push('scripts')
-    <script>
-        $(function() {
-            $('.wishlist-btn').on('click', function(e) {
-                e.preventDefault();
-                var btn = $(this);
-                var productId = btn.data('product-id');
-                $.post("{{ route('wishlist.add') }}", {
-                    product_id: productId,
-                    _token: '{{ csrf_token() }}'
-                }, function(response) {
-                    if (response.status === 'success') {
-                        btn.find('i').removeClass('fa-regular').addClass('fa-solid text-pink-500');
-                    }
-                });
-            });
-        });
-    </script>
 @endpush

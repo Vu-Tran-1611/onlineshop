@@ -43,8 +43,8 @@ class ShopProfileController extends Controller
         ]);
 
         $vendor = ShopProfile::where("user_id", Auth::user()->id)->first();
-        $banner = $this->updateImage($request, $vendor, "uploads", "banner");
-        $newBanner = empty($banner) ? $vendor->banner : $banner;
+        $banner = $this->updateImage($request, $vendor->banner, "uploads", "banner");
+        $newBanner = $banner ?? $vendor->banner;
 
         $vendor->update([
             "name" => $request->name,

@@ -130,10 +130,10 @@ class ProductController extends Controller
             "seo_title" => ["required"],
             "seo_description" => ["required"],
         ]);
-        $newPath = $this->updateImage($request, $product, "uploads", "thumb_image");
+        $newPath = $this->updateImage($request, $product->thumb_image, "uploads", "thumb_image");
         $product->update([
             "name" => $request->name,
-            "thumb_image" => empty($newPath) ? $product->thumb_image : $newPath,
+            "thumb_image" => $newPath ?? $product->thumb_image,
             // "shop_profile_id" => Auth::user()->shop_profile->id,
             "category_id" => $request->category_id,
             "sub_category_id" => $request->sub_category_id,
@@ -181,8 +181,8 @@ class ProductController extends Controller
 
         return response([
             "status" => "success",
-            "message" => "Deleted Product Successfully", 
-            "is_empty" => isTableEmpty(Product::get()), 
+            "message" => "Deleted Product Successfully",
+            "is_empty" => isTableEmpty(Product::get()),
         ]);
     }
     public function changeType(Request $req)
@@ -202,7 +202,7 @@ class ProductController extends Controller
         $newStatus = $product->status == 1 ? 0 : 1;
         $product->update(["status" => $newStatus]);
         return response([
-            "status" => "success", 
+            "status" => "success",
             "message" => "Update Product Status Successfully"
         ]);
     }

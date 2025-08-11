@@ -5,10 +5,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-Use App\Models\Product; 
-use App\Models\Category; 
-use App\Models\SubCategory; 
-use App\Models\Brand; 
+Use App\Models\Product;
+use App\Models\Category;
+use App\Models\SubCategory;
+use App\Models\Brand;
 use App\Traits\UploadTrait;
 class ProductManagementController extends Controller
 {
@@ -50,10 +50,10 @@ class ProductManagementController extends Controller
             "seo_title" => ["required"],
             "seo_description" => ["required"],
         ]);
-        $newPath = $this->updateImage($request, $product, "uploads", "thumb_image");
+        $newPath = $this->updateImage($request, $product->thumb_image, "uploads", "thumb_image");
         $product->update([
             "name" => $request->name,
-            "thumb_image" => empty($newPath) ? $product->thumb_image : $newPath,
+            "thumb_image" => $newPath ?? $product->thumb_image,
             "category_id" => $request->category_id,
             "sub_category_id" => $request->sub_category_id,
             "brand_id" => $request->brand_id,

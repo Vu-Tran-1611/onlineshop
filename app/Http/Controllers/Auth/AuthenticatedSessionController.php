@@ -31,8 +31,19 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        if (Auth::user()->role == 'user') {
-            $userId = Auth::user()->id;
+
+        $user = Auth::user();
+
+        // Check if user status is inactive
+        if ($user->status === 'inactive') {
+            Auth::logout();
+            return redirect()->route('login')->withErrors([
+                'email' => 'Your account is inactive. Please contact support at ' . config('mail.from.address', 'support@onlineshop.com') . ' for assistance.'
+            ]);
+        }
+
+        if ($user->role == 'user') {
+            $userId = $user->id;
             $savedCart = UserCart::where("user_id", $userId)->first();
             if ($savedCart) {
                 $items = unserialize($savedCart->cart_data);
@@ -41,9 +52,14 @@ class AuthenticatedSessionController extends Controller
                 }
             }
             return redirect()->intended(RouteServiceProvider::HOME);
-        } else if (Auth::user()->role = 'vendor')
+        } elseif ($user->role == 'vendor') {
             return redirect()->route("vendor.profile");
-        else return redirect()->route("admin.profile");
+        } elseif ($user->role == 'admin') {
+            return redirect()->route("admin.profile");
+        }
+
+        // Default fallback
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 
     /**

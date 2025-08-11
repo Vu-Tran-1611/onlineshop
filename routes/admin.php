@@ -4,10 +4,10 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductFromVendorController;
 use App\Http\Controllers\Admin\ProductManagementController;
-use App\Http\Controllers\admin\ProfileController;
-use App\Http\Controllers\admin\SliderController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SubCategoryController;
-use App\Http\Controllers\admin\TopBannerController;
+use App\Http\Controllers\Admin\TopBannerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Backend\FlashSellController;
@@ -17,7 +17,7 @@ use App\Http\Controllers\Vendor\ProductImageGalleryController;
 use App\Http\Controllers\Vendor\ProductVariantController;
 use App\Http\Controllers\Vendor\ProductVariantItemController;
 use App\Http\Controllers\Vendor\ProductController;
-use App\Http\Controllers\backend\CouponController;
+use App\Http\Controllers\Backend\CouponController;
 // Profile -------------------------------------------------
 Route::post("profile-update", [ProfileController::class, "profileUpdate"])->name("profile.profile-update");
 
@@ -27,14 +27,15 @@ Route::get("profile", [ProfileController::class, "index"])->name("profile");
 // Profile -------------------------------------------------
 
 // User -------------------------------------------------
+Route::get("user/{id}/change-status", [UserController::class, "changeStatus"])->name("user.change-status");
 Route::resource('user', UserController::class);
 // User -------------------------------------------------
 
 
 // Slider ------------------------------------------------
-// Change Status 
+// Change Status
 Route::put("slider/{id}/change-status", [SliderController::class, "changeStatus"])->name("slider.change-status");
-// Change Serial 
+// Change Serial
 Route::put("slider/{id}/change-serial", [SliderController::class, "changeserial"])->name("slider.change-serial");
 Route::resource("slider", SliderController::class);
 // Slider ------------------------------------------------

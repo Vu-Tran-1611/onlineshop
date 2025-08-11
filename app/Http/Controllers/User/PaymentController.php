@@ -75,12 +75,13 @@ class PaymentController extends Controller
         );
         session()->forget('user_delivery_address');
         return view("frontend.pages.payment-success", [
-            "title" => "Payment Success"
+            "title" => "Payment Success",
+            "order" => $order
         ]);
     }
 
 
-    //  Stripe Payment 
+    //  Stripe Payment
     public function makePayment(Request $request)
     {
 

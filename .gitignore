@@ -6,9 +6,11 @@
 /storage/*.key
 /vendor
 .env
+.env.*
 .env.backup
 .env.production
 .env.docker
+.env.azure
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -18,3 +20,46 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Docker files
+.dockerignore
+Dockerfile
+docker-compose.yml
+/docker/
+
+# Deployment scripts
+deploy*.sh
+migrate.sh
+redeploy.sh
+update-azure.sh
+optimize-production.sh
+
+# Azure/Container files
+container-app.yaml
+migration-job.yaml
+
+# Documentation
+README-Docker.md
+README_CLEAN.md
+
+# Uploaded files
+/public/uploads/
+!/public/uploads/.gitkeep
+
+# GitHub workflows (if you want to exclude them)
+# .github/
+
+# MacOS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+
+# Cache files
+*.cache

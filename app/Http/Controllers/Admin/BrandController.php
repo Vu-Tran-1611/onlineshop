@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
 use App\Models\Brand;
 use App\Models\Category;
-use Illuminate\Support\Facades\Session; 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 class BrandController extends Controller
 {
@@ -26,7 +26,7 @@ class BrandController extends Controller
      */
     public function create()
     {
-        $categories = Category::get(); 
+        $categories = Category::get();
         return view("admin.brand.create",compact("categories"));
     }
 
@@ -52,7 +52,7 @@ class BrandController extends Controller
             "is_featured" => $request->is_featured,
         ]);
         foreach($request->category_id as $id){
-            $brand->categories()->attach($id); 
+            $brand->categories()->attach($id);
         }
         Session::flash("status", "Create brand successfully");
         return redirect()->route("admin.brand.index");
@@ -63,7 +63,7 @@ class BrandController extends Controller
     public function edit(string $id)
     {
         $brand = Brand::findOrFail($id);
-        $categories = Category::get(); 
+        $categories = Category::get();
 
         return view("admin.brand.edit", [
             "brand" => $brand,
@@ -81,8 +81,8 @@ class BrandController extends Controller
             "name" => [ "unique:brands,name," . $id],
             "logo" => ["image"],
         ]);
-        $newPath = $this->updateImage($request, $brand, "uploads", "logo");
-        $path = empty($newPath) ? $brand->logo : $newPath;
+        $newPath = $this->updateImage($request, $brand->logo, "uploads", "logo");
+        $path = $newPath ?? $brand->logo;
 
         $brand->update([
             "name" => $request->name,
@@ -131,7 +131,7 @@ class BrandController extends Controller
     }
 
     public function getCategory(string $id){
-        $brand = Brand::with("categories")->findOrFail($id); 
+        $brand = Brand::with("categories")->findOrFail($id);
         $categoryIDs = array();
         foreach($brand->categories as $s){
             $categoryIDs[] = $s->id;

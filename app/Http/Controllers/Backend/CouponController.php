@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\backend;
+namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use App\Models\Coupon;
 use App\DataTables\CouponDataTable;
 use Illuminate\Support\Facades\Session;
@@ -123,7 +123,7 @@ class CouponController extends Controller
         $newStatus = $coupon->status == 0 ? 1 : 0;
         $coupon->update(["status" => $newStatus]);
         return response([
-            "status" => "success", 
+            "status" => "success",
             "message" => "Update status successfully"
         ]);
     }

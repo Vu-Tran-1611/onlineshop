@@ -90,14 +90,14 @@ class HomeController extends Controller
     }
 
 
-    // return product page 
+    // return product page
     // {product?}/{type?}/{subcategory?}/{category?}/{brand?}/{vendor?}
     public function product(Request $request)
     {
 
         $allCategories = Category::with("subCategories")->get();
 
-        // Product Detail 
+        // Product Detail
         $product = Product::where("slug", $request->product)->first();
         if ($product) {
             $shop = ShopProfile::findOrFail($product->shop_profile_id);
@@ -146,14 +146,14 @@ class HomeController extends Controller
             $priceRange = null;
 
 
-            // if Price Order was chosen 
+            // if Price Order was chosen
             $order = $request->order ?  $request->order : "asc";
-            // If Price was chosen 
+            // If Price was chosen
             if ($request->price_range) {
                 $priceRange = explode(",", $request->price_range);
             }
 
-            // if brand filter was chosen 
+            // if brand filter was chosen
 
             if ($request->brand_slug) {
                 $brandSlugs = explode(",", $request->brand_slug);
@@ -161,11 +161,11 @@ class HomeController extends Controller
                     $brandSlugsID[] = Brand::where("slug", $value)->pluck("id")->toArray();
                 }
             }
-            // If type was chosen 
+            // If type was chosen
             $type = "";
             if ($request->type) $type = $request->type;
 
-            // If subcategory was chosen 
+            // If subcategory was chosen
             if ($request->subcategory) {
                 $subCategory = SubCategory::where("slug", $request->subcategory)->first();
                 $activeSub = $subCategory->slug;
@@ -385,7 +385,7 @@ class HomeController extends Controller
             return redirect()->route("not-found");
         }
 
-        // If type was chosen 
+        // If type was chosen
         $type = "";
         if ($request->type) $type = $request->type;
         // If subcategory was chosen
@@ -423,7 +423,7 @@ class HomeController extends Controller
                 ->pluck('subCategory')
                 ->unique('id');
         });
-        // Check if the shop is followed by the user, fall if not logged in and not followed 
+        // Check if the shop is followed by the user, fall if not logged in and not followed
         $isFollowed = !Auth::check() ? false : $shop->shop_followers()->where("user_id", Auth::id())->exists();
 
         return view("frontend.pages.shop", [

@@ -1,71 +1,98 @@
 <div
-    class="open-chat-pannel text-xl  bg-sky-600 text-white fixed bottom-5 right-10 p-3 rounded-full shadow-xl cursor-pointer">
-    <div><i class="fa-regular fa-comment"></i> Chat</div>
-</div>
-{{-- Chat Pannel --}}
-<div class="chat-pannel z-[100] hidden shadow-2xl bg-white w-[700px]  fixed top-0 h-full   right-0">
-    <div class="p-5 flex justify-between border-b-2 border-slate-200">
-        <p class="text-sky-600  text-2xl ">Chat</p>
-        <button class="close-chat-pannel text-sky-600 cursor-pointer text-xl"><i
-                class="fa-solid fa-circle-chevron-down"></i></button>
+    class="open-chat-pannel text-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white fixed bottom-6 right-6 px-6 py-4 rounded-full shadow-2xl cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl backdrop-blur-sm border border-white/20">
+    <div class="flex items-center space-x-2">
+        <i class="fa-regular fa-comment text-xl"></i>
+        <span class="font-medium">Chat</span>
     </div>
-    <div class="grid grid-cols-[250px_auto] my-3 h-full ">
-        {{-- Vendors --}}
-        <div class="receivers overflow-y-scroll border-r-2  border-slate-100">
+</div>
+
+{{-- Chat Panel --}}
+<div class="chat-pannel z-[100] hidden shadow-2xl bg-white/95 backdrop-blur-xl w-[750px] fixed top-0 h-full right-0 border-l border-gray-200/50">
+    <!-- Modern Header -->
+    <div class="p-6 flex justify-between items-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+        <div class="flex items-center space-x-3">
+            <div class="w-3 h-3 bg-white/30 rounded-full animate-pulse"></div>
+            <div class="w-2 h-2 bg-white/50 rounded-full animate-pulse delay-100"></div>
+            <h2 class="text-2xl font-bold tracking-wide">Messages</h2>
+        </div>
+        <button class="close-chat-pannel text-white hover:text-blue-200 cursor-pointer text-2xl transition-colors duration-300 hover:rotate-180 transform">
+            <i class="fa-solid fa-times"></i>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-[280px_auto] h-full bg-gradient-to-br from-gray-50 to-blue-50/30">
+        {{-- Vendors List --}}
+        <div class="receivers overflow-y-auto border-r border-gray-200/50 bg-white/70 backdrop-blur-sm">
             {{-- Receiver - Vendor --}}
             <div class="receiver"></div>
             @foreach (getReceivers() as $receiver)
                 <div data-id="{{ $receiver->user_id }}"
-                    class="receiver cursor-pointer flex items-center p-2 max-w-[250px] max-h-[100px]   ">
-                    <div><img class="rounded-full" width="50" src="{{ asset($receiver->banner) }}" />
+                    class="receiver cursor-pointer flex items-center p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 border-b border-gray-100/50 group">
+                    <div class="relative">
+                        <img class="rounded-full w-12 h-12 object-cover ring-2 ring-transparent group-hover:ring-blue-300 transition-all duration-300 shadow-md"
+                             src="{{ asset($receiver->banner) }}" alt="{{ $receiver->name }}" />
+                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white shadow-sm"></div>
                     </div>
-                    <div class="flex flex-col p-1 flex-1">
-                        <p class="flex justify-between">
-                            <span class="font-semibold text-sm receiver-name">{{ $receiver->name }}</span>
-                            <span class="text-xs">4/2/2024</span>
-                        </p>
-                        <p class="flex justify-between overflow-hidden text-sm">
-                            <span class="last-message whitespace-nowrap "></span>
-                            <span class="hidden unseen-{{ $receiver->user_id }}  text-sky-600 text-xs "><i
-                                    class="fa-solid fa-circle"></i></span>
-                        </p>
+                    <div class="flex flex-col ml-3 flex-1 min-w-0">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold text-gray-800 receiver-name truncate text-sm group-hover:text-blue-700 transition-colors">{{ $receiver->name }}</span>
+                            <span class="text-xs text-gray-500 font-medium">4/2/2024</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="last-message text-xs text-gray-600 truncate flex-1"></span>
+                            <span class="hidden unseen-{{ $receiver->user_id }} bg-blue-500 text-white text-xs px-2 py-1 rounded-full ml-2">
+                                <i class="fa-solid fa-circle text-xs"></i>
+                            </span>
+                        </div>
                     </div>
                 </div>
             @endforeach
-
-        </div>
-        {{-- Message --}}
-        <div class="message overflow-y-scroll  bg-slate-200 max-h-[550px]  gap-y-3">
-            <div class="bg-white p-3 fixed w-full  text-xl text-sky-600 cursor-pointer message-receiver-name ">
-                {{-- Receiver Name --}}
-                @if (isset($receiver))
-                    {{ $receiver->name }}
-                @else
-                    Select a receiver
-                @endif
-            </div>
-            <div class="message-area flex flex-col gap-y-3  p-5 mt-10">
-
-            </div>
         </div>
 
+        {{-- Message Area --}}
+        <div class="message overflow-y-auto bg-gradient-to-br from-gray-50 to-white max-h-[550px] relative">
+            <!-- Message Header -->
+            <div class="bg-white/90 backdrop-blur-md p-4 sticky top-0 z-10 border-b border-gray-200/50 shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <h3 class="text-lg font-semibold text-gray-800 message-receiver-name">
+                        {{-- Receiver Name --}}
+                        @if (isset($receiver))
+                            {{ $receiver->name }}
+                        @else
+                            <span class="text-gray-500">Select a contact to start chatting</span>
+                        @endif
+                    </h3>
+                </div>
+            </div>
+            <!-- Messages Container -->
+            <div class="message-area flex flex-col gap-y-4 p-6 min-h-[400px]">
+                <!-- Messages will be populated here -->
+            </div>
+        </div>
     </div>
 
-    <div class="absolute bottom-0 right-0 w-[450px] max-h-[100px]">
+    <!-- Modern Message Input -->
+    <div class="absolute bottom-0 right-0 w-[470px] bg-white/95 backdrop-blur-md border-t border-gray-200/50">
         <form action="" class="send-message">
             <input type="hidden" name="sender_id" value="{{ Auth::user()->id }}" />
             <input type="hidden" name="receiver_id" />
-            <input required name="message_content" id="message_content" placeholder="Type Something ....."
-                class="text-sm w-full h-full focus:ring-0 ring-transparent border-none " />
-
-
-            <div class=" text-end px-4 py-1 border-t-2 border-gray-200 text-sky-600 text-xl">
-                <button id="send_message"><i class="fa-solid fa-paper-plane"></i></button>
+            <div class="flex items-center p-4 space-x-3">
+                <div class="flex-1 relative">
+                    <input required name="message_content" id="message_content"
+                           placeholder="Type your message..."
+                           class="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder-gray-500" />
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <button type="submit" id="send_message"
+                                class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fa-solid fa-paper-plane text-sm"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </div>
-
 
 @push('scripts')
     <script>
@@ -84,13 +111,17 @@
 
         function init() {
             $(".receiver").each(function(i, v) {
-                $(v).removeClass("bg-slate-100");
+                $(v).removeClass("bg-gradient-to-r").removeClass("from-blue-50").removeClass("to-indigo-50").removeClass("border-l-4").removeClass("border-blue-500");
             });
             const messagePatternHTML = `
-                        <div class="message overflow-y-scroll  bg-slate-200 max-h-[550px]  gap-y-3">
-                            <div class="bg-white fixed w-full p-3 text-xl text-sky-600 cursor-pointer message-receiver-name">${name}
+                        <div class="message overflow-y-auto bg-gradient-to-br from-gray-50 to-white max-h-[550px] relative">
+                            <div class="bg-white/90 backdrop-blur-md p-4 sticky top-0 z-10 border-b border-gray-200/50 shadow-sm">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    <h3 class="text-lg font-semibold text-gray-800 message-receiver-name">${name}</h3>
+                                </div>
                             </div>
-                            <div class="message-area flex flex-col gap-y-3  p-5 mt-10">
+                            <div class="message-area flex flex-col gap-y-4 p-6 min-h-[400px]">
                             </div>
                         </div>
                     `
@@ -99,9 +130,7 @@
         disableChat(true);
         init();
 
-
-
-        // Scroll message to the bottom 
+        // Scroll message to the bottom
         function scrollBottom() {
             let messageArea = $(".message ");
             messageArea.scrollTop(messageArea.prop("scrollHeight"));
@@ -113,12 +142,12 @@
 
         function getCurrentTime(date) {
             var currentTime = new Date(date);
-
             return currentTime.toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit"
             })
         }
+
         // Get message
         function getMessage(senderID, receiverID) {
             $.ajax({
@@ -138,19 +167,19 @@
                             let senderHTML, receiverHTML;
                             if (e.sender_id == senderID) {
                                 senderHTML = `
-                                <div class="sender flex items-end flex-col gap-y-3">
-                                    <div class=" bg-sky-600 text-white p-2 max-w-[70%] text-sm rounded-md ">
-                                        <p class="message-content">${e.message}</p>
-                                        <p class="text-end message-time text-xs font-light">${getCurrentTime(e.created_at)}</p>
+                                <div class="sender flex items-end flex-col">
+                                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 max-w-[75%] rounded-2xl rounded-br-md shadow-lg">
+                                        <p class="message-content text-sm leading-relaxed">${e.message}</p>
+                                        <p class="text-end message-time text-xs font-light opacity-80 mt-1">${getCurrentTime(e.created_at)}</p>
                                     </div>
                                 </div>  `;
                                 $(".message-area").append(senderHTML);
                             } else {
                                 receiverHTML = `
-                                <div class="receiver flex items-start flex-col gap-y-3">
-                                    <div class="bg-white text-black p-2 max-w-[70%] text-sm rounded-md">
-                                        <p class="message-content">${e.message}</p>
-                                        <p class="text-end message-time text-xs font-light">${getCurrentTime(e.created_at)}</p>
+                                <div class="receiver flex items-start flex-col">
+                                    <div class="bg-white border border-gray-200 text-gray-800 p-3 max-w-[75%] rounded-2xl rounded-bl-md shadow-lg">
+                                        <p class="message-content text-sm leading-relaxed">${e.message}</p>
+                                        <p class="text-end message-time text-xs font-light text-gray-500 mt-1">${getCurrentTime(e.created_at)}</p>
                                     </div>
                                 </div>  `
                                 $(".message-area").append(receiverHTML);
@@ -164,11 +193,11 @@
                     console.table(jqXHR)
                 },
                 complete: function() {
-
                 }
             });
         }
-        // Send Message 
+
+        // Send Message
         function sendMessage(data) {
             $.ajax({
                 type: "POST",
@@ -181,20 +210,22 @@
                     if (response.status == "success") {
                         if (response.isNewConversation) {
                             const receiverHTML = `
-                                <div data-id="${receiver.id}" class="receiver cursor-pointer flex items-center p-2 max-w-[250px] max-h-[100px] bg-slate-100  ">
-                                        <div><img class="rounded-full" width="50"
-                                                src="{{ asset('${receiver.banner}') }}" />
+                                <div data-id="${receiver.id}" class="receiver cursor-pointer flex items-center p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 border-b border-gray-100/50 group bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500">
+                                        <div class="relative">
+                                            <img class="rounded-full w-12 h-12 object-cover ring-2 ring-transparent group-hover:ring-blue-300 transition-all duration-300 shadow-md"
+                                                src="{{ asset('${receiver.banner}') }}" alt="${receiver.name}" />
+                                            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white shadow-sm"></div>
                                         </div>
-                                        <div class="flex flex-col p-1 flex-1">
-                                            <p class="flex justify-between"><span class="font-semibold text-sm receiver-name">${receiver.name}</span>
-                                                <span class='text-xs'>4/2/2024</span>
-                                            </p>
-                                        
+                                        <div class="flex flex-col ml-3 flex-1 min-w-0">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-semibold text-gray-800 receiver-name truncate text-sm group-hover:text-blue-700 transition-colors">${receiver.name}</span>
+                                                <span class="text-xs text-gray-500 font-medium">4/2/2024</span>
+                                            </div>
                                         </div>
                                 </div>
                             `
                             $(".receiver").each(function(i, v) {
-                                $(v).removeClass("bg-slate-100");
+                                $(v).removeClass("bg-gradient-to-r").removeClass("from-blue-50").removeClass("to-indigo-50").removeClass("border-l-4").removeClass("border-blue-500");
                             });
                             $(".receivers").prepend(receiverHTML);
                         }
@@ -209,6 +240,7 @@
                 }
             });
         }
+
         // Change Message Receiver
         $("body").on("click", ".receivers .receiver", function() {
             disableChat(false);
@@ -216,10 +248,11 @@
             const receiverID = $(this).data('id');
             getMessage(senderId, receiverID);
             setInputReceiverID(receiverID);
-            $(this).addClass("bg-slate-100");
+            $(this).addClass("bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500");
             const receiverName = $(this).find(".receiver-name").html();
             $(".message-receiver-name").html(receiverName);
         })
+
         // Show chat with shop
         $(".show-chat-pannel").on("click", function() {
             disableChat(false);
@@ -229,7 +262,7 @@
             $(".receivers .receiver").each(function(i, v) {
                 if ($(v).data('id') == receiverID) {
                     init();
-                    $(v).addClass("bg-slate-100");
+                    $(v).addClass("bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500");
                     getMessage(senderId, receiverID);
                     return
                 };
@@ -237,8 +270,8 @@
             setInputReceiverID(receiverID);
             $(".message-receiver-name").html(name);
             $(".chat-pannel").show(500);
-
         });
+
         $(".close-chat-pannel").on("click", function() {
             init();
             disableChat(true);
@@ -250,6 +283,7 @@
             disableChat();
             $(".chat-pannel").show(500);
         });
+
         $(".send-message").on("submit", function(e) {
             e.preventDefault();
             const id = $("input[name = 'receiver_id']").val();
@@ -257,10 +291,10 @@
             const messageContent = $("#message_content").val();
             const currentTime = getCurrentTime(new Date());
             const messageAreaHTML = `
-                <div class="sender flex items-end flex-col gap-y-3">
-                        <div class=" bg-sky-600 text-white p-2 max-w-[70%] text-sm rounded-md ">
-                                <p class="message-content">${messageContent}</p>
-                                <p class="text-end message-time text-xs">${currentTime}</p>
+                <div class="sender flex items-end flex-col">
+                        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 max-w-[75%] rounded-2xl rounded-br-md shadow-lg">
+                                <p class="message-content text-sm leading-relaxed">${messageContent}</p>
+                                <p class="text-end message-time text-xs opacity-80 mt-1">${currentTime}</p>
                         </div>
                 </div>
             `
