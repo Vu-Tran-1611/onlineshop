@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\DataTables\OrderProductsDataTable;
 use App\DataTables\OrdersDataTable;
-use App\Http\Controllers\admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderProduct;
