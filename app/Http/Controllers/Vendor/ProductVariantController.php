@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Vendor;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Product; 
-use App\Models\ProductVariant; 
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\DataTables\ProductVariantDataTable;
 use Illuminate\Support\Facades\Session;
 class ProductVariantController extends Controller
@@ -35,10 +35,19 @@ class ProductVariantController extends Controller
             "name" => "required",
             "status" => "required"
         ]);
+        // Check only one variant is swipable
+        if ($request->is_swipe) {
+            $items = ProductVariant::where("product_id", $productID)->get();
+            foreach ($items as $val) {
+                $val->update(["is_swipe" => 0]);
+            }
+        }
+        // Create new variant
         ProductVariant::create([
             "product_id" => $productID,
             "name" => $request->name,
             "status" => $request->status,
+            "is_swipe" => $request->is_swipe ?? 0,
         ]);
         Session::flash("status", "Create Product Variant Successfully");
         return redirect()->route("vendor.product.variant.index", $productID);
@@ -73,9 +82,18 @@ class ProductVariantController extends Controller
             "name" => "required",
             "status" => "required"
         ]);
+        // Check only one variant is swipable
+        if ($request->is_swipe) {
+            $items = ProductVariant::where("product_id", $productID)->get();
+            foreach ($items as $val) {
+                $val->update(["is_swipe" => 0]);
+            }
+        }
+        // Update variant
         $variant->update([
             "name" => $request->name,
             "status" => $request->status,
+            "is_swipe" => $request->is_swipe ?? 0,
         ]);
         Session::flash("status", "Update Product Variant Successfully");
         return redirect()->route("$role.product.variant.index", $productID);
@@ -113,6 +131,13 @@ class ProductVariantController extends Controller
         $variant = ProductVariant::findOrFail($id);
         $newStatus = $variant->is_swipe == 0 ? 1 : 0;
         $variant->update(["is_swipe" => $newStatus]);
+        // Update all other variants to not swipable
+        $items = ProductVariant::where("product_id", $variant->product_id)->get();
+        foreach ($items as $val) {
+            if ($val->id != $id) {
+                $val->update(["is_swipe" => 0]);
+            }
+        }
         return response([
             "status" => "success",
             "message" => "Update Product Variant Successfully",

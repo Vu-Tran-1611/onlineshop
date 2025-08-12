@@ -178,7 +178,7 @@
 
     <script>
         $(document).ready(function() {
-            // ------------------------------ Change Status --------------------------------- 
+            // ------------------------------ Change Status ---------------------------------
             $("body").on("change", ".status", function() {
 
                 const currentStatus = $(this).data("status");
@@ -219,7 +219,7 @@
                     $(`.select-status-${id} option[value=${currentStatus}]`).prop("selected", 'true');
                 }
 
-                // Chang status by send AJAX 
+                // Chang status by send AJAX
                 function changeStatus(data = null, text = null) {
                     $.ajax({
                         type: "PUT",
@@ -267,7 +267,7 @@
                     });
                 }
 
-                // Update Role Status 
+                // Update Role Status
                 if (selectName == "role-status") {
                     Swal.fire({
                         title: "Are you sure?",
@@ -285,7 +285,7 @@
                         }
                     })
                 }
-                // Update Role Status 
+                // Update Role Status
                 else if (selectName == "schedule-status") {
                     Swal.fire({
                         title: "Are you sure?",
@@ -331,7 +331,7 @@
                     });
                 } else changeStatus();
             })
-            // ------------------------------ Delete Items --------------------------------- 
+            // ------------------------------ Delete Items ---------------------------------
             $("body").on("click", ".delete", function() {
                 const URL = $(this).data("url");
                 Swal.fire({
@@ -378,8 +378,29 @@
 
             })
             // ------------------------------ change default ------------------------------
-            $('body').on('click', '.isdefault', function() {
+            $('body').on('click', '.isdefault' , function() {
 
+                const URL = $(this).data("url");
+                $.ajax({
+                    type: "PUT",
+                    url: URL,
+                    dataType: "JSON",
+                    success: function(data) {
+
+                        Toastify({
+                            text: data.status,
+                            duration: 3000,
+                            className: "info",
+                            style: {
+                                background: "linear-gradient(to right, #00b09b, #96c93d)",
+                            }
+                        }).showToast();
+
+                    }
+                });
+            })
+            // change is swipe status
+            $("body").on("click", ".is_swipe", function() {
                 const URL = $(this).data("url");
                 $.ajax({
                     type: "PUT",

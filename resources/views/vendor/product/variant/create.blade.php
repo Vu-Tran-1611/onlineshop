@@ -34,6 +34,13 @@
                                     <input value="{{ old('name') }}" name="name" type="text" class="form-control">
                                 </div>
                                 <div class="form-group">
+                                    <label for="">Is Swipable</label>
+                                    <select name="is_swipe" class="form-control">
+                                        <option value="1"> Active </option>
+                                        <option value="0"> Inactive </option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="">Status</label>
                                     <select name="status" class="form-control">
                                         <option value="1"> Active </option>

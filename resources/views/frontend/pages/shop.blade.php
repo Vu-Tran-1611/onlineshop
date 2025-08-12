@@ -88,10 +88,10 @@
                         $lastPage = $shopProducts->lastPage();
                     @endphp
                     <span>{{ $currentPage }}/{{ $lastPage }}</span>&emsp;
-                    <a href="{{ route('product', [...$paras, 'page' => $currentPage == 1 ? $currentPage : $currentPage - 1]) }}"
+                    <a href="{{ route('shop', [...$paras, 'page' => $currentPage == 1 ? $currentPage : $currentPage - 1]) }}"
                         class="border-2 border-slate-200 bg-slate-300 py-2 px-3 hover:bg-slate-400">
                         < </a>
-                            <a href="{{ route('product', [...$paras, 'page' => $currentPage == $lastPage ? $currentPage : $currentPage + 1]) }}"
+                            <a href="{{ route('shop', [...$paras, 'page' => $currentPage == $lastPage ? $currentPage : $currentPage + 1]) }}"
                                 class=" border-2 border-slate-200 bg-slate-300 py-2 px-3 hover:bg-slate-400">
                                 > </a>
                 </div>

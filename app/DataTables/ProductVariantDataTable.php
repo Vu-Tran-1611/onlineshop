@@ -21,7 +21,7 @@ class ProductVariantDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        // 
+        //
         $role = Auth::user()->role;
         return (new EloquentDataTable($query))
             ->addColumn('status', function ($query) use ($role) {
@@ -43,13 +43,13 @@ class ProductVariantDataTable extends DataTable
                 if ($query->is_swipe == 1) {
                     return
                         '<label class="custom-switch mt-2">
-                        <input type="checkbox" checked data-url=" ' . route("$role.product.variant.change_is_swipe", $query->id) . '" class="status custom-switch-input">
+                        <input type="checkbox" checked data-url=" ' . route("$role.product.variant.change_is_swipe", $query->id) . '" class="is_swipe status custom-switch-input">
                         <span class="custom-switch-indicator"></span>
                     </label>';
                 } else {
                     return
                         '<label class="custom-switch mt-2">
-                        <input type="checkbox" data-url=" ' . route("$role.product.variant.change_is_swipe", $query->id) . '"  class="status custom-switch-input">
+                        <input type="checkbox" data-url=" ' . route("$role.product.variant.change_is_swipe", $query->id) . '"  class="is_swipe status custom-switch-input">
                         <span class="custom-switch-indicator"></span>
                     </label>';
                 }
@@ -57,7 +57,7 @@ class ProductVariantDataTable extends DataTable
             ->addColumn('action', function ($query) use ($role){
                 $moreBtn = "<a href = '" . route("$role.product.variant.item.index", [$query->product_id, $query->id]) . " ' class='ml-3 btn btn-primary'><i class='fa-solid fa-list'></i> </a> &emsp;";
                 $updateBtn = "<a href = '" . route("$role.product.variant.edit", [$query->product_id, $query->id]) . " ' class='btn btn-primary'><i class='fa-solid fa-pen-to-square'></i> </a> &emsp;";
-                $deleteBtn = "<button class='delete btn btn-danger' data-url='". route("$role.product.variant.destroy",  [$query->product_id, $query->id]) ."'><i class='fa-solid fa-trash-can-arrow-up'></i></button>"; 
+                $deleteBtn = "<button class='delete btn btn-danger' data-url='". route("$role.product.variant.destroy",  [$query->product_id, $query->id]) ."'><i class='fa-solid fa-trash-can-arrow-up'></i></button>";
                 return  $moreBtn.$updateBtn . $deleteBtn  ;
             })
             ->rawColumns(["action", "status","is_swipe"])
@@ -104,7 +104,7 @@ class ProductVariantDataTable extends DataTable
             Column::make('name'),
             Column::computed('status'),
             Column::computed('is_swipe'),
-            Column::computed('action') 
+            Column::computed('action')
                 ->exportable(false)
                 ->printable(false)
                 ->width(200)

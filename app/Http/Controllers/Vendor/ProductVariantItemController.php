@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Vendor;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\ProductVariant; 
+use App\Models\ProductVariant;
 use App\Models\ProductVariantItem;
-use Illuminate\Support\Facades\Session; 
+use Illuminate\Support\Facades\Session;
 use App\Models\Product;
 use App\DataTables\ProductVariantItemDataTable;
 class ProductVariantItemController extends Controller
@@ -42,6 +42,7 @@ class ProductVariantItemController extends Controller
             "is_default" => ["required"],
             "status" => ["required"],
         ]);
+        // Check only one item is default
         if ($request->is_default == 1) {
             $items = ProductVariantItem::all();
             foreach ($items as $val) {
@@ -94,6 +95,14 @@ class ProductVariantItemController extends Controller
             "is_default" => ["required"],
             "status" => ["required"],
         ]);
+        // Check only one item is default
+        if ($request->is_default == 1) {
+            $items = ProductVariantItem::all();
+            foreach ($items as $val) {
+                $val->update(["is_default" => 0]);
+            }
+        }
+        // Update item
         $item->update([
             "variant_id" => $variantID,
             "name" => $request->name,
@@ -124,7 +133,7 @@ class ProductVariantItemController extends Controller
         $newStatus = $variant->status == 1 ? 0 : 1;
         $variant->update(["status" => $newStatus]);
         return response([
-            "status" => "success", 
+            "status" => "success",
             "message" => "Update Product Variant Item Successfully",
         ]);
     }

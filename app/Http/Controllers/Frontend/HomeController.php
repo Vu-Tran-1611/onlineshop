@@ -168,9 +168,17 @@ class HomeController extends Controller
             // If subcategory was chosen
             if ($request->subcategory) {
                 $subCategory = SubCategory::where("slug", $request->subcategory)->first();
-                $activeSub = $subCategory->slug;
+                if ($subCategory) {
+                    $activeSub = $subCategory->slug;
+                }
             };
             $category = Category::where("slug", $request->category)->first();
+
+            // Check if category exists
+            if (!$category) {
+                return redirect()->route('home')->with('error', 'Category not found');
+            }
+
             // fetch brands based on category
             $brands = Brand::with("categories")->whereHas("categories", function ($query) use ($category) {
                 $query->where("categories.id", $category->id);
@@ -393,10 +401,10 @@ class HomeController extends Controller
 
         if ($request->subcategory) {
             $subCategory = SubCategory::where("slug", $request->subcategory)->first();
-            $activeSub = $subCategory->slug;
             if (!$subCategory) {
                 return redirect()->route("not-found");
             }
+            $activeSub = $subCategory->slug;
         }
 
         // Products from shop

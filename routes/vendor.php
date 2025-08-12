@@ -72,11 +72,11 @@ Route::resource("product.variant.item", ProductVariantItemController::class);
 // Product Variant Items -------------------------------------------------
 
 
-// Chat ------------------------------------------------- 
+// Chat -------------------------------------------------
 Route::post("message/send-message", [UserMessageController::class, 'sendMessage'])->name("message.send-message");
 Route::get('message/get-message', [UserMessageController::class, "getMessage"])->name("message.get-message");
 Route::get("chat", [VendorChatController::class, "index"])->name("chat.index");
-// Chat ------------------------------------------------- 
+// Chat -------------------------------------------------
 
 
 
