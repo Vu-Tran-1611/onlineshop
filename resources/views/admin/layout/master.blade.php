@@ -89,7 +89,8 @@
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            },
+
         });
     </script>
     {{-- Icon picker --}}
@@ -151,7 +152,7 @@
     </script>
     <script>
         $(document).ready(function() {
-            // ------------------------------ Change serial --------------------------------- 
+            // ------------------------------ Change serial ---------------------------------
 
             $("body").on("change", ".serial", function() {
                 const serial = $(this).val();
@@ -177,7 +178,7 @@
                 });
             })
 
-            // ------------------------------ Change Status --------------------------------- 
+            // ------------------------------ Change Status ---------------------------------
             $("body").on("change", ".status", function() {
 
                 const currentStatus = $(this).data("status");
@@ -218,7 +219,7 @@
                     $(`.select-status-${id} option[value=${currentStatus}]`).prop("selected", 'true');
                 }
 
-                // Chang status by send AJAX 
+                // Chang status by send AJAX
                 function changeStatus(data = null, text = null) {
                     $.ajax({
                         type: "PUT",
@@ -266,7 +267,7 @@
                     });
                 }
 
-                // Update Role Status 
+                // Update Role Status
                 if (selectName == "role-status") {
                     Swal.fire({
                         title: "Are you sure?",
@@ -284,7 +285,7 @@
                         }
                     })
                 }
-                // Update Role Status 
+                // Update Role Status
                 else if (selectName == "schedule-status") {
                     Swal.fire({
                         title: "Are you sure?",
@@ -330,7 +331,7 @@
                     });
                 } else changeStatus();
             })
-            // ------------------------------ Delete Items --------------------------------- 
+            // ------------------------------ Delete Items ---------------------------------
             $("body").on("click", ".delete", function() {
                 const URL = $(this).data("url");
                 Swal.fire({
@@ -376,7 +377,7 @@
                 });
 
             })
-            // ---------------------------------  change default --------------------------------- 
+            // ---------------------------------  change default ---------------------------------
             $('body').on('click', '.isdefault', function() {
 
                 const URL = $(this).data("url");
@@ -398,7 +399,7 @@
                     }
                 });
             })
-            // --------------------------------- Get sub categories --------------------------------- 
+            // --------------------------------- Get sub categories ---------------------------------
             $("body").on("change", ".main_category", function() {
                 $(".child_category").html("<option value=''> Select </option>");
 

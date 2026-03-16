@@ -38,12 +38,17 @@
                     $paras_2['category'] = $category->slug;
                     unset($paras_2['subcategory']);
                 @endphp
-                @if (!$activeSub)
+                <div class="flex justify-between items-center">
+                    @if (!$activeSub)
                     <a href="{{ route('product', $paras_2) }}" class="my-2 text-sky-600"> <i
                             class="fa-solid fa-play text-sm"></i> {{ $category->name }}</a>
-                @else
-                    <a href="{{ route('product', $paras_2) }}" class="my-2 font-semibold">{{ $category->name }}</a>
-                @endif
+                    @else
+                        <a href="{{ route('product', $paras_2) }}" class="my-2 font-semibold">{{ $category->name }}</a>
+                    @endif
+                    <p>
+                        {{ $category->productCount() }}
+                    </p>
+                </div>
                 {{-- Category --}}
 
                 @foreach ($category->subCategories as $sub)
@@ -51,16 +56,21 @@
                         $paras_2 = $paras;
                         $paras_2['subcategory'] = $sub->slug;
                     @endphp
-                    @if ($sub->slug == $activeSub)
+                    <div class="flex justify-between items-center">
+                        @if ($sub->slug == $activeSub)
                         <a href="{{ route('product', $paras_2) }}" class="my-2 text-sky-600">
                             <i class="fa-solid fa-play text-sm"></i> {{ $sub->name }}
 
                         </a>
-                    @else
-                        <a href="{{ route('product', $paras_2) }}" class="my-2">
-                            {{ $sub->name }}
-                        </a>
-                    @endif
+                        @else
+                            <a href="{{ route('product', $paras_2) }}" class="my-2">
+                                {{ $sub->name }}
+                            </a>
+                        @endif
+                            <span>
+                                {{ $sub->productCount() }}
+                            </span>
+                    </div>
                 @endforeach
             </div>
             <div class="flex flex-col w-[200px] ">

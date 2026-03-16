@@ -16,7 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \Cart;
 use Illuminate\Support\Facades\Cache;
-
+use App\Services\RecommendationApiService;
+use Illuminate\Support\Facades\Log;
 class HomeController extends Controller
 {
     public function home()
@@ -30,15 +31,18 @@ class HomeController extends Controller
                 ->where("status", 1)
                 ->get()->take(6);
         });
+
         $categories = Cache::remember('categories', 60 * 60, function () {
-            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+            return Category::where("status", 1)->with('subCategories',function($query){
+                $query->where("status", 1);
+            })->get()->take(20);
         });
 
         $hotCategories = Cache::remember('hot_categories', 60 * 60, function () {
             return Category::get()->take(6);
         });
         $brands = Cache::remember('brands', 60 * 60, function () {
-            return Brand::where("status", 1)->get()->take(20);
+            return Brand::where("status", 1)->where("is_featured", 1)->get()->take(24);
         });
         $featuredProducts = Cache::remember('featured_products', 60 * 60, function () {
             return Product::where("product_type", "featured")
@@ -95,8 +99,11 @@ class HomeController extends Controller
     public function product(Request $request)
     {
 
-        $allCategories = Category::with("subCategories")->get();
-
+        $allCategories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories',function($query){
+                $query->where("status", 1);
+            })->get()->take(20);
+        });
         // Product Detail
         $product = Product::where("slug", $request->product)->first();
         if ($product) {
@@ -105,10 +112,56 @@ class HomeController extends Controller
             $productsBelongsToShop =  Product::where("shop_profile_id", $shop->id)
                 ->where("status", 1)
                 ->where("is_approved", 1)->get()->take(6);
-
+            /*
             $productsBelongsToSameCategory =  Product::where("category_id", $product->category_id)
                 ->where("status", 1)
                 ->where("is_approved", 1)->get()->take(30);
+            */
+
+            //Call recommendation API to get recommended products based on the current product
+            try{
+
+                // KNN + Cosine Similarity Recommendations
+                $KNNRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "knn_euclidean", 10);
+                $KNNRecommendationIDs = $KNNRecommendations["recommendations"];
+                $KNNRecommendProducts = Product::whereIn("id", $KNNRecommendationIDs)
+                    ->where("status", 1)
+                    ->where("is_approved", 1)
+                    ->get()
+                    ->sortBy(function ($product) use ($KNNRecommendationIDs) {
+                        return array_search($product->id, $KNNRecommendationIDs);
+                    });
+
+                // TFIDF + Cosine Similarity Recommendations
+                $TFIDFRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "tfidf_cosine", 10);
+                $TFIDFRecommendationIDs = $TFIDFRecommendations["recommendations"];
+                $TFIDFRecommendProducts = Product::whereIn("id", $TFIDFRecommendationIDs)
+                    ->where("status", 1)
+                    ->where("is_approved", 1)
+                    ->get()
+                    ->sortBy(function ($product) use ($TFIDFRecommendationIDs) {
+                        return array_search($product->id, $TFIDFRecommendationIDs);
+                    });
+
+                //TFIDF + KNN + Cosine Similarity Recommendations
+                $TFIDFKNNRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "tfidf_knn_cosine", 10);
+                $TFIDFKNNRecommendationIDs = $TFIDFKNNRecommendations["recommendations"];
+                $TFIDFKNNRecommendProducts = Product::whereIn("id", $TFIDFKNNRecommendationIDs)
+                    ->where("status", 1)
+                    ->where("is_approved", 1)
+                    ->get()
+                    ->sortBy(function ($product) use ($TFIDFKNNRecommendationIDs) {
+                        return array_search($product->id, $TFIDFKNNRecommendationIDs);
+                    });
+
+            }catch(\Exception $e){
+                ## Asign empty collection to avoid error in view when recommendation API fails
+                $KNNRecommendProducts = collect();
+                $TFIDFRecommendProducts = collect();
+                $TFIDFKNNRecommendProducts = collect();
+                Log::error("Error fetching recommendations: " . $e->getMessage());
+                // dd("Error fetching recommendations: " . $e->getMessage());
+            }
 
             $reviewsQuery = $product->userReviews()->with("user");
             $numberOfReviews = $reviewsQuery->count();
@@ -124,13 +177,24 @@ class HomeController extends Controller
 
             $otherReviews = $reviewsQuery->paginate(10);
             $averageRating = round($product->userReviews()->avg('rating'), 1);
-
             return view("frontend.pages.product", [
                 "categories" => $allCategories,
                 "product" => $product,
                 "shop" => $shop,
                 "productsBelongsToShop" => $productsBelongsToShop,
-                "productsBelongsToSameCategory" => $productsBelongsToSameCategory,
+                // "productsBelongsToSameCategory" => $productsBelongsToSameCategory,
+
+                // Recommendations ------------------------------
+                // KNN + Cosine Similarity Recommendations
+                "KNNRecommendProducts" => $KNNRecommendProducts,
+
+                // TFIDF + Cosine Similarity Recommendations
+                "TFIDFRecommendProducts" => $TFIDFRecommendProducts,
+
+                // TFIDF + KNN + Cosine Similarity Recommendations
+                "TFIDFKNNRecommendProducts" => $TFIDFKNNRecommendProducts,
+                // Recommendations ------------------------------
+
                 "userReview" => $userReview,
                 "otherReviews" => $otherReviews,
                 "numberOfReviews" => $numberOfReviews,
@@ -228,7 +292,9 @@ class HomeController extends Controller
 
     public function productBySearch(Request $request)
     {
-        $allCategories = Category::with("subCategories")->get();
+        $allCategories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
         $keyword = $request->keyword;
         $categorySlug = $request->category ? $request->category : "";
         $from = $request->from ? $request->from : 0;

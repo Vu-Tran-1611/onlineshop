@@ -78,6 +78,7 @@ class TopBannersDataTable extends DataTable
             ->setTableId('topbanners-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
+            //  ->minifiedAjax(route('admin.top-banner.index', [], false))
             //->dom('Bfrtip')
             ->orderBy(1)
             ->selectStyleSingle()

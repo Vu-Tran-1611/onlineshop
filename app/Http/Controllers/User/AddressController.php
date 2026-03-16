@@ -163,4 +163,14 @@ class AddressController extends Controller
             "status" => "success",
         ]);
     }
+
+
+    public function hasAddress()
+    {
+        $hasAddress = UserAddresses::where("user_id", Auth::user()->id)->exists();
+        return response([
+            "hasAddress" => $hasAddress,
+            "status" => "success",
+        ]);
+    }
 }

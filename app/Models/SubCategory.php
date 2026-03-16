@@ -15,4 +15,14 @@ class SubCategory extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    // Get number of products in the subcategory
+    public function productCount()
+    {
+        return $this->products()->count();
+    }
 }

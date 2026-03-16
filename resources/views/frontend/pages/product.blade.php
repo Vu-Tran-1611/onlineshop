@@ -6,7 +6,7 @@
     </div>
     <div class="py-10  ">
 
-        <div class="rounded-xl relative grid grid-cols-[450px_500px] gap-x-10 bg-white p-5">
+        <div class="rounded-xl relative grid grid-cols-[450px_500px] gap-x-10 bg-white p-5 mb-5">
             {{-- Loading --}}
             <div role="status"
                 class="loading z-[100] absolute w-full h-full hidden items-center justify-center bg-[#eeeeee7d]">
@@ -23,26 +23,45 @@
             </div>
             {{-- Loading --}}
             <!-- Swiper -->
-            <div class="">
-                <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper mySwiper2">
-                    <div class="swiper-wrapper">
-                        @foreach ($product->productImageGalleries as $image)
-                            <div class="swiper-slide " data-name="{{ $image->name }}">
-                                <img data-imageurl ="{{ $image->image }}" src="{{ $image->image }}" />
-                            </div>
-                        @endforeach
+            <div class="w-full">
+                <!-- Main gallery wrapper -->
+                <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-lg">
+
+                    <!-- Main Swiper -->
+                    <div class="swiper mySwiper2 relative">
+                        <div class="swiper-wrapper">
+                            @foreach ($product->allImages() as $image)
+                                <div class="swiper-slide group flex items-center justify-center bg-gray-50"
+                                    data-name="{{ $image->name }}">
+                                    <div class="aspect-square w-full overflow-hidden">
+                                        <img data-imageurl="{{ $image->image }}" src="{{ $image->image }}"
+                                            alt="{{ $image->name }}"
+                                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
 
                     </div>
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
-                </div>
-                <div thumbsSlider="" class="swiper mySwiper">
-                    <div class="swiper-wrapper">
-                        @foreach ($product->productImageGalleries as $image)
-                            <div class="swiper-slide">
-                                <img src="{{ $image->image }}" />
+
+                    <!-- Thumbnail Swiper -->
+                    <div class="border-t border-gray-200 bg-white p-4">
+                        <div thumbsSlider="" class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                                @foreach ($product->allImages() as $image)
+                                    <div class="swiper-slide !h-auto cursor-pointer">
+                                        <div
+                                            class="overflow-hidden rounded-xl border-2 border-transparent bg-gray-100 transition duration-300 hover:border-cyan-400 hover:shadow-md">
+                                            <div class="aspect-square">
+                                                <img src="{{ $image->image }}" alt="{{ $image->name }}"
+                                                    class="h-full w-full object-cover" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -51,7 +70,9 @@
                 <h1 class="text-3xl font-semibold text-gray-900 mb-6 tracking-tight leading-snug">
                     {{ $product->name }}
                 </h1>
-
+                <div class="gap-16">
+                    {!! $product->short_description !!}
+                </div>
                 <div class="flex items-center gap-4 p-5 rounded-xl  text-3xl text-sky-700">
                     @if (checkSale($product))
                         {{-- Original Price (crossed out) --}}
@@ -254,10 +275,8 @@
                         <span class="tracking-wide text-sky-700">PRODUCT DESCRIPTION</span>
                     </div>
                     <div class="my-10 leading-10 p-3">
-                        <div class="gap-16">
-                            {!! $product->short_description !!}
-                        </div>
-                        <div class="gap-16">
+
+                        <div>
                             {!! $product->long_description !!}
                         </div>
 
@@ -445,32 +464,71 @@
                     </form>
                 </div>
             </div>
+
         </div>
-        {{-- From the same shop --}}
-        <div>
+
+
+
+        {{-- Similar Products --}}
+        {{-- <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
-                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">From the same shop</h1>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">Similar Products</h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
             </div>
             <div class="grid grid-cols-5 gap-4 pt-5">
                 @include('frontend.partials.filtered-product-list', ['products' => $productsBelongsToShop])
             </div>
-        </div>
+        </div> --}}
+
 
         {{-- You may also like   --}}
+        {{-- KNN + Cosine Similarity --}}
         <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
-                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">You may also like</h1>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">KNN + Cosine Similarity</h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
             </div>
             <div class="grid gap-4 pt-5 grid-cols-5">
                 @include('frontend.partials.filtered-product-list', [
-                    'products' => $productsBelongsToSameCategory,
+                    // 'products' => $productsBelongsToSameCategory,
+                    'products' => $KNNRecommendProducts,
                 ])
             </div>
         </div>
+
+        {{-- TFIDF + Cosine Similarity --}}
+        <div>
+            <div class="flex items-center gap-3 my-8">
+                <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">TFIDF + Cosine Similarity</h1>
+                <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
+            </div>
+            <div class="grid gap-4 pt-5 grid-cols-5">
+                @include('frontend.partials.filtered-product-list', [
+                    // 'products' => $productsBelongsToSameCategory,
+                    'products' => $TFIDFRecommendProducts,
+                ])
+            </div>
+        </div>
+
+        {{-- TFIDF + KNN + Cosine Similarity --}}
+        <div>
+            <div class="flex items-center gap-3 my-8">
+                <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">TFIDF + KNN + Cosine Similarity</h1>
+                <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
+            </div>
+            <div class="grid gap-4 pt-5 grid-cols-5">
+                @include('frontend.partials.filtered-product-list', [
+                    // 'products' => $productsBelongsToSameCategory,
+                    'products' => $TFIDFKNNRecommendProducts,
+                ])
+            </div>
+        </div>
+
+
     @endsection
 
 
@@ -480,7 +538,7 @@
     @endpush
     @push('scripts')
         <!-- Swiper JS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
         <!-- Initialize Swiper -->
@@ -600,7 +658,7 @@
                         swiper: swiper,
                     },
                 });
-                // Move slide 
+                // Move slide
                 function moveToSlide(name) {
                     var slides = $('.swiper-slide');
                     slides.each(function(index) {
@@ -651,7 +709,7 @@
                     $(".variant-" + variantId).removeClass("act border-sky-600");
                     $(this).addClass("act border-sky-600");
 
-                    // Handle input id and input variants 
+                    // Handle input id and input variants
 
 
                     let newid = id;
@@ -700,7 +758,7 @@
                 })
                 // Quantity item handle  ---------------------------
 
-                // Add to cart 
+                // Add to cart
                 $(".add-to-cart").on("click", function(e) {
                     e.preventDefault();
 
@@ -711,7 +769,7 @@
                     })
                     if (flag == true) {
                         const data = $(this).closest("form").serialize();
-                        // Send form by ajax 
+                        // Send form by ajax
                         $.ajax({
                             type: "POST",
                             url: "{{ route('user.add-to-cart') }}",
@@ -733,7 +791,7 @@
                                     $(".cart-qty").html(response.cart);
                                     $(".cart-show").removeClass("hidden");
                                     $(".cart-hidden").addClass("hidden");
-                                    // Append new item to mini cart 
+                                    // Append new item to mini cart
                                     if (response.isShowInMiniCart) {
                                         const li = `
                                 <li class="flex hover:bg-slate-100 p-2 justify-between leading-[80px] items-center">

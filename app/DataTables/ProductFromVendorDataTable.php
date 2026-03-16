@@ -40,7 +40,7 @@ class ProductFromVendorDataTable extends DataTable
                 return "<div class=' form-group'>
                     <select data-id='$query->id' class='product_approved form-control'>
                         " . $html . "
-                    </select> 
+                    </select>
                 </div>";
             })
             ->addColumn('status', function ($query) {
@@ -116,6 +116,7 @@ class ProductFromVendorDataTable extends DataTable
             ->setTableId('productfromvendor-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
+            // ->minifiedAjax(route('admin.product_from_vendor.index', [], false))
             //->dom('Bfrtip')
             ->orderBy(1)
             ->selectStyleSingle()

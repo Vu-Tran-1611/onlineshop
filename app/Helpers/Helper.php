@@ -15,13 +15,13 @@ function setActive(array $routes)
     }
 };
 
-// Check table is Empty 
+// Check table is Empty
 function isTableEmpty($model)
 {
     return $model->isEmpty();
 }
 
-// Check sale 
+// Check sale
 
 function checkSale($product)
 {
@@ -46,7 +46,7 @@ function calculateSalePercent($product)
 function getProductType($product)
 {
     $type = "";
-    switch ($product->product_type) {
+    switch (isset($product) && $product->product_type) {
         case 'top':
             $type = "TOP";
             break;

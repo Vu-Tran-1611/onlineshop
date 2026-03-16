@@ -15,25 +15,26 @@
     padding: 8px;
     border-radius: 5px;
     transition: 0.2s;
+
     &:hover {
         background-color: black;
         color: white;
         transition: 0.2s;
     }
 }
+
 .gradient_text {
-    background-image: linear-gradient(
-        to right,
-        #201a93,
-        #f3265f,
-        #7f40ac,
-        #201a93
-    );
+    background-image: linear-gradient(to right,
+            #201a93,
+            #f3265f,
+            #7f40ac,
+            #201a93);
     background-size: 200% auto;
     -webkit-text-fill-color: transparent;
     -webkit-background-clip: text;
     animation: shine 5s linear infinite;
 }
+
 @keyframes shine {
     to {
         background-position: 200% center;
@@ -47,6 +48,33 @@
 .swal2-actions {
     background-color: #0284c7 !important;
 }
+
 .swal2-actions:hover {
     background-color: #0b608b !important;
+}
+
+
+.mySwiper {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.mySwiper .swiper-slide {
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.mySwiper .swiper-slide-thumb-active {
+    opacity: 1;
+}
+
+.mySwiper .swiper-slide-thumb-active>div {
+    border-color: rgb(34 211 238);
+    /* cyan-400 */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.mySwiper2 .swiper-slide img,
+.mySwiper .swiper-slide img {
+    display: block;
 }

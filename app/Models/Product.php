@@ -87,4 +87,30 @@ class Product extends Model
             return $this->orderProducts()->where('status', 'delivered')->sum('qty');
         });
     }
+
+    // Get all images (thumb_image + productImageGalleries)
+    public function allImages()
+{
+    return Cache::remember("product_{$this->id}_all_images", 60 * 60, function () {
+        $images = collect();
+
+        if ($this->thumb_image) {
+            $images->push((object) [
+                'image' => $this->thumb_image,
+                'name' => 'Thumbnail',
+                'is_primary' => true
+            ]);
+        }
+
+        $this->productImageGalleries->each(function ($gallery) use ($images) {
+            $images->push((object) [
+                'image' => $gallery->image,
+                'name' => $gallery->name,
+                'is_primary' => false
+            ]);
+        });
+
+        return $images;
+    });
+}
 }

@@ -3,45 +3,10 @@
     <div class="container mx-auto px-4 py-12">
         <div class="grid lg:grid-cols-12 gap-8 items-stretch">
 
-            <!-- Elegant Sidebar - Hot Categories -->
-            <div class="lg:col-span-3">
-                <div class="sticky top-4 h-full">
-                    <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden h-full flex flex-col">
-                        <!-- Modern Header -->
-                        <div class="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-6">
 
-                            <h2 class="text-xl font-bold text-white mt-3 tracking-wide">
-                                Trending Categories
-                            </h2>
-                            <p class="text-purple-100 text-sm mt-1">Explore what's hot</p>
-                        </div>
-
-                        <!-- Category List -->
-                        <div class="p-6 space-y-3 flex-1">
-                            @foreach ($hotCategories as $index => $cate)
-                                <div class="group">
-                                    <a href="{{ route('product', ['category' => $cate->slug]) }}"
-                                       class="flex items-center justify-between p-4 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 transition-all duration-300 border border-transparent hover:border-purple-200/50 hover:shadow-md">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-2 h-2 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
-                                            <span class="text-gray-700 font-medium group-hover:text-purple-700 transition-colors">{{ $cate->name }}</span>
-                                        </div>
-                                        <svg class="w-4 h-4 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        <!-- Decorative Bottom -->
-                        <div class="h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500"></div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Main Content Area -->
-            <div class="lg:col-span-9 flex flex-col">
+            <div class="lg:col-span-12 flex flex-col">
                 <!-- Hero Slider -->
                 <div class="relative mb-8">
                     <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff; --swiper-pagination-bullet-inactive-color: rgba(255,255,255,0.5);"
@@ -87,11 +52,11 @@
                     </div>
 
                     <!-- Category Grid -->
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 flex-1">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-6 flex-1">
                         @foreach ($categoryBanners as $index => $banner)
-                            <div class="group cursor-pointer h-full">
+                            <div class="group cursor-pointer h-full rounded-2xl border overflow-hidden relative">
                                 <a href="#" class="block h-full">
-                                    <div class="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-purple-200 hover:-translate-y-2 transform h-full flex flex-col hover:bg-gradient-to-br hover:from-violet-50 hover:via-purple-50 hover:to-indigo-50">
+                                    <div class="relative bg-white  rounded-2xl shadow-lg">
                                         <!-- Image Container -->
                                         <div class="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 relative">
                                             <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

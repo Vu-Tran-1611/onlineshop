@@ -7,10 +7,16 @@
         </svg>
         CATEGORY
     </h1>
-    <ul class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6 py-6">
+<ul
+    style="display: grid;grid-template-columns:repeat(4,1fr)"
+    class="gap-6 py-6">
         @foreach ($categories as $cate)
             <li data-url="{{ route('product', ['category' => $cate->slug]) }}"
-                class="category group bg-white hover:bg-cyan-50 shadow-md hover:shadow-2xl transition-all duration-300 rounded-xl border-2 border-transparent hover:border-cyan-400 pb-4 text-center cursor-pointer transform hover:-translate-y-2 hover:scale-105 relative overflow-hidden">
+                class="category group bg-white hover:bg-cyan-50 shadow-md
+                hover:shadow-2xl transition-all duration-300 rounded-xl
+                border-2 border-transparent hover:border-cyan-400 pb-4 text-center
+                cursor-pointer transform hover:-translate-y-2 hover:scale-105 relative
+                overflow-hidden">
                 <div
                     class="absolute inset-0 bg-cyan-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-xl">
                 </div>

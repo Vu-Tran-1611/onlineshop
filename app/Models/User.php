@@ -76,6 +76,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShopFollowers::class);
     }
+    public function shippingAddresses()
+    {
+        return $this->hasMany(UserAddresses::class);
+    }
 
     // public function notifications()
     // {
@@ -101,10 +105,7 @@ class User extends Authenticatable
     // {
     //     return $this->hasMany(Coupon::class);
     // }
-    // public function shippingAddresses()
-    // {
-    //     return $this->hasMany(ShippingAddress::class);
-    // }
+
     // public function billingAddresses()
     // {
     //     return $this->hasMany(BillingAddress::class);

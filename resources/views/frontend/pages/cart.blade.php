@@ -140,10 +140,10 @@
                     <p class="text-sky-200 font-semibold text-lg">Total (<span class="total-quantity">0</span> item): <span
                             class="total-price text-2xl text-sky-600 font-bold">$0</span></p>
                 </div>
-                <a href="{{ route('user.check-out') }}"
+                <button href="{{ route('user.check-out') }}"
                     class="check-out bg-gradient-to-r from-pink-700 to-sky-700 hover:from-pink-600 hover:to-sky-600 text-white px-10 py-3 rounded-xl shadow-lg font-bold text-lg transition hover:scale-105">
                     <i class="fa-solid fa-credit-card mr-2"></i>Check out
-                </a>
+                </button>
             </div>
         </div>
     @endif
@@ -157,12 +157,46 @@
                     $(v).prop('checked', false);
                 });
             }
+
+            //Check user has registered address
+            function checkHasAddress() {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('user.address.has-address') }}",
+                    dataType: "JSON",
+                    success: function(response) {
+                        if (response.status == 'success') {
+                            if (response.hasAddress == false) {
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "No Shipping Address",
+                                    text: "Please add a shipping address before checking out.",
+                                    showCancelButton: true,
+                                    confirmButtonText: "Add Address",
+                                    cancelButtonText: "Cancel"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.replace("{{ route('user.address.index') }}");
+                                    }
+                                });
+                            } else {
+                                window.location.replace("{{ route('user.check-out') }}");
+                            }
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.table(jqXHR);
+                    }
+                });
+            }
+
             // Go To Check out Page
             $(".check-out").on("click", function(e) {
                 e.preventDefault();
                 const item = parseInt($('.total-quantity').html());
-                if (item > 0) window.location.replace($(this).attr('href'));
-                else {
+                if (item > 0) {
+                    checkHasAddress();
+                } else {
                     Swal.fire({
                         icon: "error",
                         title: "Please Select Item",
@@ -215,9 +249,9 @@
                 });
             });
             init()
-            // Apply coupon 
+            // Apply coupon
 
-            // Remove Item 
+            // Remove Item
             function removeItem(url, hidden) {
                 Swal.fire({
                     title: "You Want To Remove This Item",
@@ -253,7 +287,7 @@
 
                 });
             }
-            // Get Cart Item 
+            // Get Cart Item
             function getCart(type = null, check = null, itemIDArray = null) {
                 $.ajax({
                     type: "GET",
@@ -308,7 +342,7 @@
                     }
                 });
             }
-            // Quantity item handle  --------------------------- 
+            // Quantity item handle  ---------------------------
             function changeQuantity(id, type = null, max = null) {
                 let qty = parseInt($(".quantity-" + id).val());
 
@@ -329,7 +363,7 @@
                 $(".price-sum-" + id).html(qty * priceQuotation);
                 return qty;
             }
-            // Quantity item handle  --------------------------- 
+            // Quantity item handle  ---------------------------
 
             // Find Checked Item -------------------
             function checkOnItem() {
@@ -381,7 +415,7 @@
                 updateCart(id, quantity)
             })
 
-            // Remove item 
+            // Remove item
 
             $(".remove").on("click", function() {
                 const url = $(this).data("url");
