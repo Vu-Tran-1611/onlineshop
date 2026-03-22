@@ -5,12 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
-
+use App\Models\UserProductInteraction;
 class UserReviewsController extends Controller
 {
     use UploadTrait;
 
-    // Create User Review For Product 
+    // Create User Review For Product
     public function create(Request $request)
     {
         $request->validate([
@@ -43,6 +43,14 @@ class UserReviewsController extends Controller
             "review" => $request->review,
             "images" => $images
         ]);
+
+        if($request->rating !== null){
+            UserProductInteraction::create([
+                "user_id" => $user->id,
+                "product_id" => $request->product_id,
+                "interaction_type" => "R".$request->rating
+            ]);
+        }
 
         return response()->json([
             "message" => "Review created successfully.",

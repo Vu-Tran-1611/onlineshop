@@ -11,6 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\ShopProfile;
 use App\Models\Order;
 use App\Models\UserAddresses;
+use App\Models\UserProductInteraction;
+
 
 class User extends Authenticatable
 {
@@ -79,6 +81,11 @@ class User extends Authenticatable
     public function shippingAddresses()
     {
         return $this->hasMany(UserAddresses::class);
+    }
+
+    public function interactions()
+    {
+        return $this->hasMany(UserProductInteraction::class);
     }
 
     // public function notifications()

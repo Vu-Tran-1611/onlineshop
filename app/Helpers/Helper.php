@@ -45,8 +45,12 @@ function calculateSalePercent($product)
 // Get Product type
 function getProductType($product)
 {
+    if (!isset($product) || !$product->product_type) {
+        return null;
+    }
+
     $type = "";
-    switch (isset($product) && $product->product_type) {
+    switch ($product->product_type) {
         case 'top':
             $type = "TOP";
             break;

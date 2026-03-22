@@ -12,7 +12,7 @@
 
     </div>
 
-    <ul class="grid  grid-cols-5 py-5 gap-5 ccursor-pointer ">
+    <ul class="grid  grid-cols-5 py-5 gap-5 cursor-pointer ">
         @include('frontend.partials.filtered-product-list', ['products' => $newProducts])
     </ul>
     {{-- See more button --}}

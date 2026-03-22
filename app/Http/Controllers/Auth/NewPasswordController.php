@@ -57,7 +57,7 @@ class NewPasswordController extends Controller
         // redirect them back to where they came from with their error message.
         if ($status == Password::PASSWORD_RESET) {
             // Optionally, you can dispatch a job to send a password updated email
-            // Mail::to($user->email)->send(new PasswordUpdatedMail($user)); 
+            // Mail::to($user->email)->send(new PasswordUpdatedMail($user));
             $user = User::where('email', $request->email)->first();
             if ($user) {
                 // Dispatch the job to send the password updated email

@@ -38,6 +38,7 @@
                     <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-violet-400 to-purple-500 rounded-full opacity-10 animate-pulse delay-1000"></div>
                 </div>
 
+                {{--
                 <!-- Category Showcase -->
                 <div class="bg-white/60 backdrop-blur-md rounded-3xl shadow-xl border border-white/20 p-8 flex-1 flex flex-col">
                     <!-- Section Header -->
@@ -81,6 +82,8 @@
                         @endforeach
                     </div>
                 </div>
+                 --}}
+
             </div>
         </div>
     </div>

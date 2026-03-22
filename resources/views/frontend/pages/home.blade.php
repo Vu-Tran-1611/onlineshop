@@ -7,6 +7,11 @@
     {{-- Category --}}
     @include('frontend.sections.category')
 
+
+    {{-- Recommended for you --}}
+    @include('frontend.sections.recommended-for-you')
+
+
     {{-- Flash sell --}}
     @include('frontend.sections.flash-sell')
 

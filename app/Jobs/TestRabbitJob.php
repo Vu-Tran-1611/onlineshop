@@ -25,8 +25,7 @@ class TestRabbitJob implements ShouldQueue
      */
     public function handle(): void
     {
-        logger('✅ Job đã được xử lý qua RabbitMQ!');
     }
 
-    
+
 }

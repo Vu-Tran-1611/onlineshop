@@ -5,7 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
-
+use App\Models\Category;
+use App\Models\SubCategory;
+use App\Models\ShopProfile;
+use App\Models\Brand;
+use App\Models\ProductImageGallery;
+use App\Models\ProductVariant;
+use App\Models\UserReviews;
+use App\Models\OrderProduct;
+use App\Models\UserProductInteraction;
 class Product extends Model
 {
     use HasFactory;
@@ -66,6 +74,11 @@ class Product extends Model
         return $this->hasMany(OrderProduct::class);
     }
 
+    public function userInteractions()
+    {
+        return $this->hasMany(UserProductInteraction::class);
+    }
+
     // Average Rating
     public function averageRating()
     {
@@ -112,5 +125,7 @@ class Product extends Model
 
         return $images;
     });
+
+
 }
 }

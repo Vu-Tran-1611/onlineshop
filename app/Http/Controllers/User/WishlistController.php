@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\UserProductInteraction;
 class WishlistController extends Controller
 {
     /**
@@ -22,9 +22,10 @@ class WishlistController extends Controller
         ]);
     }
 
-    // Add to wishlist  
+    // Add to wishlist
     public function addToWishlist(Request $request)
     {
+
         $request->validate([
             "product_id" => "required|exists:products,id",
         ]);
@@ -43,6 +44,13 @@ class WishlistController extends Controller
         // Add the product to the wishlist
         $user->wishlists()->create(["product_id" => $productId]);
 
+        // Store user interaction
+        UserProductInteraction::create([
+            "user_id" => $user->id,
+            "product_id" => $productId,
+            "interaction_type" => UserProductInteraction::WISHLIST_ADD
+        ]);
+
         return response()->json(["message" => "Product added to your wishlist.", "success" => true], 201);
     }
 
@@ -58,6 +66,13 @@ class WishlistController extends Controller
         }
 
         $wishlistItem->delete();
+        // Store user interaction
+        UserProductInteraction::create([
+                "user_id" => $user->id,
+                "product_id" => $productId,
+                "interaction_type" => UserProductInteraction::WISHLIST_REMOVE
+    ]);
+
 
         return response()->json(["message" => "Product removed from your wishlist.", "success" => true], 200);
     }

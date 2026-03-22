@@ -337,7 +337,7 @@
                             </div>
                             <div class="flex-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-semibold text-slate-800">{{ $userReview->user->username }}</span>
+                                    <span class="font-semibold text-slate-800">{{ $userReview->user->username ?? $userReview->user->name }}</span>
                                     <span
                                         class="text-xs text-slate-400">{{ $userReview->created_at->format('M d, Y') }}</span>
                                 </div>
@@ -367,14 +367,14 @@
                         </div>
                     @endif
                     @foreach ($otherReviews as $otherReview)
-                        <div class="py-6 flex gap-5">
+                        <div class="py-6 flex gap-5 items-center">
                             <div class="flex-shrink-0">
                                 <img src="{{ asset($otherReview->user->image) }}" alt="User"
                                     class="w-14 h-14 rounded-full border-2 border-sky-200 shadow">
                             </div>
                             <div class="flex-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-semibold text-slate-800">{{ $otherReview->user->username }}</span>
+                                    <span class="font-semibold text-slate-800">{{ $otherReview->user->username ?? $otherReview->user->name }}</span>
                                     <span
                                         class="text-xs text-slate-400">{{ $otherReview->created_at->format('M d, Y') }}</span>
                                 </div>
@@ -528,6 +528,20 @@
             </div>
         </div>
 
+        {{-- Matrix Factorization --}}
+        <div>
+            <div class="flex items-center gap-3 my-8">
+                <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">Matrix Factorization</h1>
+                <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
+            </div>
+            <div class="grid gap-4 pt-5 grid-cols-5">
+                @include('frontend.partials.filtered-product-list', [
+                    // 'products' => $productsBelongsToSameCategory,
+                    'products' => $MFRecommendProducts,
+                ])
+            </div>
+        </div>
 
     @endsection
 
@@ -575,7 +589,7 @@
                         },
                         error: function(response, textStatus, jqXHR) {
                             Toastify({
-                                text: "You need to login first",
+                                text: response.responseJSON.message,
                                 backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)", // orange/yellow
                             }).showToast();
                         }

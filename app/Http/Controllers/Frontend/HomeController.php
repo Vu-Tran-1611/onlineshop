@@ -18,6 +18,8 @@ use \Cart;
 use Illuminate\Support\Facades\Cache;
 use App\Services\RecommendationApiService;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\StoreProductInteractionJob;
+use App\Models\UserProductInteraction;
 class HomeController extends Controller
 {
     public function home()
@@ -72,9 +74,42 @@ class HomeController extends Controller
 
         $flashSellProducts = FlashSellItem::with("product")->get();
         $flashSellEndDate = FlashSell::first();
+        // Call Recommend API to get recommend product based on user interaction if user is logged in
+        $recommendedProducts = collect();
+        if (Auth::check()) {
+            try {
+                $interactions = UserProductInteraction::where("user_id", Auth::id())
+                    ->orderBy("created_at", "desc")
+                    ->whereNotIn("interaction_type",["wishlist_remove","cart_remove","R0"])
+                    ->get()
+                    ->map(function ($interaction) {
+                        return [
+                            "product_id" => $interaction->product_id,
+                            "interaction_type" => $interaction->interaction_type
+                        ];
+                    })
+                    ->toArray();
+                if(empty($interactions)){
+                    $recommendedProducts = collect();
+                }else{
+                    $recommendationService = new RecommendationApiService();
+                    $response = $recommendationService->
+                    getUserRecentRecommendations($interactions,"matrix_factorization", 10);
+                    $recommendedProductIDs = $response["recommendations"];
+                    $recommendedProducts = Product::whereIn("id", $recommendedProductIDs)
+                    ->where("status", 1)
+                    ->where("is_approved", 1)
+                    ->get()
+                    ->sortBy(function ($product) use ($recommendedProductIDs) {
+                        return array_search($product->id, $recommendedProductIDs);
+                    });
+                }
+            } catch (\Exception $e) {
+                Log::error("Error fetching user recommendations: " . $e->getMessage());
 
-
-
+                $recommendedProducts = collect();
+            }
+        }
         return view(
             "frontend.pages.home",
             compact(
@@ -89,6 +124,7 @@ class HomeController extends Controller
                 "featuredProducts",
                 "bestProducts",
                 "flashSellEndDate",
+                "recommendedProducts"
             )
         );
     }
@@ -107,6 +143,12 @@ class HomeController extends Controller
         // Product Detail
         $product = Product::where("slug", $request->product)->first();
         if ($product) {
+            // Store user interaction with the product
+            if (Auth::check()) {
+                StoreProductInteractionJob::dispatch(Auth::id(), $product->id, UserProductInteraction::CLICK);
+            }
+
+
             $shop = ShopProfile::findOrFail($product->shop_profile_id);
 
             $productsBelongsToShop =  Product::where("shop_profile_id", $shop->id)
@@ -154,13 +196,24 @@ class HomeController extends Controller
                         return array_search($product->id, $TFIDFKNNRecommendationIDs);
                     });
 
+                // Matrix Factorization Recommendations
+                $MFRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "matrix_factorization", 10);
+                $MFRecommendationIDs = $MFRecommendations["recommendations"];
+                $MFRecommendProducts = Product::whereIn("id", $MFRecommendationIDs)
+                    ->where("status", 1)
+                    ->where("is_approved", 1)
+                    ->get()
+                    ->sortBy(function ($product) use ($MFRecommendationIDs) {
+                        return array_search($product->id, $MFRecommendationIDs);
+                    });
+
             }catch(\Exception $e){
                 ## Asign empty collection to avoid error in view when recommendation API fails
                 $KNNRecommendProducts = collect();
                 $TFIDFRecommendProducts = collect();
                 $TFIDFKNNRecommendProducts = collect();
-                Log::error("Error fetching recommendations: " . $e->getMessage());
-                // dd("Error fetching recommendations: " . $e->getMessage());
+                $MFRecommendProducts = collect();
+                    Log::error("Error fetching product recommendations for product ID " . $product->id . ": " . $e->getMessage());
             }
 
             $reviewsQuery = $product->userReviews()->with("user");
@@ -193,6 +246,10 @@ class HomeController extends Controller
 
                 // TFIDF + KNN + Cosine Similarity Recommendations
                 "TFIDFKNNRecommendProducts" => $TFIDFKNNRecommendProducts,
+
+                // Matrix Factorization Recommendations
+                "MFRecommendProducts" => $MFRecommendProducts,
+
                 // Recommendations ------------------------------
 
                 "userReview" => $userReview,

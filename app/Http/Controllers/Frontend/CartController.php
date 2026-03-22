@@ -9,12 +9,12 @@ use Cart;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ShopProfile;
 use Carbon\Carbon;
-
+use App\Models\UserProductInteraction;
 use function PHPUnit\Framework\isEmpty;
 
 class CartController extends Controller
 {
-    // return cart view 
+    // return cart view
     public function index()
     {
         $title = "Cart";
@@ -37,7 +37,7 @@ class CartController extends Controller
     }
 
 
-    // Add to cart 
+    // Add to cart
     public function addToCart(Request $request)
     {
         Cart::session(Auth::user()->id);
@@ -50,6 +50,14 @@ class CartController extends Controller
 
             Cart::update($item['id'], ["attributes" =>  $variants]);
         }
+
+        // Store user interaction
+        UserProductInteraction::create([
+            "user_id" => Auth::user()->id,
+            "product_id" => $request->id,
+            "interaction_type" => UserProductInteraction::CART_ADD
+        ]);
+
         return response([
             "status" => 'success',
             "message" => "Product was added to your cart",
@@ -61,7 +69,7 @@ class CartController extends Controller
         ]);
     }
 
-    // Update Cart  
+    // Update Cart
     public function update(Request $request)
     {
         Cart::session(Auth::user()->id);
@@ -104,7 +112,7 @@ class CartController extends Controller
             ]);
         }
     }
-    // Delete 
+    // Delete
     public function delete(string $id)
     {
         Cart::session(Auth::user()->id);
@@ -112,11 +120,11 @@ class CartController extends Controller
         return response(["status" => "success", "total" => Cart::getTotalQuantity()]);
     }
 
-    // Check coupon 
+    // Check coupon
     public function applyCoupon(Request $request)
     {
         Cart::session("checked");
-        // Check is Cart session checked empty 
+        // Check is Cart session checked empty
         if (count(Cart::getContent()) <= 0) {
             return response([
                 "status" => "unsuccess",
@@ -126,7 +134,7 @@ class CartController extends Controller
         $coupon = Coupon::where("code", $request->code)->first();
 
         if ($coupon) {
-            // Check is coupon active 
+            // Check is coupon active
             if (!$coupon->status) {
                 return response([
                     "status" => "unsuccess",
@@ -134,7 +142,7 @@ class CartController extends Controller
                     "text" => "Let's Join Our Events To Get Coupon"
                 ]);
             }
-            // Check is coupon expired 
+            // Check is coupon expired
             $currentTime = Carbon::now();
             if (!$currentTime->between($coupon->start_date, $coupon->end_date)) {
                 return response([
@@ -143,7 +151,7 @@ class CartController extends Controller
                     "text" => "Let's Join Our Events To Get Coupon"
                 ]);
             };
-            // Check is coupon applied  
+            // Check is coupon applied
             $cartConditions = Cart::getConditions();
             foreach ($cartConditions as $condition) {
                 if ($condition->getName() == $coupon->name) {

@@ -9,7 +9,7 @@
                </span>
 
            </div>
-           <div class="absolute top-2 right-2">
+           {{-- <div class="absolute top-2 right-2">
                @if (isset($isWishlist))
                    <button data-id="{{ $p->id }}"
                        class="bg-white hover:bg-pink-200 rounded-full p-1 shadow transition remove-from-wishlist">
@@ -21,31 +21,31 @@
                        <i class="fa-regular fa-heart text-sky-600"></i>
                    </button>
                @endif
-           </div>
+           </div> --}}
        </div>
        <div class="p-4 flex flex-col gap-2">
-           <h1 class="text-base text-slate-800 group-hover:text-sky-700" title="{{ isset($p) ? $p->name : '' }}">
-               {{ isset($p) ? \Illuminate\Support\Str::limit($p->name, 35, '...') : '' }}
+           <h1 class="text-base text-slate-800 group-hover:text-sky-700" title="{{ $p->name }}">
+               {{  \Illuminate\Support\Str::limit($p->name, 35, '...') }}
            </h1>
 
            <div class="flex items-center justify-between mt-2">
                 <div>
-                    @if (isset($p) && checkSale($p))
-                    <span class="font-bold text-lg text-gray-400 line-through">${{ isset($p) ? $p->price : '' }}</span>
-                    <span class="text-orange-700 font-bold text-lg ">${{ isset($p) ? $p->offer_price : '' }}</span>
+                    @if (checkSale($p))
+                    <span class="font-bold text-lg text-gray-400 line-through">${{ $p->price }}</span>
+                    <span class="text-orange-700 font-bold text-lg ">${{ $p->offer_price }}</span>
                     @else
-                        <span class="text-orange-700 font-bold text-lg">${{ isset($p) ? $p->price : '' }}</span>
+                        <span class="text-orange-700 font-bold text-lg">${{ $p->price }}</span>
                     @endif
                 </div>
 
                <span class="text-xs text-slate-500 flex items-center gap-1">
-                   <i class="fa-solid fa-fire text-orange-700"></i> {{ isset($p) ? $p->soldCount() : '' }} Sold
+                   <i class="fa-solid fa-fire text-orange-700"></i> {{ $p->soldCount() }} Sold
                </span>
            </div>
            <div class="flex gap-1 mt-1">
                @php
-                   $avgRating = isset($p) ? $p->averageRating() : 0;
-                   $numberOfReviews = isset($p) ? $p->numberOfReviews() : 0;
+                   $avgRating = $p->averageRating();
+                   $numberOfReviews = $p->numberOfReviews();
                @endphp
                @for ($i = 0; $i < 5; $i++)
                    <i
@@ -53,7 +53,7 @@
                @endfor
                <span class="text-xs text-slate-400 ml-1">({{ $numberOfReviews }})</span>
            </div>
-           <button data-url="{{ route('product', ['product' => isset($p) ? $p->slug : '']) }}"
+           <button data-url="{{ route('product', ['product' => $p->slug]) }}"
                class="product mt-3 w-full bg-sky-600 hover:bg-sky-700 text-white rounded-lg py-1.5 font-medium transition-all opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 duration-200">
                View Details
            </button>
