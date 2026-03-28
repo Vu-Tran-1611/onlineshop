@@ -4,7 +4,7 @@
 
 @section('profile-content')
     {{-- Address Section --}}
-    <div class="p-8 bg-gradient-to-br from-sky-900 to-white rounded-2xl shadow-xl">
+    <div class="p-8 bg-gradient-to-br from-sky-950 to-slate-400 rounded-2xl shadow-xl">
         <div class="flex justify-between items-center border-b pb-6 mb-6">
             <h2 class="text-3xl font-extrabold text-white flex items-center gap-2">
                 <i class="fa-solid fa-location-dot"></i> My Addresses
@@ -62,7 +62,7 @@
                     </div>
                 @empty
                     <div class="col-span-2 text-center py-12">
-                        <div class="text-gray-500 text-lg">
+                        <div class="text-white text-lg">
                             <i class="fa-solid fa-location-slash text-4xl mb-4"></i>
                             <p class="font-semibold">No addresses found</p>
                             <p class="text-sm">Add your first address to get started</p>

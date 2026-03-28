@@ -94,7 +94,7 @@ class HomeController extends Controller
                 }else{
                     $recommendationService = new RecommendationApiService();
                     $response = $recommendationService->
-                    getUserRecentRecommendations($interactions,"matrix_factorization", 10);
+                    getUserPersonalizedRecommendations(Auth::id(),"matrix_factorization", 10);
                     $recommendedProductIDs = $response["recommendations"];
                     $recommendedProducts = Product::whereIn("id", $recommendedProductIDs)
                     ->where("status", 1)
@@ -196,18 +196,8 @@ class HomeController extends Controller
                         return array_search($product->id, $TFIDFKNNRecommendationIDs);
                     });
 
-                // Matrix Factorization Recommendations
-                $MFRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "matrix_factorization", 10);
-                $MFRecommendationIDs = $MFRecommendations["recommendations"];
-                $MFRecommendProducts = Product::whereIn("id", $MFRecommendationIDs)
-                    ->where("status", 1)
-                    ->where("is_approved", 1)
-                    ->get()
-                    ->sortBy(function ($product) use ($MFRecommendationIDs) {
-                        return array_search($product->id, $MFRecommendationIDs);
-                    });
-
             }catch(\Exception $e){
+                dd($e->getMessage());
                 ## Asign empty collection to avoid error in view when recommendation API fails
                 $KNNRecommendProducts = collect();
                 $TFIDFRecommendProducts = collect();
@@ -247,8 +237,8 @@ class HomeController extends Controller
                 // TFIDF + KNN + Cosine Similarity Recommendations
                 "TFIDFKNNRecommendProducts" => $TFIDFKNNRecommendProducts,
 
-                // Matrix Factorization Recommendations
-                "MFRecommendProducts" => $MFRecommendProducts,
+                // // Matrix Factorization Recommendations
+                // "MFRecommendProducts" => $MFRecommendProducts,
 
                 // Recommendations ------------------------------
 

@@ -13,6 +13,7 @@
         @if ($recommendedProducts->isEmpty())
             <div class="text-center text-gray-500 py-5">
                 <p class="text-lg font-bold">Sorry, no recommended products available at the moment ...</p>
+                <p>Please login and interact with some of our items to try the recommendations</p>
             </div>
         @elseif ($recommendedProducts->count() > 1 && $recommendedProducts->count() <= 10)
             <ul class="grid  grid-cols-5 py-5 gap-5 cursor-pointer ">

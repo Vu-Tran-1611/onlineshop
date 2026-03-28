@@ -1,5 +1,9 @@
 <div
-    class="open-chat-pannel text-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white fixed bottom-6 right-6 px-6 py-4 rounded-full shadow-2xl cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl backdrop-blur-sm border border-white/20">
+    class="open-chat-pannel text-lg bg-gradient-to-r
+     from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700
+      text-white fixed bottom-6 right-6 px-6 py-4 rounded-full shadow-2xl
+      cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl
+      backdrop-blur-sm border border-white/20" >
     <div class="flex items-center space-x-2">
         <i class="fa-regular fa-comment text-xl"></i>
         <span class="font-medium">Chat</span>
@@ -7,7 +11,7 @@
 </div>
 
 {{-- Chat Panel --}}
-<div class="chat-pannel z-[100] hidden shadow-2xl bg-white/95 backdrop-blur-xl w-[750px] fixed top-0 h-full right-0 border-l border-gray-200/50">
+<div class="chat-pannel z-[10000] hidden shadow-2xl bg-white/95 backdrop-blur-xl w-[750px] fixed top-0 h-full right-0 border-l border-gray-200/50">
     <!-- Modern Header -->
     <div class="p-6 flex justify-between items-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
         <div class="flex items-center space-x-3">
