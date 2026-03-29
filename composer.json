@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.4",
         "ext-bcmath": "*",
+        "ext-pdo_mysql": "*",
         "ext-zip": "*",
         "ext-sockets": "*",
         "ext-gd": "*",
