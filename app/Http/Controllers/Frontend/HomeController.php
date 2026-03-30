@@ -197,7 +197,7 @@ class HomeController extends Controller
                     });
 
             }catch(\Exception $e){
-                dd($e->getMessage());
+                // dd($e->getMessage());
                 ## Asign empty collection to avoid error in view when recommendation API fails
                 $KNNRecommendProducts = collect();
                 $TFIDFRecommendProducts = collect();
