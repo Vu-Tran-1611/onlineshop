@@ -43,7 +43,7 @@ README-Docker.md
 README_CLEAN.md
 
 # Uploaded files
-/public/uploads/
+
 !/public/uploads/.gitkeep
 
 # GitHub workflows (if you want to exclude them)
