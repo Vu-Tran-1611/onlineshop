@@ -46,7 +46,7 @@ class CheckOutController extends Controller
         ]);
         $address = UserAddresses::findOrFail($request->address_id);
         Cart::session("checked");
-        // Store the address ID in the session for later use    
+        // Store the address ID in the session for later use
         session()->put('user_delivery_address', $address->id);
         return response([
             "address" => $address,
