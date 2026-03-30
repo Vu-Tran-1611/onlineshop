@@ -93,8 +93,12 @@ class HomeController extends Controller
                     $recommendedProducts = collect();
                 }else{
                     $recommendationService = new RecommendationApiService();
+                    // $response = $recommendationService->
+                    // getUserPersonalizedRecommendations(Auth::id(),"matrix_factorization", 10);
                     $response = $recommendationService->
-                    getUserPersonalizedRecommendations(Auth::id(),"matrix_factorization", 10);
+                    getUserRecentRecommendations($interactions,"matrix_factorization", 10);
+
+
                     $recommendedProductIDs = $response["recommendations"];
                     $recommendedProducts = Product::whereIn("id", $recommendedProductIDs)
                     ->where("status", 1)
