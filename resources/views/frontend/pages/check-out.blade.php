@@ -140,8 +140,8 @@
             <div class="flex flex-wrap gap-4 mb-6">
                 <button class="tab border border-sky-600 text-sky-600 px-4 py-2 rounded-md active" data-method="cash">Cash
                     on Delivery</button>
-                <button  class="tab border  border-sky-600 text-sky-600 px-4 py-2 rounded-md" data-method="card">Credit /
-                    Debit Card (via Stripe)</button>
+                {{-- <button  class="tab border  border-sky-600 text-sky-600 px-4 py-2 rounded-md" data-method="card">Credit /
+                    Debit Card (via Stripe)</button> --}}
             </div>
             <div class="tabs-content space-y-6">
                 <div id="tabs-1" class="tab-content block">
