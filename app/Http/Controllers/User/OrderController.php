@@ -48,7 +48,12 @@ class OrderController extends Controller
     public function show(string $id)
     {
         $title = "Order Details";
-        $categories = Category::get();
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories',function($query){
+                $query->where("status", 1);
+            })->get()->take(20);
+        });
+
         $user = auth()->user();
         // Fetch the order by ID for the authenticated user
         $order = auth()->user()->orders()->with(['orderProducts', 'userAddress'])->findOrFail($id);
