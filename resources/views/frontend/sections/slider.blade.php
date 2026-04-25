@@ -10,14 +10,14 @@
                 <!-- Hero Slider -->
                 <div class="relative mb-8">
                     <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff; --swiper-pagination-bullet-inactive-color: rgba(255,255,255,0.5);"
-                         class="swiper mySwiper rounded-3xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20">
+                        class="swiper mySwiper rounded-3xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20">
                         <div class="swiper-wrapper">
                             @foreach ($sliders as $slider)
-                                <div class="swiper-slide relative group">
+                                <div class="swiper-slide relative group cursor-pointer" onclick="window.location='{{ route('product',$slider->url) }}'">
                                     <div class="relative overflow-hidden">
-                                        <img class="w-full h-96 lg:h-[500px] object-cover transition-transform duration-700 group-hover:scale-105"
-                                             src="{{ asset($slider->banner) }}"
-                                             alt="Hero Slide" />
+                                        <img class="w-full h-96 lg:h-[500px] object-fill transition-transform duration-700 group-hover:scale-105"
+                                            src="{{ asset($slider->banner) }}"
+                                            alt="Hero Slide" />
                                         <!-- Gradient Overlay -->
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
@@ -61,8 +61,8 @@
                                         <!-- Image Container -->
                                         <div class="aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 relative">
                                             <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                 alt="{{ $banner->name }}"
-                                                 src="{{ $banner->banner }}" />
+                                                alt="{{ $banner->name }}"
+                                                src="{{ $banner->banner }}" />
                                             <!-- Hover Overlay -->
                                             <div class="absolute inset-0 bg-gradient-to-t from-purple-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         </div>
@@ -82,7 +82,7 @@
                         @endforeach
                     </div>
                 </div>
-                 --}}
+                --}}
 
             </div>
         </div>

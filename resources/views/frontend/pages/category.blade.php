@@ -37,6 +37,7 @@
                     $paras_2 = $paras;
                     $paras_2['category'] = $category->slug;
                     unset($paras_2['subcategory']);
+                    unset($paras_2['page']);
                 @endphp
                 <div class="flex justify-between items-center">
                     @if (!$activeSub)
@@ -55,6 +56,8 @@
                     @php
                         $paras_2 = $paras;
                         $paras_2['subcategory'] = $sub->slug;
+                        unset($paras_2['page']);
+
                     @endphp
                     <div class="flex justify-between items-center">
                         @if ($sub->slug == $activeSub)
@@ -89,7 +92,7 @@
                             <div>
                                 <label class="font-semibold">Brand</label>
                                 @foreach ($paras as $key => $p)
-                                    @if ($key != 'brand_slug')
+                                    @if ($key != 'brand_slug' && $key != 'page')
                                         <input type="hidden" name="{{ $key }}" value="{{ $p }}" />
                                     @endif
                                 @endforeach
@@ -166,17 +169,40 @@
                         $lastPage = $products->lastPage();
                     @endphp
                     <span>{{ $currentPage }}/{{ $lastPage }}</span>&emsp;
-                    <a href="{{ route('product', [...$paras, 'page' => $currentPage == 1 ? $currentPage : $currentPage - 1]) }}"
+
+                    <button class ="{{ $currentPage == 1 ? 'disabled cursor-not-allowed opacity-50' : '' }}" >
+                        @if ($currentPage > 1)
+                            <a href="{{ route('product', [...$paras, 'page' => $currentPage == 1 ? $currentPage : $currentPage - 1]) }}"
                         class="border-2 border-slate-200 bg-slate-300 py-2 px-3 hover:bg-slate-400">
-                        < </a>
+                            <
+                            </a>
+                        @else
+                            <span class="border-2 border-slate-200 bg-slate-300 py-2 px-3 opacity-50 cursor-not-allowed">
+                            <
+                            </span>
+                        @endif
+
+                    </button>
+                    <button class ="{{ $currentPage == $lastPage ? 'disabled cursor-not-allowed opacity-50' : '' }}"   >
+                        @if ($currentPage < $lastPage)
                             <a href="{{ route('product', [...$paras, 'page' => $currentPage == $lastPage ? $currentPage : $currentPage + 1]) }}"
-                                class=" border-2 border-slate-200 bg-slate-300 py-2 px-3 hover:bg-slate-400">
-                                > </a>
+                        class=" border-2 border-slate-200 bg-slate-300 py-2 px-3 hover:bg-slate-400">
+                        >
+                        </a>
+                        @else
+                            <span class="border-2 border-slate-200 bg-slate-300 py-2 px-3 opacity-50 cursor-not-allowed">
+                                >
+                            </span>
+                        @endif
+                    </button>
                 </div>
             </div>
             {{-- Filtered Products --}}
             <div class="grid grid-cols-4 gap-3 z-[1] relative">
                 @include('frontend.partials.filtered-product-list', ['products' => $products])
+            </div>
+            <div class="flex justify-center my-5 ">
+                {{ $products->withQueryString()->links('vendor.pagination.tailwind') }}
 
             </div>
         </div>

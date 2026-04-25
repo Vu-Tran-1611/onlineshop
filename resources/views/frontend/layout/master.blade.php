@@ -94,6 +94,8 @@
     </script>
     {{-- Product Card Scripts --}}
     <script>
+
+        /*
         // Add To Wishlist
         $(document).off('click', '.add-to-wishlist').on('click', '.add-to-wishlist', function(e) {
             e.preventDefault();
@@ -178,6 +180,7 @@
                 }
             });
         });
+        */
         $(".product").on("click", function() {
             const url = $(this).data("url");
             window.location.replace(url);

@@ -10,10 +10,10 @@
     "require": {
         "php": "^8.4",
         "ext-bcmath": "*",
-        "ext-pdo_mysql": "*",
-        "ext-zip": "*",
-        "ext-sockets": "*",
         "ext-gd": "*",
+        "ext-pdo_mysql": "*",
+        "ext-sockets": "*",
+        "ext-zip": "*",
         "darryldecode/cart": "~4.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/cashier": "^15.4",
@@ -21,6 +21,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "pusher/pusher-php-server": "^7.2",
+        "stripe/stripe-php": "^16.6",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "14.0",
         "yajra/laravel-datatables": "^10.1"
     },

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
 use App\Models\UserProductInteraction;
+use App\Jobs\StoreProductInteractionJob;
 class UserReviewsController extends Controller
 {
     use UploadTrait;
@@ -45,15 +46,11 @@ class UserReviewsController extends Controller
         ]);
 
         if($request->rating !== null){
-            UserProductInteraction::create([
-                "user_id" => $user->id,
-                "product_id" => $request->product_id,
-                "interaction_type" => "R".$request->rating
-            ]);
+            StoreProductInteractionJob::dispatch($user->id, $request->product_id, "R" . $request->rating);
         }
 
         return response()->json([
-            "message" => "Review created successfully.",
+            "message" => "Review submitted successfully.",
             "data" => $review
         ], 200);
     }

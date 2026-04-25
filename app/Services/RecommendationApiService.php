@@ -5,13 +5,14 @@ use Illuminate\Http\Client\RequestException;
 
 class RecommendationApiService
 {
-    public function getRecommendations($productId,$model,$topK)
+    public function getRecommendations($productId,$model,$topK,$version = "v1")
     {
         $baseUrl = config('services.python_api.url');
         $response = Http::timeout(10)->post($baseUrl . '/recommend', [
             'product_id' => $productId,
             'model_name' => $model,
-            'top_k' => $topK
+            'top_k' => $topK,
+            'version' => $version
         ]);
 
         if ($response->successful()) {
@@ -23,13 +24,15 @@ class RecommendationApiService
 
     // For user-based recommendations
     // 1 Recent interactions of the user (clicks, purchases, etc.) with product IDs and interaction types
-    public function getUserRecentRecommendations($interactions,$model,$topK)
+    public function getUserRecentRecommendations($userId,$interactions,$model,$topK)
     {
         $baseUrl = config('services.python_api.url');
         $response = Http::timeout(10)->post($baseUrl . '/recommend/recent', [
+            'user_id' => $userId,
             'interactions' => $interactions,
             'model_name' => $model,
-            'top_k' => $topK
+            'top_k' => $topK,
+
         ]);
 
         if ($response->successful()) {
@@ -39,20 +42,20 @@ class RecommendationApiService
         throw new RequestException($response);
     }
 
-    // 2 Personalized recommendations after training model with user interactions
-    public function getUserPersonalizedRecommendations($userId,$model,$topK)
-    {
-        $baseUrl = config('services.python_api.url');
-        $response = Http::timeout(10)->post($baseUrl . '/recommend/retrain', [
-            'user_id' => $userId,
-            'model_name' => $model,
-            'top_k' => $topK
-        ]);
+    // // 2 Personalized recommendations after training model with user interactions
+    // public function getUserPersonalizedRecommendations($userId,$model,$topK)
+    // {
+    //     $baseUrl = config('services.python_api.url');
+    //     $response = Http::timeout(10)->post($baseUrl . '/recommend/retrain', [
+    //         'user_id' => $userId,
+    //         'model_name' => $model,
+    //         'top_k' => $topK
+    //     ]);
 
-        if ($response->successful()) {
-            return $response->json();
-        }
+    //     if ($response->successful()) {
+    //         return $response->json();
+    //     }
 
-        throw new RequestException($response);
-    }
+    //     throw new RequestException($response);
+    // }
 }

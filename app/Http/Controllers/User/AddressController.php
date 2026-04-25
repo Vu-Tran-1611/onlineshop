@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\UserAddresses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cache;
+use App\Models\Category;
 class AddressController extends Controller
 {
     /**
@@ -19,7 +20,12 @@ class AddressController extends Controller
             ->orderByDesc("is_default")
             ->orderBy("created_at", 'desc')
             ->paginate(4);
-        $categories = \App\Models\Category::all();
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories',function($query){
+                $query->where("status", 1);
+            })->get()->take(20);
+        });
+
         return view("frontend.pages.profile-address", compact("title", "addresses", "categories")); // Pass to view
     }
 

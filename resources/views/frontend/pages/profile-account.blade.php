@@ -37,7 +37,12 @@
         <div class="flex md:flex-row flex-col md:items-center gap-10 my-5 border-t-2 border-slate-200">
             <div class="flex flex-col md:flex-row md:items-center gap-3 gap-x-8">
                 <div class="w-40 h-40 rounded-full overflow-hidden my-4">
-                    <img src="{{ asset($user->image) }}" class="w-full h-full object-cover" alt="Avatar" />
+                    @if($user->image)
+                        <img src="{{ asset($user->image) }}" class="w-full h-full object-fit" alt="Avatar" />
+                    @else
+                        <img class="cursor-pointer object-fit" alt="avatar"
+                            src="{{ asset('uploads/user-avatar.png') }}" />
+                     @endif
                 </div>
 
                 <form enctype="multipart/form-data" method="POST" action="{{ route('user.profile.update-profile') }}">

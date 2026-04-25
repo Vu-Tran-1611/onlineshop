@@ -230,7 +230,7 @@
                     class="absolute z-[100]  rounded-xl group-hover/minicart:block hidden border-2 border-slate-300 shadow-2xl p-3 right-0 top-[50px] bg-white text-black w-[400px]">
 
                     <div class="cart-show {{ \Cart::getTotalQuantity() <= 0 ? 'hidden' : 'block' }}">
-                        <h1 class="font-light py-3 text-xl text-sky-700">New Added Item</h1>
+                        <h1 class="py-3 text-xl font-semibold text-center text-sky-700">New Added Item</h1>
                         <ul class="cart-mini">
                             @if (Auth::check())
                                 @if (!\Cart::isEmpty())
@@ -240,7 +240,7 @@
                                             <span class="flex gap-2 items-center">
                                                 <span><img width="50"
                                                         src="{{ asset($item->attributes['imageURL']) }}" /></span>
-                                                <span>{{ \Illuminate\Support\Str::limit($item->name, 30) }}</span>
+                                                <span>{{ \Illuminate\Support\Str::limit($item->name, 20) }}</span>
                                             </span>
                                             {{-- |
                                                 @foreach ($item->attributes as $key => $v)
@@ -248,7 +248,7 @@
                                                         <span>{{ $v }}</span>
                                                     @endif
                                                 @endforeach| --}}
-                                            <span class="text-sky-600">${{ $item->price }}</span>
+                                            <span class="text-sky-600 font-semibold">${{ $item->price }}</span>
                                         </li>
                                     @endforeach
                                 @endif
@@ -280,13 +280,13 @@
         <ul class="text-white hidden
          md:flex justify-between mt-5">
             <li class="relative group/category "><a href="#"
-                    class="hover:underline py-8 pr-[30px] hover:underline-offset-8"><i class="fa-solid fa-list"></i>
+                    class="py-8 pr-[30px] "><i class="fa-solid fa-list"></i>
                     Category</a>
                 {{-- Category --}}
                 <ul
-                    class=" absolute hidden group-hover/category:block shadow-2xl bg-slate-800   z-[100] top-[30px] w-[280px] leading-10">
+                    class=" absolute hidden group-hover/category:block shadow-2xl bg-slate-800   z-[100] top-[38px] w-[280px] leading-10">
                     @foreach ($categories as $cate)
-                        <li class="group/subcategory p-3 px-3 text-lg hover:bg-sky-600 relative flex justify-between">
+                        <li class="cursor-pointer group/subcategory p-3 px-3 text-lg hover:bg-sky-600 relative flex justify-between">
                             <span class="flex items-center w-full">
                                 <i class="{{ $cate->icon }}"></i>&ensp;<a
                                     href="{{ route('product', ['category' => $cate->slug]) }}"

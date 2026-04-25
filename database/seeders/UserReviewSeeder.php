@@ -11,73 +11,54 @@ class UserReviewSeeder extends Seeder
     {
         $reviewTemplates = [
             5 => [
-                'Excellent product, highly recommended.',
-                'Very satisfied with the quality.',
-                'Amazing product, worth the money.',
-                'Works great and looks exactly as expected.',
-                'One of the best purchases I have made.',
+                'Excellent product overall. The quality feels very good, it performs exactly as expected, and I am very satisfied with this purchase.',
+                'I am very happy with this product. The design looks great, the quality is impressive, and it has been a very worthwhile purchase for me.',
+                'This is one of the better products I have bought recently. It works very well, feels reliable, and I would definitely recommend it to others.',
+                'The product exceeded my expectations in both quality and usability. Everything looks as described, and I am extremely satisfied with it.',
+                'Very pleased with this item. The materials feel solid, the performance is excellent, and it offers really good value for the money.',
             ],
             4 => [
-                'Good product overall.',
-                'Pretty satisfied with this purchase.',
-                'Nice quality and reasonable price.',
-                'Works well and meets my expectations.',
-                'A solid product with good value.',
-            ],
-            3 => [
-                'It is okay for the price.',
-                'Average experience, nothing special.',
-                'The product is decent but has some minor issues.',
-                'Acceptable quality overall.',
-                'Not bad, but could be better.',
-            ],
-            2 => [
-                'Below expectations.',
-                'The product quality is not very good.',
-                'Not very satisfied with this purchase.',
-                'There are several things that could be improved.',
-                'It works, but I expected more.',
-            ],
-            1 => [
-                'Very disappointed with this product.',
-                'Poor quality and not worth the price.',
-                'I would not recommend this item.',
-                'Bad experience overall.',
-                'The product did not meet expectations at all.',
+                'Good product overall. The quality is nice, it works well for my needs, and I am satisfied with this purchase.',
+                'I like this product quite a lot. It performs well, the design is good, and it mostly met my expectations.',
+                'This is a solid product with good quality and a reasonable price. There are small things that could be improved, but overall I am happy with it.',
+                'The product works well and looks good in person. It may not be perfect, but it still offers very good value and a positive experience.',
+                'Pretty satisfied with this item. The overall quality is good, it does what I expected, and I would consider buying similar products again.',
             ],
         ];
 
-        // only review products user has already shown stronger interest in
-        $eligiblePairs = DB::table('user_product_interactions')
-            ->select('user_id', 'product_id')
-            ->whereIn('interaction_type', ['wishlist_add', 'cart_add'])
-            ->groupBy('user_id', 'product_id')
-            ->get()
-            ->map(fn ($row) => [
-                'user_id' => $row->user_id,
-                'product_id' => $row->product_id,
-            ])
+        // Delete old reviews from synthetic users before reseeding
+        $syntheticUserIds = DB::table('users')
+            ->where('name', 'like', 'synthetic%')
+            ->pluck('id')
             ->toArray();
 
-        shuffle($eligiblePairs);
 
-        $targetCount = min(1500, count($eligiblePairs));
-        $selectedPairs = array_slice($eligiblePairs, 0, $targetCount);
+        // Only take actual rating interactions from user_product_interactions
+        $ratingInteractions = DB::table('user_product_interactions')
+            ->select('user_id', 'product_id', 'interaction_type', 'created_at')
+            ->whereIn('interaction_type', ['R4', 'R5'])
+            ->whereIn('user_id', $syntheticUserIds)
+            ->get();
 
         $rows = [];
         $batchSize = 500;
 
-        foreach ($selectedPairs as $pair) {
-            $rating = $this->generateRating();
+        foreach ($ratingInteractions as $interaction) {
+            $rating = match ($interaction->interaction_type) {
+                'R4' => 4,
+                'R5' => 5,
+            };
+
             $review = $reviewTemplates[$rating][array_rand($reviewTemplates[$rating])];
-            $timestamp = $this->randomTimestamp();
 
             $rows[] = [
-                'user_id' => $pair['user_id'],
-                'product_id' => $pair['product_id'],
+                'user_id' => $interaction->user_id,
+                'product_id' => $interaction->product_id,
                 'rating' => $rating,
                 'images' => null,
                 'review' => $review,
+                'created_at' => $interaction->created_at ?? now(),
+                'updated_at' => $interaction->created_at ?? now(),
             ];
 
             if (count($rows) >= $batchSize) {
@@ -89,28 +70,5 @@ class UserReviewSeeder extends Seeder
         if (!empty($rows)) {
             DB::table('user_reviews')->insert($rows);
         }
-    }
-
-    private function generateRating(): int
-    {
-        $rand = rand(1, 100);
-
-        return match (true) {
-            $rand <= 30 => 5,
-            $rand <= 65 => 4,
-            $rand <= 85 => 3,
-            $rand <= 95 => 2,
-            default => 1,
-        };
-    }
-
-    private function randomTimestamp(): string
-    {
-        return now()
-            ->subDays(rand(0, 90))
-            ->subHours(rand(0, 23))
-            ->subMinutes(rand(0, 59))
-            ->subSeconds(rand(0, 59))
-            ->format('Y-m-d H:i:s');
     }
 }

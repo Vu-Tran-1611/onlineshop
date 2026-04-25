@@ -1,7 +1,11 @@
 <div class="bg-white p-7 flex flex-col md:flex-row items-center gap-8 rounded-2xl shadow-lg border border-sky-100">
     <div class="flex items-center gap-6 ">
         <div class="rounded-full overflow-hidden border-4 border-sky-200 shadow w-[100px] h-[100px]">
-            <img src="{{ asset($shop->banner) }}" width="100" height="100" class="object-cover w-[100px] h-[100px]" />
+            @if ($shop->banner)
+                <img src="{{ asset($shop->banner) }}" width="100" height="100" class="object-cover w-[100px] h-[100px]" />
+            @else
+                <img src="{{ asset('uploads/user-avatar.png') }}" width="100" height="100" class="object-cover w-[100px] h-[100px]" />
+            @endif
         </div>
         <div class="flex flex-col justify-between border-r-2 pr-7 border-sky-100 h-full">
             <span class="text-2xl font-bold text-sky-700">{{ $shop->name }}</span>

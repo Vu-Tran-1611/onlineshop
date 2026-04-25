@@ -40,6 +40,13 @@ class CartController extends Controller
     // Add to cart
     public function addToCart(Request $request)
     {
+        if(!Auth::check()) {
+            return response([
+                "status" => 'error',
+                "message" => "You need to login first"
+            ], 401);
+        }
+
         Cart::session(Auth::user()->id);
 
         $item = $request->except('temp_id', 'attributes');
@@ -54,7 +61,7 @@ class CartController extends Controller
         // Store user interaction
         UserProductInteraction::create([
             "user_id" => Auth::user()->id,
-            "product_id" => $request->id,
+            "product_id" => $request->temp_id,
             "interaction_type" => UserProductInteraction::CART_ADD
         ]);
 

@@ -19,8 +19,8 @@ use App\Models\User;
 |
 */
 
-Route::get('/', [HomeController::class, "home"])->name('home');
 
+Route::get('/', [HomeController::class, "home"])->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -40,16 +40,16 @@ Route::get("/not-found", [HomeController::class, "notFound"])->name("not-found")
 // Product by search
 Route::get("/product-by-search", [HomeController::class, "productBySearch"])->name("product-by-search");
 
-// More products by types 
+// More products by types
 Route::get("/more-products-by-types", [HomeController::class, "moreProductsByType"])->name("more-products-by-type");
 
 
-// More Products by brands 
+// More Products by brands
 Route::get("/more-products-by-brands", [HomeController::class, "moreProductsByBrand"])->name("more-products-by-brand");
 
-// More Products by Shop 
+// More Products by Shop
 
-// More Products by flash sale 
+// More Products by flash sale
 Route::get("/more-products-by-flash-sale", [HomeController::class, "moreProductsByFlashSale"])->name("more-products-by-flash-sale");
 
 

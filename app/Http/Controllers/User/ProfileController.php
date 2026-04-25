@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserAddresses;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cache;
 
 class ProfileController extends Controller
 {
@@ -19,7 +20,12 @@ class ProfileController extends Controller
     {
         $title = "Profile";
         $user = Auth::user();
-        $categories = Category::get();
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories',function($query){
+                $query->where("status", 1);
+            })->get()->take(20);
+        });
+
 
         return view(
             "frontend.pages.profile-account",
@@ -57,7 +63,7 @@ class ProfileController extends Controller
         return redirect()->back();
     }
 
-    // Update Password 
+    // Update Password
     public function updatePassword(Request $request)
     {
         $user = Auth::user();

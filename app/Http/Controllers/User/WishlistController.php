@@ -5,6 +5,8 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserProductInteraction;
+use Illuminate\Support\Facades\Cache;
+
 class WishlistController extends Controller
 {
     /**
@@ -13,7 +15,11 @@ class WishlistController extends Controller
     public function index()
     {
         $wishlists = auth()->user()->wishlists()->with("product")->paginate(10);
-        $categories = \App\Models\Category::all();
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return \App\Models\Category::where("status", 1)->with('subCategories',function($query){
+                $query->where("status", 1);
+            })->get()->take(20);
+        });
 
         return view("frontend.pages.profile-wishlist", [
             "wishlists" => $wishlists,
@@ -33,16 +39,16 @@ class WishlistController extends Controller
         $user = auth()->user();
         $productId = $request->input("product_id");
 
-        // Check if the product is already in the wishlist
-        if ($user->wishlists()->where("product_id", $productId)->exists()) {
+        $wishlist = $user->wishlists()->firstOrCreate([
+            "product_id" => $productId
+        ]);
+
+        if (!$wishlist->wasRecentlyCreated) {
             return response()->json([
                 "message" => "Product is already in your wishlist.",
                 "success" => false
             ], 200);
         }
-
-        // Add the product to the wishlist
-        $user->wishlists()->create(["product_id" => $productId]);
 
         // Store user interaction
         UserProductInteraction::create([

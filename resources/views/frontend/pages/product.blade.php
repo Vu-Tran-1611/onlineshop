@@ -4,8 +4,13 @@
         data-brandid = "{{ $product->brand->id }}" data-vendorid = "{{ $product->shopProfile->id }}"
         data-imageurl = "{{ $product->thumb_image }}">
     </div>
-    <div class="py-10  ">
-
+    <div class="breadcrumb pt-8 text-md">
+        <a href="{{ route('home') }}" class="text-sky-800 hover:underline cursor-pointer">Home</a> /
+        <a href="{{ route('product', ["category" => $product->category->slug]) }}" class="text-sky-800 hover:underline cursor-pointer" >{{ $product->category->name }}</a> /
+        <a href="{{ route('product', ["category" => $product->category->slug, "subcategory" => $product->subCategory->slug]) }}" class="text-sky-800 hover:underline cursor-pointer">{{ $product->subCategory->name }}</a> /
+        <span class="text-gray-500">{{ $product->name }}</span>
+    </div>
+    <div class="py-10 ">
         <div class="rounded-xl relative grid grid-cols-[450px_500px] gap-x-10 bg-white p-5 mb-5">
             {{-- Loading --}}
             <div role="status"
@@ -207,12 +212,19 @@
 
 
                                 {{-- Add to Wishlist --}}
-                                <button onclick="event.preventDefault()"
-                                    class="add-to-wishlist flex items-center justify-center gap-2 text-pink-600 bg-white border-2 border-pink-500 hover:bg-pink-500 hover:text-white transition-all font-semibold text-sx rounded-xl px-3 py-2 shadow-md hover:shadow-lg min-w-[180px]"
-                                    data-id="{{ $product->id }}">
+                                @auth
+                                <button
+                                    class="add-to-wishlist flex items-center justify-center gap-2 transition-all font-semibold text-sx rounded-xl px-3 py-2 shadow-md hover:shadow-lg min-w-[180px]
+                                        {{ $isInWishlist
+                                            ? 'text-white bg-pink-500 border-2 border-pink-500 hover:bg-white hover:text-pink-500'
+                                            : 'text-pink-600 bg-white border-2 border-pink-500 hover:bg-pink-500 hover:text-white' }}"
+                                    data-id="{{ $product->id }}"
+                                    data-in-wishlist="{{ $isInWishlist ? '1' : '0' }}"
+                                >
                                     <i class="fa-solid fa-heart"></i>
-                                    Add to Wishlist
+                                    <span>{{ $isInWishlist ? 'Delete in Wishlist' : 'Add to Wishlist' }}</span>
                                 </button>
+                                @endauth
                             </div>
 
                         </form>
@@ -369,8 +381,13 @@
                     @foreach ($otherReviews as $otherReview)
                         <div class="py-6 flex gap-5 items-center">
                             <div class="flex-shrink-0">
-                                <img src="{{ asset($otherReview->user->image) }}" alt="User"
-                                    class="w-14 h-14 rounded-full border-2 border-sky-200 shadow">
+                                @if($otherReview->user->image)
+                                    <img src="{{ asset($otherReview->user->image) }}" alt="User"
+                                        class="w-14 h-14 rounded-full border-2 border-sky-200 shadow">
+                                @else
+                                    <img class="cursor-pointer object-cover" alt="avatar" width="70"
+                                        src="{{ asset('uploads/user-avatar.png') }}" />
+                                @endif
                             </div>
                             <div class="flex-1">
                                 <div class="flex items-center gap-2">
@@ -487,7 +504,10 @@
         <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
-                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">KNN + Cosine Similarity</h1>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
+                    {{-- KNN + Cosine Similarity --}}
+                    KNN with numerical and categorical features
+                </h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
             </div>
             <div class="grid gap-4 pt-5 grid-cols-5">
@@ -498,26 +518,34 @@
             </div>
         </div>
 
+
         {{-- TFIDF + Cosine Similarity --}}
         <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
-                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">TFIDF + Cosine Similarity</h1>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
+                    {{-- TFIDF + Cosine Similarity --}}
+                    KNN with text features
+                </h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
             </div>
             <div class="grid gap-4 pt-5 grid-cols-5">
                 @include('frontend.partials.filtered-product-list', [
                     // 'products' => $productsBelongsToSameCategory,
-                    'products' => $TFIDFRecommendProducts,
+                    'products' => $TFIDFRecommendProductsV1,
                 ])
             </div>
         </div>
+
 
         {{-- TFIDF + KNN + Cosine Similarity --}}
         <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
-                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">TFIDF + KNN + Cosine Similarity</h1>
+                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
+                    {{-- TFIDF + KNN + Cosine Similarity --}}
+                    KNN with combined all features
+                </h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
             </div>
             <div class="grid gap-4 pt-5 grid-cols-5">
@@ -564,7 +592,15 @@
                                 // Reset formdata
                                 $(".submit-review")[0].reset();
                                 $(".rating-stars").data("selected", 0);
-                                location.reload();
+                                Toastify({
+                                    text: response.message || "Review submitted successfully.",
+                                    duration: 3000,
+                                    backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)",
+                                }).showToast();
+
+                                $(".submit-review button[type='submit']")
+                                    .prop("disabled", true)
+                                    .text("Review submitted");
                             }
                             // Already Reviewed
                             else {
@@ -584,44 +620,51 @@
                 });
 
                 // Add to Wishlist button handler
+                $(".add-to-wishlist").on("click", function(e) {
+                    e.preventDefault();
+                    const btn = $(this);
+                    const productId = btn.data("id");
+                    const inWishlist = btn.data("in-wishlist") == 1;
+                    const url = inWishlist
+                        ? "{{ route('user.profile.wishlist.remove-from-wishlist') }}"
+                        : "{{ route('user.profile.wishlist.add-to-wishlist') }}";
+                    const method = inWishlist ? "DELETE" : "POST";
 
-                // $(".add-to-wishlist").on("click", function(e) {
-                //     e.preventDefault();
-                //     const productId = $(this).data("id");
-                //     $.ajax({
-                //         type: "POST",
-                //         url: "{{ route('user.profile.wishlist.add-to-wishlist') }}",
-                //         data: {
-                //             product_id: productId
-                //         },
-                //         dataType: "json",
-                //         success: function(response, textStatus, jqXHR) {
-                //             console.log(response);
-                //             // Not in wishlist
-                //             if (response.success == true) {
-                //                 Toastify({
-                //                     text: response.message,
-                //                     duration: 3000,
-                //                     backgroundColor: "linear-gradient(to right, #22c55e, #16a34a)", // green
-
-                //                 }).showToast();
-                //             }
-                //             // Already in wishlist
-                //             else {
-                //                 Toastify({
-                //                     text: response.message,
-                //                     backgroundColor: "linear-gradient(to right, #ef4444, #b91c1c)", // red/danger
-                //                 }).showToast();
-                //             }
-                //         },
-                //         error: function(jqXHR, textStatus, errorThrown) {
-                //             Toastify({
-                //                 text: "You need to login first",
-                //                 backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)", // orange/yellow
-                //             }).showToast();
-                //         }
-                //     });
-                // });
+                    $.ajax({
+                        type: method,
+                        url: url,
+                        data: { product_id: productId },
+                        dataType: "json",
+                        success: function(response) {
+                            const nowInWishlist = !inWishlist;
+                            // Toggle data flag
+                            btn.data("in-wishlist", nowInWishlist ? 1 : 0);
+                            // Toggle text
+                            btn.find("span").text(nowInWishlist ? "Delete in Wishlist" : "Add to Wishlist");
+                            // Toggle classes
+                            if (nowInWishlist) {
+                                btn.removeClass("text-pink-600 bg-white hover:bg-pink-500 hover:text-white")
+                                   .addClass("text-white bg-pink-500 hover:bg-white hover:text-pink-500");
+                            } else {
+                                btn.removeClass("text-white bg-pink-500 hover:bg-white hover:text-pink-500")
+                                   .addClass("text-pink-600 bg-white hover:bg-pink-500 hover:text-white");
+                            }
+                            Toastify({
+                                text: response.message,
+                                duration: 3000,
+                                backgroundColor: nowInWishlist
+                                    ? "linear-gradient(to right, #22c55e, #16a34a)"
+                                    : "linear-gradient(to right, #ef4444, #b91c1c)",
+                            }).showToast();
+                        },
+                        error: function(jqXHR) {
+                            Toastify({
+                                text: jqXHR.responseJSON?.message ?? "Something went wrong.",
+                                backgroundColor: "linear-gradient(to right, #f59e42, #fbbf24)",
+                            }).showToast();
+                        }
+                    });
+                });
 
                 function init() {
                     let allVarNames = [];
@@ -795,14 +838,14 @@
                                     // Append new item to mini cart
                                     if (response.isShowInMiniCart) {
                                         const li = `
-                                <li class="flex hover:bg-slate-100 p-2 justify-between leading-[80px] items-center">
-                                    <span class="flex gap-2 items-center">
-                                        <span><img width="50" src="${response.variants['imageURL']}" /></span>
-                                        <span>${ response.name.length > 30 ? response.name.substring(0, 30) + '...' : response.name }</span>
-                                    </span>
-                                    <span class="text-sky-600">$${response.price }</span>
-                                </li>
-                        `
+                                                            <li class="flex hover:bg-slate-100 p-2 justify-between leading-[80px] items-center">
+                                                                <span class="flex gap-2 items-center">
+                                                                    <span><img width="50" src="${response.variants['imageURL']}" /></span>
+                                                                    <span>${ response.name.length > 30 ? response.name.substring(0, 30) + '...' : response.name }</span>
+                                                                </span>
+                                                                <span class="text-sky-600">$${response.price }</span>
+                                                            </li>
+                                                    `
                                         $(".cart-mini").append(li);
                                     }
                                     $(".view-cart-button").removeClass("hidden").addClass("block");
@@ -810,9 +853,23 @@
                                         "hidden");
 
                                 }
+                                else {
+                                    $(".loading").addClass("hidden");
+                                    $(".loading").removeClass("flex");
+                                    Swal.fire({
+                                        icon: "error",
+                                        text: response.message,
+                                    });
+                                }
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
-                                window.location.replace("/login");
+                                console.log(jqXHR, textStatus, errorThrown);
+                                $(".loading").addClass("hidden");
+                                $(".loading").removeClass("flex");
+                                Swal.fire({
+                                    icon: "error",
+                                    text: "You need to login first",
+                                });
                             }
                         });
                     } else {

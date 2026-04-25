@@ -3,13 +3,14 @@
     {{-- Slider --}}
     @include('frontend.sections.slider')
 
-
     {{-- Category --}}
     @include('frontend.sections.category')
 
+    {{-- Matrix Factorization Recommended Products --}}
+    @include('frontend.sections.matrix-factorization-recommended-for-you')
 
-    {{-- Recommended for you --}}
-    @include('frontend.sections.recommended-for-you')
+    {{-- LightGCN Recommended Products --}}
+    @include('frontend.sections.light-gcn-recommended-for-you')
 
 
     {{-- Flash sell --}}

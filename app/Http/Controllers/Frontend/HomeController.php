@@ -24,7 +24,6 @@ class HomeController extends Controller
 {
     public function home()
     {
-
         $sliders = Cache::remember('sliders', 60 * 60, function () {
             return Slider::where("status", 1)->get();
         });
@@ -72,10 +71,12 @@ class HomeController extends Controller
         });
 
 
-        $flashSellProducts = FlashSellItem::with("product")->get();
+        $flashSellProducts = FlashSellItem::with("product")->orderBy("created_at","desc")->get();
         $flashSellEndDate = FlashSell::first();
         // Call Recommend API to get recommend product based on user interaction if user is logged in
-        $recommendedProducts = collect();
+        $matrixFactorizationRecommendedProducts = collect();
+        $lightGCNRecommendedProducts = collect();
+
         if (Auth::check()) {
             try {
                 $interactions = UserProductInteraction::where("user_id", Auth::id())
@@ -89,26 +90,42 @@ class HomeController extends Controller
                         ];
                     })
                     ->toArray();
-                if(empty($interactions)){
-                    $recommendedProducts = collect();
+                $numberOfUniqueInteractedProducts = count(array_unique(array_column($interactions, 'product_id')));
+                if(empty($interactions) || $numberOfUniqueInteractedProducts < 2){
+                    $matrixFactorizationRecommendedProducts = collect();
+                    $lightGCNRecommendedProducts = collect();
                 }else{
                     $recommendationService = new RecommendationApiService();
-                    // $response = $recommendationService->getUserPersonalizedRecommendations(Auth::id(),"matrix_factorization", 10);
-                    $response = $recommendationService->getUserRecentRecommendations($interactions,"matrix_factorization", 10);
-
-                    $recommendedProductIDs = $response["recommendations"];
-                    $recommendedProducts = Product::whereIn("id", $recommendedProductIDs)
+                    //------------- Matrix Factorization -------------
+                    $matrixFactorizationResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"matrix_factorization", 10);
+                    $matrixFactorizationRecommendedProductIDs = $matrixFactorizationResponse["recommendations"];
+                    $matrixFactorizationRecommendedProducts = Product::whereIn("id", $matrixFactorizationRecommendedProductIDs)
                     ->where("status", 1)
                     ->where("is_approved", 1)
                     ->get()
-                    ->sortBy(function ($product) use ($recommendedProductIDs) {
-                        return array_search($product->id, $recommendedProductIDs);
+                    ->sortBy(function ($product) use ($matrixFactorizationRecommendedProductIDs) {
+                        return array_search($product->id, $matrixFactorizationRecommendedProductIDs);
                     });
+
+                    //-------------  Matrix Factorization -------------
+
+                    //------------- LightGCN -------------
+                    $lightGCNResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"light_gcn", 10);
+                    $lightGCNRecommendedProductIDs = $lightGCNResponse["recommendations"];
+                    $lightGCNRecommendedProducts = Product::whereIn("id", $lightGCNRecommendedProductIDs)
+                    ->where("status", 1)
+                    ->where("is_approved", 1)
+                    ->get()
+                    ->sortBy(function ($product) use ($lightGCNRecommendedProductIDs) {
+                        return array_search($product->id, $lightGCNRecommendedProductIDs);
+                    });
+                    //------------- LightGCN -------------
+                    // dd($lightGCNResponse,$matrixFactorizationResponse);
                 }
             } catch (\Exception $e) {
                 Log::error("Error fetching user recommendations: " . $e->getMessage());
-
-                $recommendedProducts = collect();
+                $matrixFactorizationRecommendedProducts = collect();
+                $lightGCNRecommendedProducts = collect();
             }
         }
         return view(
@@ -125,7 +142,8 @@ class HomeController extends Controller
                 "featuredProducts",
                 "bestProducts",
                 "flashSellEndDate",
-                "recommendedProducts"
+                "matrixFactorizationRecommendedProducts",
+                "lightGCNRecommendedProducts",
             )
         );
     }
@@ -175,10 +193,16 @@ class HomeController extends Controller
                         return array_search($product->id, $KNNRecommendationIDs);
                     });
 
+
+
+
                 // TFIDF + Cosine Similarity Recommendations
-                $TFIDFRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "tfidf_cosine", 10);
-                $TFIDFRecommendationIDs = $TFIDFRecommendations["recommendations"];
-                $TFIDFRecommendProducts = Product::whereIn("id", $TFIDFRecommendationIDs)
+                // V1
+                $version = "v2";
+                $TFIDFRecommendProductsV1 = collect();
+                $TFIDFRecommendationsV1 = (new RecommendationApiService())->getRecommendations($product->id, "tfidf_cosine", 10,$version);
+                $TFIDFRecommendationIDs = $TFIDFRecommendationsV1["recommendations"];
+                $TFIDFRecommendProductsV1 = Product::whereIn("id", $TFIDFRecommendationIDs)
                     ->where("status", 1)
                     ->where("is_approved", 1)
                     ->get()
@@ -186,7 +210,9 @@ class HomeController extends Controller
                         return array_search($product->id, $TFIDFRecommendationIDs);
                     });
 
+
                 //TFIDF + KNN + Cosine Similarity Recommendations
+                $TFIDFKNNRecommendProducts = collect();
                 $TFIDFKNNRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "tfidf_knn_cosine", 10);
                 $TFIDFKNNRecommendationIDs = $TFIDFKNNRecommendations["recommendations"];
                 $TFIDFKNNRecommendProducts = Product::whereIn("id", $TFIDFKNNRecommendationIDs)
@@ -198,15 +224,12 @@ class HomeController extends Controller
                     });
 
             }catch(\Exception $e){
-                // dd($e->getMessage());
+                dd($e->getMessage());
                 ## Asign empty collection to avoid error in view when recommendation API fails
                 $KNNRecommendProducts = collect();
-                $TFIDFRecommendProducts = collect();
                 $TFIDFKNNRecommendProducts = collect();
-                $MFRecommendProducts = collect();
-                    Log::error("Error fetching product recommendations for product ID " . $product->id . ": " . $e->getMessage());
+                $TFIDFRecommendProductsV1 = collect();
             }
-
             $reviewsQuery = $product->userReviews()->with("user");
             $numberOfReviews = $reviewsQuery->count();
             $userReview = null;
@@ -219,8 +242,18 @@ class HomeController extends Controller
             }
 
 
+
             $otherReviews = $reviewsQuery->paginate(10);
             $averageRating = round($product->userReviews()->avg('rating'), 1);
+
+            #Check if this product is added into wishlist
+            $isInWishlist = false;
+            if (Auth::check()) {
+                $isInWishlist = auth()->user()->wishlists()
+                    ->where('product_id', $product->id)
+                    ->exists();
+            }
+
             return view("frontend.pages.product", [
                 "categories" => $allCategories,
                 "product" => $product,
@@ -233,20 +266,17 @@ class HomeController extends Controller
                 "KNNRecommendProducts" => $KNNRecommendProducts,
 
                 // TFIDF + Cosine Similarity Recommendations
-                "TFIDFRecommendProducts" => $TFIDFRecommendProducts,
+                "TFIDFRecommendProductsV1" => $TFIDFRecommendProductsV1,
 
                 // TFIDF + KNN + Cosine Similarity Recommendations
                 "TFIDFKNNRecommendProducts" => $TFIDFKNNRecommendProducts,
-
-                // // Matrix Factorization Recommendations
-                // "MFRecommendProducts" => $MFRecommendProducts,
-
                 // Recommendations ------------------------------
 
                 "userReview" => $userReview,
                 "otherReviews" => $otherReviews,
                 "numberOfReviews" => $numberOfReviews,
                 "averageRating" => $averageRating,
+                "isInWishlist" => $isInWishlist,
             ]);
         } else {
             // Product based on category filter
@@ -279,12 +309,12 @@ class HomeController extends Controller
 
             // If subcategory was chosen
             if ($request->subcategory) {
-                $subCategory = SubCategory::where("slug", $request->subcategory)->first();
+                $subCategory = SubCategory::where("slug", $request->subcategory)->where("status", 1)->first();
                 if ($subCategory) {
                     $activeSub = $subCategory->slug;
                 }
             };
-            $category = Category::where("slug", $request->category)->first();
+            $category = Category::where("slug", $request->category)->where("status", 1)->first();
 
             // Check if category exists
             if (!$category) {
@@ -321,7 +351,7 @@ class HomeController extends Controller
                 ->where("is_approved", 1)
                 ->where("status", 1)
                 ->orderBy("price", $order)
-                ->paginate(10);
+                ->paginate(12);
             return view("frontend.pages.category", [
                 "categories" => $allCategories,
                 "category" => $category,

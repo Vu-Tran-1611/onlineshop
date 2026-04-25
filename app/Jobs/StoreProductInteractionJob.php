@@ -31,7 +31,6 @@ class StoreProductInteractionJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // Create a new interaction record every time (multiple clicks allowed)
         UserProductInteraction::create([
             "user_id" => $this->userId,
             "product_id" => $this->productId,

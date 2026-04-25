@@ -5,7 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
-
+use Illuminate\Support\Facades\Cache;
 class OrderController extends Controller
 {
     /**
@@ -14,7 +14,12 @@ class OrderController extends Controller
     public function index()
     {
         $title = "Orders";
-        $categories = Category::get();
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories',function($query){
+                $query->where("status", 1);
+            })->get()->take(20);
+        });
+
 
         // Fetch orders for the authenticated user
         $orders = auth()->user()->orders()->with('orderProducts')->orderBy('created_at', 'desc')->paginate(5);
@@ -49,7 +54,7 @@ class OrderController extends Controller
         $order = auth()->user()->orders()->with(['orderProducts', 'userAddress'])->findOrFail($id);
         $quantity = $order->orderProducts->sum('qty');
         $order->quantity = $quantity; // Add quantity to the order object
-        // Ensure the order has a valid payment method      
+        // Ensure the order has a valid payment method
         return view('frontend.pages.profile-order-details', compact('title', 'user', 'order', 'categories'));
     }
 

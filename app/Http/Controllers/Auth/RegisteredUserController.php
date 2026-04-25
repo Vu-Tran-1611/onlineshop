@@ -48,8 +48,8 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
-        // Dispatch a job to send a welcome email 
-        SendWelcomeEmailJob::dispatch(Auth::user());
+        // Dispatch a job to send a welcome email
+        SendWelcomeEmailJob::dispatch(Auth::user())->onQueue('emails');
         return redirect(RouteServiceProvider::HOME);
     }
 }

@@ -72,10 +72,10 @@ class PaymentController extends Controller
 
 
         SendOrderNotificationMailJob::dispatch(
+            $order->user,
             $order,
-            auth()->user(),
-            'order-pending'
-        );
+            'pending'
+        )->onQueue('emails');
 
 
         session()->forget('user_delivery_address');
@@ -93,12 +93,10 @@ class PaymentController extends Controller
         if ($request->payment_method == 'cash') return self::store(0, 'cash');
         Cart::session("checked");
         $priceIDs = array();
-        $stripe = new \Stripe\StripeClient(config('stripe.secret_key'));
+        $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
         foreach (Cart::getContent() as $item) {
             $product =  $stripe->products->create([
-                'name' => $item->name,
-                'images' => [$item->attributes->imageURL],
-
+                'name' => $item->name
             ]);
             $price = $stripe->prices->create([
                 'product' => $product->id,
