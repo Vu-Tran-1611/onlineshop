@@ -52,8 +52,8 @@
                 <div>
                     <h3 class="text-white font-semibold mb-3">Contact Us</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><span class="block">Email: <a href="mailto:support@onlineshop.com"
-                                    class="hover:underline">support@onlineshop.com</a></span></li>
+                        <li><span class="block">Email: <a href="mailto:{{ env('MAIL_FROM_ADDRESS', 'support@vushop.com') }}"
+                                    class="hover:underline">{{ env('MAIL_FROM_ADDRESS', 'support@vushop.com') }}</a></span></li>
                         <li><span class="block">Phone: <a href="tel:+1234567890" class="hover:underline">+1 234 567
                                     890</a></span></li>
                         <li><span class="block">Mon-Fri: 9am - 6pm</span></li>
