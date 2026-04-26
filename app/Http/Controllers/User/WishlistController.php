@@ -43,13 +43,6 @@ class WishlistController extends Controller
             "product_id" => $productId
         ]);
 
-        if (!$wishlist->wasRecentlyCreated) {
-            return response()->json([
-                "message" => "Product is already in your wishlist.",
-                "success" => false
-            ], 200);
-        }
-
         // Store user interaction
         UserProductInteraction::create([
             "user_id" => $user->id,
@@ -77,9 +70,7 @@ class WishlistController extends Controller
                 "user_id" => $user->id,
                 "product_id" => $productId,
                 "interaction_type" => UserProductInteraction::WISHLIST_REMOVE
-    ]);
-
-
+        ]);
         return response()->json(["message" => "Product removed from your wishlist.", "success" => true], 200);
     }
     /**

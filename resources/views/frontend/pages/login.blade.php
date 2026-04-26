@@ -17,13 +17,14 @@
         <div class="form-container sign-up ">
             <form method="POST" action="{{ route('register') }}">
                 @csrf
+                <a  href="/" class="hidden md:block" style="font-size: 2rem;color:rgb(46, 98, 193)" >{{ env('APP_NAME', 'OShop') }} </a>
                 <h1>Create Account</h1>
-                <div class="social-icons">
+                {{-- <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
-                <span>or use your email for registeration</span>
+                <span>or use your email for registeration</span> --}}
                 <input name="name" type="text" placeholder="Username">
                 <input name="email" type="email" placeholder="Email">
                 <input name="password" type="password" placeholder="Password">
@@ -41,14 +42,14 @@
         <div class="form-container sign-in">
             <form method="POST" action="{{ route('login') }}">
                 @csrf
-
+                <a  href="/" class="hidden md:block" style="font-size: 2rem;color:rgb(46, 98, 193)" >{{ env('APP_NAME', 'OShop') }} </a>
                 <h1>Log In</h1>
-                <div class="social-icons">
+                {{-- <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
-                <span>or use your email password</span>
+                <span>or use your email password</span> --}}
                 <input name="email" type="email" placeholder="Email">
                 <input name="password" type="password" placeholder="Password">
                 <div class="error-show">
