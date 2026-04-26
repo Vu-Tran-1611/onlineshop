@@ -18,7 +18,7 @@
         }
     </script>
     @vite(['resources/js/app.js', 'resources/js/frontend.js'])
-    <title>OShop Chat System</title>
+    <title>{{ env('APP_NAME', 'VuShop') }} Chat System</title>
 </head>
 
 <body>
@@ -97,7 +97,7 @@
             $(".message").replaceWith(messagePatternHTML);
         }
         init();
-        // Scroll message to the bottom 
+        // Scroll message to the bottom
         function scrollBottom() {
             let messageArea = $(".message ");
             messageArea.scrollTop(messageArea.prop("scrollHeight"));
@@ -165,7 +165,7 @@
                 }
             });
         }
-        // Send Message 
+        // Send Message
         function sendMessage(data) {
             $.ajax({
                 type: "POST",

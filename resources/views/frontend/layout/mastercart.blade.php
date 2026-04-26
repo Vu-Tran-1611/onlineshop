@@ -24,7 +24,7 @@
             <div class="md:w-[1200px] p-3 mx-auto">
                 <nav class=" flex justify-between md:gap-5 lg:gap-0 lg:justify-between text-white  items-center">
                     <h1 class="text-2xl">
-                        <a href="/" class="hidden md:block">{{ env('APP_NAME', 'OShop') }} |
+                        <a href="/" class="hidden md:block">{{ env('APP_NAME', 'VuShop') }} |
                             {{ $title }}</a>
 
                     </h1>

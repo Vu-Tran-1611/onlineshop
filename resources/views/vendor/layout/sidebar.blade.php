@@ -1,10 +1,10 @@
        <div class="main-sidebar sidebar-style-2">
            <aside id="sidebar-wrapper">
                <div class="sidebar-brand">
-                   <a>{{ env('APP_NAME', 'OShop') }}</a>
+                   <a>{{ env('APP_NAME', 'VuShop') }}</a>
                </div>
                <div class="sidebar-brand sidebar-brand-sm">
-                   <a>OS</a>
+                   <a>VS</a>
                </div>
                <ul class="sidebar-menu">
                    <li class="menu-header ">Shop

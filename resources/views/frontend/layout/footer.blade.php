@@ -13,7 +13,7 @@
                             </path>
                         </svg>
                     </span>
-                    <span class="text-2xl font-bold text-white">OShop</span>
+                    <span class="text-2xl font-bold text-white">{{ env('APP_NAME', 'VuShop') }}</span>
                 </div>
                 <p class="text-slate-400 mb-4">Your one-stop shop for everything online. Discover the latest trends and
                     unbeatable deals.</p>
@@ -74,7 +74,7 @@
             </div>
         </div>
         <div class="border-t border-slate-700 mt-10 pt-4 text-center text-slate-500 text-xs">
-            &copy; {{ date('Y') }} OnlineShop. All rights reserved. | Designed with <span
+            &copy; {{ date('Y') }} {{ env('APP_NAME', 'VuShop') }}. All rights reserved. | Designed with <span
                 class="text-red-500">&hearts;</span>
         </div>
     </div>

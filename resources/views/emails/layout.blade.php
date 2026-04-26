@@ -18,7 +18,7 @@
                     <tr>
                         <td style="background-color: #0077B6; padding: 30px; text-align: center;">
                             <a href="{{ url('/') }}" style="text-decoration: none;">
-                                <span style="font-size: 26px; font-weight: bold; color: white;">OShop</span>
+                                <span style="font-size: 26px; font-weight: bold; color: white;">{{ env('APP_NAME', 'VuShop') }}</span>
                             </a>
                         </td>
                     </tr>
@@ -28,7 +28,7 @@
                     <tr>
                         <td
                             style="background-color: #eeeeee; padding: 20px; text-align: center; font-size: 12px; color: #888888;">
-                            © {{ date('Y') }} {{ env('APP_NAME', 'OnlineShop') }}. All rights reserved.
+                            © {{ date('Y') }} {{ env('APP_NAME', 'VuShop') }}. All rights reserved.
                         </td>
                     </tr>
 

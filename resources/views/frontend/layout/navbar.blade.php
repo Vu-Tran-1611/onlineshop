@@ -46,7 +46,7 @@
                                 </path>
                             </svg>
                         </span>
-                        <span class="text-2xl font-bold text-white">OSHOP</span>
+                        <span class="text-2xl font-bold text-white">{{ env('APP_NAME', 'VuShop') }}</span>
                     </div>
                 </a>
                 <div class="sm:block md:hidden relative">
