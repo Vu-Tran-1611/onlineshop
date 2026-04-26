@@ -14,11 +14,22 @@
 
 <body>
     <div class="container {{ $action == 'register' ? 'active' : '' }}" id="container" style="min-height: 600px">
+
         <div class="form-container sign-up ">
+
             <form method="POST" action="{{ route('register') }}">
                 @csrf
-                <a  href="/" class="hidden md:block" style="font-size: 2rem;color:rgb(46, 98, 193)" >{{ env('APP_NAME', 'VuShop') }} </a>
+                <a href="/" style="display:flex; align-items:center; gap:5px;  font-size:1.5rem; color:rgb(46, 98, 193); text-decoration:none;">
+                    <span style="display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background-color:#264375; flex-shrink:0;">
+                        <svg style="width:26px; height:26px;" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"></path>
+                        </svg>
+                    </span>
+                    <span style="font-size:1.5rem; color:rgb(46, 98, 193);font-weight:bold">{{ env('APP_NAME', 'VuShop') }}</span>
+                </a>
+
                 <h1>Create Account</h1>
+
                 {{-- <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
@@ -42,7 +53,14 @@
         <div class="form-container sign-in">
             <form method="POST" action="{{ route('login') }}">
                 @csrf
-                <a  href="/" class="hidden md:block" style="font-size: 2rem;color:rgb(46, 98, 193)" >{{ env('APP_NAME', 'VuShop') }} </a>
+                <a href="/" style="display:flex; align-items:center; gap:5px;  font-size:1.5rem; color:rgb(46, 98, 193); text-decoration:none;">
+                    <span style="display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background-color:#264375; flex-shrink:0;">
+                        <svg style="width:26px; height:26px;" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"></path>
+                        </svg>
+                    </span>
+                    <span style="font-size:1.5rem; color:rgb(46, 98, 193);font-weight:bold">{{ env('APP_NAME', 'VuShop') }}</span>
+                </a>
                 <h1>Log In</h1>
                 {{-- <div class="social-icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>

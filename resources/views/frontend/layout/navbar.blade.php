@@ -38,7 +38,7 @@
             <h1 class="text-2xl ">
                 <a href="/" class="hidden md:block">
                     <div class="flex items-center gap-3 mb-3 ">
-                        <span class="bg-slate-700 rounded-full p-2">
+                        <span class="bg-sky-800 rounded-full p-2">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2"
                                 viewBox="0 0 24 24">
                                 <path
