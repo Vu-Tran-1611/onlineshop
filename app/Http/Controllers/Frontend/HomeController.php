@@ -91,7 +91,7 @@ class HomeController extends Controller
                     })
                     ->toArray();
                 $numberOfUniqueInteractedProducts = count(array_unique(array_column($interactions, 'product_id')));
-                if(empty($interactions) || $numberOfUniqueInteractedProducts < 2){
+                if(empty($interactions) || $numberOfUniqueInteractedProducts < 1){
                     $matrixFactorizationRecommendedProducts = collect();
                     $lightGCNRecommendedProducts = collect();
                 }else{
