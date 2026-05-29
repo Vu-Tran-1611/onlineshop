@@ -300,7 +300,7 @@
                 <h2 class="text-slate-500">Top picks from Shop</h2>
 
                 <div class="flex flex-col gap-4 pt-5">
-                    @foreach ($productsBelongsToShop as $t)
+                    @foreach ($topPicksFromShop as $t)
                         @include('frontend.partials.product-card', [
                             'p' => $t,
                             'isWishlist' => $isWishlist ?? null,
@@ -487,7 +487,7 @@
 
 
         {{-- Similar Products --}}
-        {{-- <div>
+        <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
                 <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">Similar Products</h1>
@@ -496,16 +496,17 @@
             <div class="grid grid-cols-5 gap-4 pt-5">
                 @include('frontend.partials.filtered-product-list', ['products' => $productsBelongsToShop])
             </div>
-        </div> --}}
+        </div>
 
 
         {{-- You may also like   --}}
         {{-- KNN + Cosine Similarity --}}
-        <div>
+
+        {{-- <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
                 <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
-                    {{-- KNN + Cosine Similarity --}}
+
                     KNN with numerical and categorical features
                 </h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
@@ -516,15 +517,15 @@
                     'products' => $KNNRecommendProducts,
                 ])
             </div>
-        </div>
+        </div> --}}
 
 
         {{-- TFIDF + Cosine Similarity --}}
-        <div>
+        {{-- <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
                 <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
-                    {{-- TFIDF + Cosine Similarity --}}
+
                     KNN with text features
                 </h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
@@ -535,7 +536,7 @@
                     'products' => $TFIDFRecommendProductsV1,
                 ])
             </div>
-        </div>
+        </div> --}}
 
 
         {{-- TFIDF + KNN + Cosine Similarity --}}
@@ -544,7 +545,7 @@
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
                 <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
                     {{-- TFIDF + KNN + Cosine Similarity --}}
-                    KNN with combined all features
+                    Recommendation by K Nearest Neighbors Models
                 </h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
             </div>

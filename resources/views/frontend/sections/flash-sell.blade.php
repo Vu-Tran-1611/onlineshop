@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold text-orange-600 flex items-center gap-2">
             <i class="fa-solid fa-bolt text-yellow-400 animate-pulse"></i>
-            FLASH SELL
+            Hurry Up! Flash Sell Ending Soon
         </h1>
         <div id="flash-sell-timer"
             class="flex items-center gap-3 bg-gradient-to-r from-sky-700 via-orange-500 to-pink-500 text-white px-7 py-3 rounded-xl shadow-xl font-mono text-xl font-bold  backdrop-blur-sm">

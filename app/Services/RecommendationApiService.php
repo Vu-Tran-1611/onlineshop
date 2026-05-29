@@ -23,7 +23,7 @@ class RecommendationApiService
     }
 
     // For user-based recommendations
-    // 1 Recent interactions of the user (clicks, purchases, etc.) with product IDs and interaction types
+    // Recent interactions of the user (clicks, purchases, etc.) with product IDs and interaction types
     public function getUserRecentRecommendations($userId,$interactions,$model,$topK)
     {
         $baseUrl = config('services.python_api.url');

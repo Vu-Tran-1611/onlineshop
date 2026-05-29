@@ -6,11 +6,19 @@
     {{-- Category --}}
     @include('frontend.sections.category')
 
-    {{-- Matrix Factorization Recommended Products --}}
+    {{-- Matrix Factorization Recommended Products
     @include('frontend.sections.matrix-factorization-recommended-for-you')
 
-    {{-- LightGCN Recommended Products --}}
-    @include('frontend.sections.light-gcn-recommended-for-you')
+
+
+    {{-- SASRec Recommended Products --}}
+    {{-- @include('frontend.sections.sasrec-recommended-for-you') --}}
+
+
+
+    {{-- ComiRec Recommended Products --}}
+    @include('frontend.sections.comirec-recommended-for-you')
+
 
 
     {{-- Flash sell --}}
@@ -18,16 +26,29 @@
 
     {{-- Brand --}}
     @include('frontend.sections.brand')
+
     {{-- Best product --}}
     @include('frontend.sections.best')
+
+    {{-- BERT4Rec Recommended Products --}}
+    @include('frontend.sections.bert4rec-recommended-for-you')
+
+
 
     {{-- top product --}}
     @include('frontend.sections.top-product')
 
+    {{-- LightGCN Recommended Products
+    @include('frontend.sections.light-gcn-recommended-for-you') --}}
+
+
+    {{-- Two Tower Recommended Products --}}
+    @include('frontend.sections.two-tower-recommended-for-you')
+
     {{-- New Arrival product --}}
-    @include('frontend.sections.new-arrival')
+    {{-- @include('frontend.sections.new-arrival') --}}
     {{-- Featured product --}}
-    @include('frontend.sections.featured-product')
+    {{-- @include('frontend.sections.featured-product') --}}
 @endsection
 
 

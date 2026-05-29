@@ -6,7 +6,7 @@
         style="--box-height: {{ $lightGCNRecommendedProducts->isNotEmpty() ? '99%' : '95%' }};">
         <div class="flex items-center justify-between mb-6">
             <h1 style="color:rgb(50, 118, 122)" class="text-3xl font-bold flex items-center gap-2">
-                LightGCN Recommendations
+                Continue Exploring Your Style
             </h1>
         </div>
 
