@@ -20,13 +20,14 @@
             <ul class="grid  grid-cols-5 py-5 gap-5 cursor-pointer ">
                 @include('frontend.partials.filtered-product-list', ['products' => $comirecRecommendedProducts])
             </ul>
-        @endif
-        <div class="flex justify-center">
+            <div class="flex justify-center">
             <a href="{{ route('user.more-products-by-comirec') }}"
                 class="bg-sky-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-sky-800 transition">
                 See More
             </a>
         </div>
+        @endif
+
 
     </div>
 

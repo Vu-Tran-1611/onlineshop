@@ -20,7 +20,7 @@ class PersonalizedRecommendationController extends Controller
             return Category::where("status", 1)->with('subCategories')->get()->take(20);
         });
         $comirecRecommendedProducts = collect();
-        $title = "Recommended for You";
+        $title = "Personalized Recommendations";
         try {
             $interactions = UserProductInteraction::where("user_id", Auth::id())
                 ->orderBy("created_at", "desc")
