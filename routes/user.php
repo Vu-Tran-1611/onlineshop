@@ -12,7 +12,7 @@ use App\Http\Controllers\User\ShopFollowController;
 use App\Http\Controllers\User\UserMessageController;
 use App\Http\Controllers\User\UserReviewsController;
 use App\Http\Controllers\User\WishlistController;
-
+use App\Http\Controllers\User\PersonalizedRecommendationController;
 
 
 
@@ -97,3 +97,8 @@ Route::post("shop/follow", [ShopFollowController::class, "followUnfollow"])->nam
 
 
 // Shop Follow -------------------------------------------------
+
+
+
+// Personalized Recommendations -------------------------------------------------
+Route::get("/more-products-by-comirec", [PersonalizedRecommendationController::class, "moreProductsByComirec"])->name("more-products-by-comirec");

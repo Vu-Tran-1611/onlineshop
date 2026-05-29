@@ -74,7 +74,7 @@ class HomeController extends Controller
         $flashSellProducts = FlashSellItem::with("product")->orderBy("created_at","desc")->get();
         $flashSellEndDate = FlashSell::first();
         // Call Recommend API to get recommend product based on user interaction if user is logged in
-        $matrixFactorizationRecommendedProducts = collect();
+        // $matrixFactorizationRecommendedProducts = collect();
         $lightGCNRecommendedProducts = collect();
         $sasRecRecommendedProducts = collect();
         $bert4RecRecommendedProducts = collect();
@@ -96,7 +96,7 @@ class HomeController extends Controller
                 // dd($interactions);
                 $numberOfUniqueInteractedProducts = count(array_unique(array_column($interactions, 'product_id')));
                 if(empty($interactions) || $numberOfUniqueInteractedProducts < 1){
-                    $matrixFactorizationRecommendedProducts = collect();
+                    // $matrixFactorizationRecommendedProducts = collect();
                     $lightGCNRecommendedProducts = collect();
                     $sasRecRecommendedProducts = collect();
                     $bert4RecRecommendedProducts = collect();
@@ -106,15 +106,15 @@ class HomeController extends Controller
                     // dd($interactions);
                     $recommendationService = new RecommendationApiService();
                     //------------- Matrix Factorization -------------
-                    $matrixFactorizationResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"matrix_factorization", 10);
-                    $matrixFactorizationRecommendedProductIDs = $matrixFactorizationResponse["recommendations"];
-                    $matrixFactorizationRecommendedProducts = Product::whereIn("id", $matrixFactorizationRecommendedProductIDs)
-                    ->where("status", 1)
-                    ->where("is_approved", 1)
-                    ->get()
-                    ->sortBy(function ($product) use ($matrixFactorizationRecommendedProductIDs) {
-                        return array_search($product->id, $matrixFactorizationRecommendedProductIDs);
-                    });
+                    // $matrixFactorizationResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"matrix_factorization", 10);
+                    // $matrixFactorizationRecommendedProductIDs = $matrixFactorizationResponse["recommendations"];
+                    // $matrixFactorizationRecommendedProducts = Product::whereIn("id", $matrixFactorizationRecommendedProductIDs)
+                    // ->where("status", 1)
+                    // ->where("is_approved", 1)
+                    // ->get()
+                    // ->sortBy(function ($product) use ($matrixFactorizationRecommendedProductIDs) {
+                    //     return array_search($product->id, $matrixFactorizationRecommendedProductIDs);
+                    // });
 
                     //-------------  Matrix Factorization -------------
 
@@ -180,7 +180,7 @@ class HomeController extends Controller
                 }
             } catch (\Exception $e) {
                 Log::error("Error fetching user recommendations: " . $e->getMessage());
-                $matrixFactorizationRecommendedProducts = collect();
+                // $matrixFactorizationRecommendedProducts = collect();
                 $lightGCNRecommendedProducts = collect();
                 $sasRecRecommendedProducts = collect();
                 $bert4RecRecommendedProducts = collect();
@@ -202,7 +202,7 @@ class HomeController extends Controller
                 "featuredProducts",
                 "bestProducts",
                 "flashSellEndDate",
-                "matrixFactorizationRecommendedProducts",
+                // "matrixFactorizationRecommendedProducts",
                 "lightGCNRecommendedProducts",
                 "sasRecRecommendedProducts",
                 "bert4RecRecommendedProducts",
@@ -592,6 +592,10 @@ class HomeController extends Controller
             "isFlashSell" => true
         ]);
     }
+
+
+
+
 
     // View Shop Page
     public function shop(Request $request)
