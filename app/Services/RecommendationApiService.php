@@ -36,7 +36,7 @@ class RecommendationApiService
         ]);
 
         if ($response->successful()) {
-            return $response->json();
+            return $response;
         }
 
         throw new RequestException($response);

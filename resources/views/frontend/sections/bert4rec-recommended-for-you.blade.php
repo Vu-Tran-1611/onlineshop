@@ -15,14 +15,12 @@
                 <p class="text-lg font-bold">Sorry, no recommended products available at the moment ...</p>
                 <p>Please login and interact with some of our items to try the recommendations</p>
             </div>
-        @elseif ($bert4RecRecommendedProducts->count() > 1 && $bert4RecRecommendedProducts->count() <= 10)
+        @else
             <ul class="grid  grid-cols-5 py-5 gap-5 cursor-pointer ">
                 @include('frontend.partials.filtered-product-list', ['products' => $bert4RecRecommendedProducts])
             </ul>
-
-        @else
             <div class="flex justify-center">
-                <a href="{{ route('more-products-by-flash-sale') }}"
+                <a href="{{ route('user.more-products-by-bert4rec') }}"
                     class="bg-sky-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-sky-800 transition">
                     See More
                 </a>

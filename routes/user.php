@@ -102,3 +102,5 @@ Route::post("shop/follow", [ShopFollowController::class, "followUnfollow"])->nam
 
 // Personalized Recommendations -------------------------------------------------
 Route::get("/more-products-by-comirec", [PersonalizedRecommendationController::class, "moreProductsByComirec"])->name("more-products-by-comirec");
+Route::get("/more-products-by-two-tower", [PersonalizedRecommendationController::class, "moreProductsByTwoTower"])->name("more-products-by-two-tower");
+Route::get("/more-products-by-bert4rec", [PersonalizedRecommendationController::class, "moreProductsByBert4Rec"])->name("more-products-by-bert4rec");

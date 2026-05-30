@@ -22,6 +22,21 @@ use App\Jobs\StoreProductInteractionJob;
 use App\Models\UserProductInteraction;
 class HomeController extends Controller
 {
+    public function getInteractions($userID,$interaction_types){
+        return UserProductInteraction::where("user_id", $userID)
+        ->orderBy("created_at", "desc")
+        ->whereIn("interaction_type",$interaction_types)
+        ->get()
+        ->map(function ($interaction) {
+            return [
+                "product_id" => $interaction->product_id,
+                "category_id" => $interaction->product ? $interaction->product->sub_category_id : null,
+                "interaction_type" => $interaction->interaction_type
+            ];
+        })
+        ->toArray();
+
+    }
     public function home()
     {
         $sliders = Cache::remember('sliders', 60 * 60, function () {
@@ -74,36 +89,20 @@ class HomeController extends Controller
         $flashSellProducts = FlashSellItem::with("product")->orderBy("created_at","desc")->get();
         $flashSellEndDate = FlashSell::first();
         // Call Recommend API to get recommend product based on user interaction if user is logged in
-        // $matrixFactorizationRecommendedProducts = collect();
-        $lightGCNRecommendedProducts = collect();
-        $sasRecRecommendedProducts = collect();
         $bert4RecRecommendedProducts = collect();
         $comirecRecommendedProducts = collect();
         $twoTowerRecommendedProducts = collect();
         if (Auth::check()) {
             try {
-                $interactions = UserProductInteraction::where("user_id", Auth::id())
-                    ->orderBy("created_at", "desc")
-                    ->whereNotIn("interaction_type",["wishlist_remove","cart_remove","R0"])
-                    ->get()
-                    ->map(function ($interaction) {
-                        return [
-                            "product_id" => $interaction->product_id,
-                            "interaction_type" => $interaction->interaction_type
-                        ];
-                    })
-                    ->toArray();
-                // dd($interactions);
-                $numberOfUniqueInteractedProducts = count(array_unique(array_column($interactions, 'product_id')));
-                if(empty($interactions) || $numberOfUniqueInteractedProducts < 1){
-                    // $matrixFactorizationRecommendedProducts = collect();
-                    $lightGCNRecommendedProducts = collect();
-                    $sasRecRecommendedProducts = collect();
+                $interactionsForComirec = self::getInteractions(Auth::id(),["click","wishlist_add"]);
+                $interactionsForBert4Rec = self::getInteractions(Auth::id(),["cart_add","cart_remove"]);
+                $interactionsForTwoTower = self::getInteractions(Auth::id(),["click","wishlist_add","cart_add","R5","R4","R3"]);
+                $numberOfUniqueInteractedProducts = count(array_unique(array_column($interactionsForTwoTower, 'product_id')));
+                if(empty($interactionsForTwoTower) || $numberOfUniqueInteractedProducts < 1){
                     $bert4RecRecommendedProducts = collect();
                     $comirecRecommendedProducts = collect();
                     $twoTowerRecommendedProducts = collect();
                 }else{
-                    // dd($interactions);
                     $recommendationService = new RecommendationApiService();
                     //------------- Matrix Factorization -------------
                     // $matrixFactorizationResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"matrix_factorization", 10);
@@ -119,31 +118,31 @@ class HomeController extends Controller
                     //-------------  Matrix Factorization -------------
 
                     //------------- LightGCN -------------
-                    $lightGCNResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"light_gcn", 10);
-                    $lightGCNRecommendedProductIDs = $lightGCNResponse["recommendations"];
-                    $lightGCNRecommendedProducts = Product::whereIn("id", $lightGCNRecommendedProductIDs)
-                    ->where("status", 1)
-                    ->where("is_approved", 1)
-                    ->get()
-                    ->sortBy(function ($product) use ($lightGCNRecommendedProductIDs) {
-                        return array_search($product->id, $lightGCNRecommendedProductIDs);
-                    });
+                    // $lightGCNResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"light_gcn", 10);
+                    // $lightGCNRecommendedProductIDs = $lightGCNResponse["recommendations"];
+                    // $lightGCNRecommendedProducts = Product::whereIn("id", $lightGCNRecommendedProductIDs)
+                    // ->where("status", 1)
+                    // ->where("is_approved", 1)
+                    // ->get()
+                    // ->sortBy(function ($product) use ($lightGCNRecommendedProductIDs) {
+                    //     return array_search($product->id, $lightGCNRecommendedProductIDs);
+                    // });
                     //------------- LightGCN -------------
 
                     //------------- SASRec ----------------
-                    $sasRecResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"sasrec", 10);
-                    $sasRecRecommendedProductIDs = $sasRecResponse["recommendations"];
-                    $sasRecRecommendedProducts = Product::whereIn("id", $sasRecRecommendedProductIDs)
-                    ->where("status", 1)
-                    ->where("is_approved", 1)
-                    ->get()
-                    ->sortBy(function ($product) use ($sasRecRecommendedProductIDs) {
-                        return array_search($product->id, $sasRecRecommendedProductIDs);
-                    });
+                    // $sasRecResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"sasrec", 10);
+                    // $sasRecRecommendedProductIDs = $sasRecResponse["recommendations"];
+                    // $sasRecRecommendedProducts = Product::whereIn("id", $sasRecRecommendedProductIDs)
+                    // ->where("status", 1)
+                    // ->where("is_approved", 1)
+                    // ->get()
+                    // ->sortBy(function ($product) use ($sasRecRecommendedProductIDs) {
+                    //     return array_search($product->id, $sasRecRecommendedProductIDs);
+                    // });
                     //------------- SASRec ----------------
 
                     //------------- Bert4rec ----------------
-                    $bert4recResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"bert4rec", 10);
+                    $bert4recResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactionsForBert4Rec,"bert4rec", 10);
                     $bert4recRecommendedProductIDs = $bert4recResponse["recommendations"];
                     $bert4RecRecommendedProducts = Product::whereIn("id", $bert4recRecommendedProductIDs)
                     ->where("status", 1)
@@ -155,7 +154,7 @@ class HomeController extends Controller
                     //------------- Bert4rec ----------------
 
                     //------------- Comirec ----------------
-                    $comirecResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"comirec", 10);
+                    $comirecResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactionsForComirec,"comirec", 10);
                     $comirecRecommendedProductIDs = $comirecResponse["recommendations"];
                     $comirecRecommendedProducts = Product::whereIn("id", $comirecRecommendedProductIDs)
                     ->where("status", 1)
@@ -167,7 +166,7 @@ class HomeController extends Controller
                     //------------- Comirec ----------------
 
                     //------------- Two Tower ----------------
-                    $twoTowerResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"twotower", 10);
+                    $twoTowerResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactionsForTwoTower,"twotower", 10);
                     $twoTowerRecommendedProductIDs = $twoTowerResponse["recommendations"];
                     $twoTowerRecommendedProducts = Product::whereIn("id", $twoTowerRecommendedProductIDs)
                     ->where("status", 1)
@@ -181,13 +180,14 @@ class HomeController extends Controller
             } catch (\Exception $e) {
                 Log::error("Error fetching user recommendations: " . $e->getMessage());
                 // $matrixFactorizationRecommendedProducts = collect();
-                $lightGCNRecommendedProducts = collect();
-                $sasRecRecommendedProducts = collect();
+
+
                 $bert4RecRecommendedProducts = collect();
                 $comirecRecommendedProducts = collect();
                 $twoTowerRecommendedProducts = collect();
             }
         }
+
         return view(
             "frontend.pages.home",
             compact(
@@ -202,9 +202,6 @@ class HomeController extends Controller
                 "featuredProducts",
                 "bestProducts",
                 "flashSellEndDate",
-                // "matrixFactorizationRecommendedProducts",
-                "lightGCNRecommendedProducts",
-                "sasRecRecommendedProducts",
                 "bert4RecRecommendedProducts",
                 "comirecRecommendedProducts",
                 "twoTowerRecommendedProducts"

@@ -14,10 +14,9 @@
     {{-- SASRec Recommended Products --}}
     {{-- @include('frontend.sections.sasrec-recommended-for-you') --}}
 
+    {{-- Two Tower Recommended Products --}}
+    @include('frontend.sections.two-tower-recommended-for-you')
 
-
-    {{-- ComiRec Recommended Products --}}
-    @include('frontend.sections.comirec-recommended-for-you')
 
 
 
@@ -41,9 +40,10 @@
     {{-- LightGCN Recommended Products
     @include('frontend.sections.light-gcn-recommended-for-you') --}}
 
+    {{-- ComiRec Recommended Products --}}
+    @include('frontend.sections.comirec-recommended-for-you')
 
-    {{-- Two Tower Recommended Products --}}
-    @include('frontend.sections.two-tower-recommended-for-you')
+
 
     {{-- New Arrival product --}}
     {{-- @include('frontend.sections.new-arrival') --}}
