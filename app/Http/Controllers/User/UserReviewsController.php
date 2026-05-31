@@ -20,6 +20,13 @@ class UserReviewsController extends Controller
             "review" => "nullable|string",
         ]);
 
+        $reviewText = is_string($request->review) ? trim($request->review) : null;
+        if (empty($reviewText)) {
+            return response()->json([
+                "message" => "Please provide a review comment."
+            ], 422);
+        }
+
         $user = auth()->user();
 
         // Check if user has already reviewed this product
@@ -41,7 +48,7 @@ class UserReviewsController extends Controller
         $review = $user->userReviews()->create([
             "product_id" => $request->product_id,
             "rating" => $request->rating,
-            "review" => $request->review,
+            "review" => $reviewText,
             "images" => $images
         ]);
 

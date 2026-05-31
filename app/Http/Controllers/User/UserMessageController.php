@@ -15,8 +15,22 @@ class UserMessageController extends Controller
 
     public function sendMessage(Request $request)
     {
-        $senderID = $request->sender_id;
-        $receiverID = $request->receiver_id;
+        $senderID = Auth::id();
+
+        $request->validate([
+            "receiver_id" => "required|integer|exists:users,id|different:" . $senderID,
+            "message_content" => "required|string",
+        ]);
+
+        $receiverID = (int) $request->receiver_id;
+        $messageContent = trim((string) $request->message_content);
+        if ($messageContent === '') {
+            return response([
+                "status" => "error",
+                "message" => "Please type a message before sending."
+            ], 422);
+        }
+
         $isNewConversation =  count(Chat::whereIn('receiver_id', [$senderID, $receiverID])
             ->whereIn('sender_id', [$senderID, $receiverID])
             ->get()) <= 0 ? true : false;
@@ -24,7 +38,7 @@ class UserMessageController extends Controller
         $message = Chat::create([
             "receiver_id" => $receiverID,
             "sender_id" => $senderID,
-            "message" => $request->message_content,
+            "message" => $messageContent,
         ]);
 
         broadcast(new MessageEvent($message->message, $senderID, $receiverID, $message->created_at));

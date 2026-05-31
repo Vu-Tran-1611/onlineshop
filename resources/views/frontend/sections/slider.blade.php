@@ -1,4 +1,4 @@
-<!-- Modern Hero Section -->
+
 <div class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50">
     <div class="container mx-auto px-4 py-12">
         <div class="grid lg:grid-cols-12 gap-8 items-stretch">

@@ -49,8 +49,11 @@ class PersonalizedRecommendationController extends Controller
 
                 $recommendationService = new RecommendationApiService();
                 //------------- Comirec ----------------
-                $comirecResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"comirec", 60);
-                $comirecRecommendedProductIDs = $comirecResponse["recommendations"];
+                $interactionsHash = md5(json_encode($interactions));
+                $comirecRecommendedProductIDs = Cache::remember('comirec_recommendations_' . Auth::id() . '_' . $interactionsHash, 60 * 15, function () use ($recommendationService, $interactions) {
+                    $response = $recommendationService->getUserRecentRecommendations(Auth::id(), $interactions, "comirec", 60);
+                    return $response["recommendations"];
+                });
                 $comirecRecommendedProducts = Product::whereIn("id", $comirecRecommendedProductIDs)
                 ->where("status", 1)
                 ->where("is_approved", 1)
@@ -91,8 +94,11 @@ class PersonalizedRecommendationController extends Controller
 
                 $recommendationService = new RecommendationApiService();
                 //------------- Two Tower ----------------
-                $twoTowerResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"twotower", 60);
-                $twoTowerRecommendedProductIDs = $twoTowerResponse["recommendations"];
+                $interactionsHash = md5(json_encode($interactions));
+                $twoTowerRecommendedProductIDs = Cache::remember('twotower_recommendations_' . Auth::id() . '_' . $interactionsHash, 60 * 15, function () use ($recommendationService, $interactions) {
+                    $response = $recommendationService->getUserRecentRecommendations(Auth::id(), $interactions, "twotower", 60);
+                    return $response["recommendations"];
+                });
                 $twoTowerRecommendedProducts = Product::whereIn("id", $twoTowerRecommendedProductIDs)
                 ->where("status", 1)
                 ->where("is_approved", 1)
@@ -133,8 +139,11 @@ class PersonalizedRecommendationController extends Controller
 
                 $recommendationService = new RecommendationApiService();
                 //------------- Bert4rec ----------------
-                $bert4recResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactions,"bert4rec", 60);
-                $bert4recRecommendedProductIDs = $bert4recResponse["recommendations"];
+                $interactionsHash = md5(json_encode($interactions));
+                $bert4recRecommendedProductIDs = Cache::remember('bert4rec_recommendations_' . Auth::id() . '_' . $interactionsHash, 60 * 15, function () use ($recommendationService, $interactions) {
+                    $response = $recommendationService->getUserRecentRecommendations(Auth::id(), $interactions, "bert4rec", 60);
+                    return $response["recommendations"];
+                });
                 $bert4RecRecommendedProducts = Product::whereIn("id", $bert4recRecommendedProductIDs)
                 ->where("status", 1)
                 ->where("is_approved", 1)

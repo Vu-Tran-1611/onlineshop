@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\UserProductInteraction;
+use Illuminate\Support\Facades\Cache;
 
 class StoreProductInteractionJob implements ShouldQueue
 {
@@ -36,6 +37,5 @@ class StoreProductInteractionJob implements ShouldQueue
             "product_id" => $this->productId,
             "interaction_type" => $this->interactionType
         ]);
-
     }
 }
