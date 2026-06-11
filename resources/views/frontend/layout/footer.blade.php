@@ -28,28 +28,35 @@
                 </div>
             </div>
             <!-- Links -->
-            <div class="flex flex-1 flex-col sm:flex-row gap-10">
+            <div class="flex flex-1 flex-col sm:flex-row gap-5">
                 <div>
                     <h3 class="text-white font-semibold mb-3">Quick Links</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:underline">Home</a></li>
-                        <li><a href="#" class="hover:underline">Shop</a></li>
-                        <li><a href="#" class="hover:underline">About Us</a></li>
-                        <li><a href="#" class="hover:underline">Contact</a></li>
-                        <li><a href="#" class="hover:underline">Blog</a></li>
+                        <li><a href="{{ route('home') }}" class="hover:underline">Home</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'faq']) }}" class="hover:underline">FAQ</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'contact-support']) }}" class="hover:underline">Support</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'about-us']) }}" class="hover:underline">About Us</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="text-white font-semibold mb-3">Customer Service</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:underline">FAQ</a></li>
-                        <li><a href="#" class="hover:underline">Returns</a></li>
-                        <li><a href="#" class="hover:underline">Shipping</a></li>
-                        <li><a href="#" class="hover:underline">Support</a></li>
-                        <li><a href="#" class="hover:underline">Order Tracking</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'shipping-policy']) }}" class="hover:underline">Shipping Policy</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'return-policy']) }}" class="hover:underline">Return Policy</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'refund-policy']) }}" class="hover:underline">Refund Policy</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'warranty-policy']) }}" class="hover:underline">Warranty Policy</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'payment-policy']) }}" class="hover:underline">Payment Policy</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'order-cancellation-policy']) }}" class="hover:underline">Order Cancellation Policy</a></li>
                     </ul>
                 </div>
                 <div>
+                    <h3 class="text-white font-semibold mb-3">Legal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'privacy-policy']) }}" class="hover:underline">Privacy Policy</a></li>
+                        <li><a href="{{ route('knowledge-base.document', ['documentSlug' => 'terms-and-conditions']) }}" class="hover:underline">Terms and Conditions</a></li>
+                    </ul>
+                </div>
+                {{-- <div>
                     <h3 class="text-white font-semibold mb-3">Contact Us</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="block">Email: <a href="mailto:{{ env('MAIL_FROM_ADDRESS', 'support@vushop.com') }}"
@@ -59,7 +66,7 @@
                         <li><span class="block">Mon-Fri: 9am - 6pm</span></li>
                         <li><span class="block">123 Market Street, City, Country</span></li>
                     </ul>
-                </div>
+                </div> --}}
             </div>
             <!-- Newsletter -->
             <div class="md:w-1/4">

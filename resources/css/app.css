@@ -160,3 +160,64 @@
   }
 }
 /* Box gradient */
+
+/* Knowledge base document typography */
+.kb-document {
+  max-width: 900px;
+  margin: 24px auto;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 28px;
+  color: #0f172a;
+  line-height: 1.75;
+}
+
+.kb-document header {
+  margin-bottom: 20px;
+}
+
+.kb-document h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #0b1020;
+  margin-bottom: 12px;
+}
+
+.kb-document h2 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: #0f172a;
+  margin-top: 22px;
+  margin-bottom: 10px;
+}
+
+.kb-document p {
+  margin: 0 0 12px;
+  color: #334155;
+}
+
+.kb-document ul,
+.kb-document ol {
+  margin: 0 0 14px 24px;
+  padding-left: 12px;
+}
+
+.kb-document ul {
+  list-style: disc;
+}
+
+.kb-document ol {
+  list-style: decimal;
+}
+
+.kb-document li {
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.kb-document section + section {
+  margin-top: 6px;
+}

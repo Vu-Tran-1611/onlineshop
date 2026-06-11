@@ -56,4 +56,15 @@ Route::get("/more-products-by-flash-sale", [HomeController::class, "moreProducts
 // View Shop Page
 Route::get("/shop", [HomeController::class, "shop"])->name("shop");
 
+// Knowledge Base
+define('DOCUMENTS_SLUGS', "shipping-policy|return-policy|refund-policy|warranty-policy|payment-policy|order-cancellation-policy|privacy-policy|terms-and-conditions|faq|contact-support|about-us");
+
+Route::get('/{documentSlug}', [HomeController::class, 'knowledgeBaseDocument'])
+    ->where('documentSlug', DOCUMENTS_SLUGS)
+    ->name('knowledge-base.document');
+
+// PDF Download Routes
+require __DIR__ . '/pdf-download.php';
+
 require __DIR__ . '/auth.php';
+

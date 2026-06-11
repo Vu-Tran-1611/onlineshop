@@ -20,6 +20,7 @@ use App\Services\RecommendationApiService;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\StoreProductInteractionJob;
 use App\Models\UserProductInteraction;
+use App\Models\KnowledgeBaseDocument;
 class HomeController extends Controller
 {
     public function getInteractions($userID,$interaction_types){
@@ -671,7 +672,27 @@ class HomeController extends Controller
         $categories = Cache::remember('categories', 60 * 60, function () {
             return Category::where("status", 1)->with('subCategories')->get()->take(20);
         });
-        $user = Auth::user();
-        return view("frontend.pages.not-found", compact("title", "user", "categories"));
+        return view("frontend.pages.not-found", compact("title", "categories"));
+    }
+
+    // Knowledge Base document by URL slug
+    public function knowledgeBaseDocument(string $documentSlug)
+    {
+        $content = KnowledgeBaseDocument::where("slug", $documentSlug)->first();
+        if (!$content) {
+            return redirect()->route("not-found");
+        }
+
+        $title = $content->title;
+        $categories = Cache::remember('categories', 60 * 60, function () {
+            return Category::where("status", 1)->with('subCategories')->get()->take(20);
+        });
+
+        $viewName = "frontend.pages.{$documentSlug}";
+        if (!view()->exists($viewName)) {
+            return redirect()->route("not-found");
+        }
+
+        return view($viewName, compact("title", "categories", "content"));
     }
 }

@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        $this->call(UserReviewSeeder::class);
+        $this->call(KnowledgeBaseDocumentSeeder::class);
+        // $this->call(UserReviewSeeder::class);
     }
 }
