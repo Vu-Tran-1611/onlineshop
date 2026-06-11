@@ -737,21 +737,20 @@ HTML;
 	<section>
 		<h2>Do I need an account to shop?</h2>
 		<p>
-			Customers do not always need an account to browse products, but creating an account can make the shopping experience easier.
-		</p>
+            For browsing products, you do not need to create an account.
+            However, for basic features such as adding products to the cart and making purchases, you will need to create an account and log in.
+        </p>
 		<p>With an account, customers can:</p>
 		<ul>
             <li>Add products to the cart and save them for later</li>
-            <li>Purchase products faster with saved payment and shipping information</li>
+            <li>Purchase products and manage shipping information</li>
 			<li>View order history</li>
 			<li>Track orders</li>
 			<li>Save addresses</li>
 			<li>Manage wishlist items</li>
 			<li>Receive updates about promotions or recommendations</li>
+            <li>Get the latest news about new products, sales, and events</li>
 		</ul>
-		<p>
-			Some features, such as personalized recommendations or saved carts, may require the customer to be logged in.
-		</p>
 	</section>
 
 	<section>
