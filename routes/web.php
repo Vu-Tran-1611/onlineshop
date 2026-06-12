@@ -58,7 +58,7 @@ Route::get("/more-products-by-flash-sale", [HomeController::class, "moreProducts
 Route::get("/shop", [HomeController::class, "shop"])->name("shop");
 
 // Knowledge Base
-define('DOCUMENTS_SLUGS', "shipping-policy|return-policy|refund-policy|warranty-policy|payment-policy|order-cancellation-policy|privacy-policy|terms-and-conditions|faq|contact-support|about-us");
+defined('DOCUMENTS_SLUGS') || define('DOCUMENTS_SLUGS', "shipping-policy|return-policy|refund-policy|warranty-policy|payment-policy|order-cancellation-policy|privacy-policy|terms-and-conditions|faq|contact-support|about-us");
 
 Route::get('/{documentSlug}', [HomeController::class, 'knowledgeBaseDocument'])
     ->where('documentSlug', DOCUMENTS_SLUGS)
