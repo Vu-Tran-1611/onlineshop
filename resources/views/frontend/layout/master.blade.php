@@ -37,6 +37,8 @@
             </div>
         </div>
         {{-- Chat --}}
+        @include('frontend.sections.chat_bot')
+
         @if (auth()->check())
             @include('frontend.sections.chat')
         @endif

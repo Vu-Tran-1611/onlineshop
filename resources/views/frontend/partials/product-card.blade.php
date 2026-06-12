@@ -2,7 +2,7 @@
        class=" cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
        <div class="relative">
            <img class="h-64 w-full object-cover group-hover:scale-105 transition-transform duration-300"
-               src="{{ isset($p->thumb_image) ? asset($p->thumb_image) : '' }}" />
+               src="{{ isset($p->thumb_image) ? asset($p->thumb_image) : '' }}"/>
            <div class="absolute top-2 left-2 flex gap-2 w-full pr-2 justify-between">
                <span class="bg-sky-600 rounded-full text-white px-3 py-1 text-xs shadow">
                    {{ getProductType($p) }}

@@ -1,3 +1,11 @@
+import MarkdownIt from 'markdown-it';
+
+window.ChatMarkdown = new MarkdownIt({
+    html: false,
+    breaks: true,
+    linkify: true,
+});
+
 window.Echo.private('message.' + USER.id).listen(
     "MessageEvent",
     (e) => {

@@ -142,7 +142,7 @@
 @endpush
 
 <div
-        class="open-chat-pannel text-lg fixed bottom-6 right-6 px-6 py-4 rounded-full text-white
+        class="open-chat-pannel text-md fixed bottom-6 right-6 px-8 py-2 rounded-full text-white
     cursor-pointer transition-all duration-300 hover:scale-105 bg-slate-900 hover:bg-slate-800 border border-slate-600 shadow-2xl z-[10001]">
     <div class="flex items-center space-x-2">
         <i class="fa-regular fa-comment text-xl"></i>
@@ -275,6 +275,17 @@
                     `
             $(".message").replaceWith(messagePatternHTML);
         }
+
+        $(document).on('bot-chat:open', function() {
+            if ($('.chat-pannel').is(':visible')) {
+                init();
+                disableChat(true);
+                $('.chat-pannel').hide();
+                $('.open-chat-pannel').show();
+                document.dispatchEvent(new CustomEvent('vendor-chat:close'));
+            }
+        });
+
         disableChat(true);
         init();
 
@@ -412,6 +423,7 @@
 
         // Show chat with shop
         $(".show-chat-pannel").on("click", function() {
+            document.dispatchEvent(new CustomEvent('vendor-chat:open'));
             disableChat(false);
             const name = $(this).data("name");
             const banner = $(this).data("banner");
@@ -435,9 +447,11 @@
             disableChat(true);
             $(".chat-pannel").hide(500);
             $(".open-chat-pannel").show();
+            document.dispatchEvent(new CustomEvent('vendor-chat:close'));
         });
 
         $(".open-chat-pannel").on("click", function() {
+            document.dispatchEvent(new CustomEvent('vendor-chat:open'));
             init();
             disableChat(true);
             $(".chat-pannel").show(500);

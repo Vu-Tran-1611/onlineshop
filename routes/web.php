@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\BotChatController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Jobs\SendWelcomeEmailJob;
@@ -62,6 +63,8 @@ define('DOCUMENTS_SLUGS', "shipping-policy|return-policy|refund-policy|warranty-
 Route::get('/{documentSlug}', [HomeController::class, 'knowledgeBaseDocument'])
     ->where('documentSlug', DOCUMENTS_SLUGS)
     ->name('knowledge-base.document');
+
+Route::post('/bot-chat', [BotChatController::class, 'chat'])->name('frontend.bot-chat');
 
 // PDF Download Routes
 require __DIR__ . '/pdf-download.php';

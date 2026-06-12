@@ -33,6 +33,9 @@ return [
     'python_api' => [
         'url' => env('PYTHON_API_URL'),
     ],
+    'fastapi_ai' => [
+        'url' => env('FASTAPI_AI_URL'),
+    ],
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
