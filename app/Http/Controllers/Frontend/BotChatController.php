@@ -26,7 +26,7 @@ class BotChatController extends Controller
         $endpoint = rtrim($baseUrl, '/') . '/chat';
 
         try {
-            $response = Http::timeout(45)
+            $response = Http::timeout(100)
                 ->acceptJson()
                 ->withQueryParameters([
                     'questions' => $validated['message'],
