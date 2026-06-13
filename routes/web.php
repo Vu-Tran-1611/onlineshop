@@ -59,7 +59,7 @@ Route::get("/shop", [HomeController::class, "shop"])->name("shop");
 
 // Knowledge Base
 
-Route::get('/{documentSlug}', [HomeController::class, 'knowledgeBaseDocument'])->name('knowledge-base.document');
+Route::get('/knowledge-base/{documentSlug}', [HomeController::class, 'knowledgeBaseDocument'])->name('knowledge-base.document');
 
 Route::post('/bot-chat', [BotChatController::class, 'chat'])->name('frontend.bot-chat');
 
