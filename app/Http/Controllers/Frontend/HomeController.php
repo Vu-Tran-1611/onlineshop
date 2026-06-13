@@ -678,6 +678,7 @@ class HomeController extends Controller
     // Knowledge Base document by URL slug
     public function knowledgeBaseDocument(string $documentSlug)
     {
+        dd($documentSlug);
         $content = KnowledgeBaseDocument::where("slug", $documentSlug)->first();
         if (!$content) {
             return redirect()->route("not-found");
