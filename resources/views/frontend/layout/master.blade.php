@@ -27,9 +27,6 @@
         {{-- Navbar --}}
         @include('frontend.layout.navbar')
 
-        {{-- Sidebar --}}
-        @include('frontend.layout.sidebar')
-
         <!-- Main Content -->
         <div class=" bg-slate-100">
             <div class="main-content lg:w-[1200px] mx-auto">

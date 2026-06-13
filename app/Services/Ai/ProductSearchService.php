@@ -93,8 +93,8 @@ class ProductSearchService
 
         return Category::query()
             ->where(function ($builder) use ($category) {
-                $builder->where('name', 'like', '%' . $category . '%')
-                    ->orWhere('slug', 'like', '%' . $category . '%');
+                $builder->where('name', 'like',  $category )
+                    ->orWhere('slug', 'like',  $category );
             })
             ->pluck('id')
             ->all();
@@ -109,8 +109,8 @@ class ProductSearchService
         return SubCategory::query()
             ->when(!empty($categoryIds), fn ($builder) => $builder->whereIn('category_id', $categoryIds))
             ->where(function ($builder) use ($subcategory) {
-                $builder->where('name', 'like', '%' . $subcategory . '%')
-                    ->orWhere('slug', 'like', '%' . $subcategory . '%');
+                $builder->where('name', 'like' ,$subcategory )
+                    ->orWhere('slug', 'like' ,$subcategory );
             })
             ->pluck('id')
             ->all();

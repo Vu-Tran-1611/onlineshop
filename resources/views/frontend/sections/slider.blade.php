@@ -1,6 +1,6 @@
 
-<div class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50">
-    <div class="container mx-auto px-4 py-12">
+<div class="relative overflow-hidden bg-gradient-to-br ">
+    <div class="container mx-auto  py-12">
         <div class="grid lg:grid-cols-12 gap-8 items-stretch">
 
 
@@ -33,9 +33,7 @@
                         <div class="swiper-pagination !bottom-6"></div>
                     </div>
 
-                    <!-- Floating Elements -->
-                    <div class="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full opacity-20 animate-pulse"></div>
-                    <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-violet-400 to-purple-500 rounded-full opacity-10 animate-pulse delay-1000"></div>
+
                 </div>
 
                 {{--
