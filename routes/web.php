@@ -59,9 +59,7 @@ Route::get("/shop", [HomeController::class, "shop"])->name("shop");
 
 // Knowledge Base
 
-Route::get('/{documentSlug}', [HomeController::class, 'knowledgeBaseDocument'])
-    ->where('documentSlug', 'shipping-policy|warranty-policy|payment-policy|order-cancellation-policy|faq|contact-support|about-us|terms-and-conditions|privacy-policy|return-policy|refund-policy')
-    ->name('knowledge-base.document');
+Route::get('/{documentSlug}', [HomeController::class, 'knowledgeBaseDocument'])->name('knowledge-base.document');
 
 Route::post('/bot-chat', [BotChatController::class, 'chat'])->name('frontend.bot-chat');
 
