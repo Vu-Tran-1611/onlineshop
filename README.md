@@ -2,11 +2,11 @@
 
 This project is a full-stack e-commerce platform built with Laravel and MySQL. It supports product browsing, cart, wishlist, checkout, coupon discounts, vendor product uploads, admin management, and real-time customer-vendor chat. The platform also integrates two FastAPI services: a product recommendation system for personalized suggestions and an AI shopping assistant for product search and store-policy support.
 
-## Live Demo
+## 1. Live Demo
 
 Live application: [https://demo.fashion-shop.uk](https://demo.fashion-shop.uk)
 
-## Key Features
+## 2. Key Features
 
 ### Customer Features
 
@@ -48,7 +48,7 @@ Live application: [https://demo.fashion-shop.uk](https://demo.fashion-shop.uk)
 - View all orders and monitor status changes across all vendors
 - Update admin profile info, avatar, and password
 
-## AI / ML Integrations
+## 3. AI / ML Integrations
 
 ### Recommendation Service
 
@@ -68,7 +68,7 @@ The platform connects to a FastAPI AI assistant that uses an LLM, LangChain tool
 
 A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query products by keyword, category, sub-category, brand, price range, and product type. The endpoint is throttled at 60 requests per minute.
 
-## Tech Stack
+## 4. Tech Stack
 
 - Backend: Laravel, PHP
 - Frontend: Blade, Tailwind CSS, jQuery
@@ -79,33 +79,15 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
 - AI / ML Services: FastAPI (recommendation models and AI assistant)
 - Deployment: Railway
 
-## System Architecture
-
-```
-User Browser
-   |
-   v
-Laravel E-Commerce App
-   |
-   v
-MySQL Database
-
-Laravel App
-   |-- FastAPI Recommendation Service
-   |      |-- ComiRec model
-   |      |-- Two-Tower model
-   |      +-- Bert4Rec model
-   |
-   +-- FastAPI AI Shopping Assistant
-          |-- LLM + LangChain tool-calling
-          +-- Pinecone vector database for policy RAG
-```
-
-## Screenshots / Demo
+## 5. System Architecture
 
 (Coming soon)
 
-## How to Run Locally
+## 6. Screenshots / Demo
+
+(Coming soon)
+
+## 7. How to Run Locally
 
 1. Clone the repository
 
@@ -188,12 +170,12 @@ Laravel App
    - Admin panel: http://localhost:8000/admin
    - Vendor panel: http://localhost:8000/vendor
 
-## Future Improvements
+## 8. Future Improvements
 
 - Improve product search with semantic search
 - Add more login methods (Google, Facebook OAuth)
 - Add mobile app support
 
-## License
+## 9. License
 
 This project is licensed under the MIT License - see the Laravel framework license for details.
