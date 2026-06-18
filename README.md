@@ -84,72 +84,65 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
 (Coming soon)
 
 ## 6. Screenshots / Demo
+1. Login Page
+    ![Login Page](./public/screenshots/02-category-page.png)
 
-1. Homepage
+2. Homepage
 
-   ![Homepage](./public/screenshots/01-homepage.png)
+    ![Homepage](./public/screenshots/01-homepage.png)
 
-   ![Homepage hero banner](./public/screenshots/14-homepage-hero-banner.png)
 
-2. Category browsing page
+3. Category browsing page
+    ![Category Browsing Page](./public/screenshots/10-ai-gift-recommendation.png)
 
-   ![Category browsing page](./public/screenshots/02-category-page.png)
 
-3. Search results page
+4. Search results page
+    ![Product Search Page](./public/screenshots/09-login-page.png)
 
-   ![Search results page](./public/screenshots/03-search-page.png)
 
-4. Product details page
+5. Product details page
+    ![Product details page](./public/screenshots/03-search-page.png)
 
-   ![Product details page](./public/screenshots/04-product-details-page.png)
 
-5. Cart page
+6. Cart page
+   ![Cart page](./public/screenshots/04-product-details-page.png)
 
-   ![Cart page](./public/screenshots/05-cart-page.png)
 
-6. Checkout page
+7. Checkout page
 
    ![Checkout page](./public/screenshots/06-checkout-page.png)
+   ![Checkout page](./public/screenshots/07-order-details-page.png)
 
-   ![Checkout payment method](./public/screenshots/19-checkout-payment-method-page.png)
 
-7. Order details page
+8. Order details page
+   ![Order Detail Page](./public/screenshots/08-customer-address-page.png)
 
-   ![Order details page](./public/screenshots/07-order-details-page.png)
 
-8. Customer profile and address management page
-
-   ![Customer address management page](./public/screenshots/08-customer-address-page.png)
-
-   ![Customer profile page](./public/screenshots/17-customer-profile-page.png)
 
 9. Customer-vendor real-time chat page
 
-   ![Customer-vendor real-time chat page](./public/screenshots/18-customer-vendor-chat-page.png)
+    ![Vendor Chat](./public/screenshots/12-ai-chatbot-homepage-support.png)
 
-10. AI chatbot page
+    ![Vendor Chat](./public/screenshots/13-ai-iphone-recommendation.png)
+10. Agentic RAG AI 
 
-    ![AI chatbot support](./public/screenshots/12-ai-chatbot-homepage-support.png)
+    ![Agentic RAG AI](./public/screenshots/14-homepage-hero-banner.png)
 
-    ![AI chatbot product suggestion](./public/screenshots/13-ai-iphone-recommendation.png)
 
-    ![AI chatbot product suggestion](./public/screenshots/15-ai-dior-recommendation.png)
-
-    ![AI chatbot product suggestion](./public/screenshots/16-ai-hoodie-recommendation.png)
-
+  
 11. AI shopping assistant response page
+    ![AI chatbot product suggestion](./public/screenshots/15-ai-dior-recommendation.png)
+    ![AI chatbot product suggestion](./public/screenshots/16-ai-hoodie-recommendation.png)
+    ![Customer profile page](./public/screenshots/17-customer-profile-page.png)
+    ![AI chatbot product suggestion](./public/screenshots/20-vendor-chat-dashboard-page.png)
+    ![AI chatbot product suggestion](./public/screenshots/18-customer-vendor-chat-page.png)
+    ![AI chatbot product suggestion](./public/screenshots/19-checkout-payment-method-page.png)
 
-    ![AI shopping assistant response page](./public/screenshots/10-ai-gift-recommendation.png)
 
-    ![AI shopping assistant response page](./public/screenshots/11-ai-watch-recommendation.png)
+12. Update Account Page
+    ![Update Address](./public/screenshots/05-cart-page.png)
+    ![Update Account](./public/screenshots/11-ai-watch-recommendation.png)
 
-12. Login page
-
-    ![Login page](./public/screenshots/09-login-page.png)
-
-13. Vendor chat dashboard page
-
-    ![Vendor chat dashboard page](./public/screenshots/20-vendor-chat-dashboard-page.png)
 
 ## 7. How to Run Locally
 
