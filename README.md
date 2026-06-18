@@ -85,7 +85,71 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
 
 ## 6. Screenshots / Demo
 
-(Coming soon)
+1. Homepage
+
+   ![Homepage](./public/screenshots/01-homepage.png)
+
+   ![Homepage hero banner](./public/screenshots/14-homepage-hero-banner.png)
+
+2. Category browsing page
+
+   ![Category browsing page](./public/screenshots/02-category-page.png)
+
+3. Search results page
+
+   ![Search results page](./public/screenshots/03-search-page.png)
+
+4. Product details page
+
+   ![Product details page](./public/screenshots/04-product-details-page.png)
+
+5. Cart page
+
+   ![Cart page](./public/screenshots/05-cart-page.png)
+
+6. Checkout page
+
+   ![Checkout page](./public/screenshots/06-checkout-page.png)
+
+   ![Checkout payment method](./public/screenshots/19-checkout-payment-method-page.png)
+
+7. Order details page
+
+   ![Order details page](./public/screenshots/07-order-details-page.png)
+
+8. Customer profile and address management page
+
+   ![Customer address management page](./public/screenshots/08-customer-address-page.png)
+
+   ![Customer profile page](./public/screenshots/17-customer-profile-page.png)
+
+9. Customer-vendor real-time chat page
+
+   ![Customer-vendor real-time chat page](./public/screenshots/18-customer-vendor-chat-page.png)
+
+10. AI chatbot page
+
+    ![AI chatbot support](./public/screenshots/12-ai-chatbot-homepage-support.png)
+
+    ![AI chatbot product suggestion](./public/screenshots/13-ai-iphone-recommendation.png)
+
+    ![AI chatbot product suggestion](./public/screenshots/15-ai-dior-recommendation.png)
+
+    ![AI chatbot product suggestion](./public/screenshots/16-ai-hoodie-recommendation.png)
+
+11. AI shopping assistant response page
+
+    ![AI shopping assistant response page](./public/screenshots/10-ai-gift-recommendation.png)
+
+    ![AI shopping assistant response page](./public/screenshots/11-ai-watch-recommendation.png)
+
+12. Login page
+
+    ![Login page](./public/screenshots/09-login-page.png)
+
+13. Vendor chat dashboard page
+
+    ![Vendor chat dashboard page](./public/screenshots/20-vendor-chat-dashboard-page.png)
 
 ## 7. How to Run Locally
 
