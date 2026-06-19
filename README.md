@@ -143,7 +143,28 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
     ![Update Address](./public/screenshots/05-cart-page.png)
     ![Update Account](./public/screenshots/11-ai-watch-recommendation.png)
 
-
+13. Vendor Manage Product Page
+    ![Update Account](./public/screenshots/vendor-product.png)
+14. Vendor Create Product Page
+    ![Update Account](./public/screenshots/vendor-create-product.png)
+15. Vendor Invoice Page
+    ![Update Account](./public/screenshots/vendor-invoice.png)
+16. Admin Dashboard Page
+    ![Update Account](./public/screenshots/admin-dashboard.png)
+17. Admin Sub Category Manage Page
+    ![Update Account](./public/screenshots/admin-sub-category-manage.png)
+18. Admin Category Manage Page
+    ![Update Account](./public/screenshots/admin-category-manage.png)
+19. Admin Slider Manage Page
+    ![Update Account](./public/screenshots/admin-slider-manage.png)
+20. Admin Coupon Manage Page
+    ![Update Account](./public/screenshots/admin-coupon-manage.png)
+21. Admin Flash Sale Manage Page
+    ![Update Account](./public/screenshots/admin-flash-sale.png)
+16. Admin Brand Manage Page
+    ![Update Account](./public/screenshots/admin-brand-manage.png)
+16. Admin User Manage Page
+    ![Update Account](./public/screenshots/admin-user.png)
 ## 7. How to Run Locally
 
 1. Clone the repository
