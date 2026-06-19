@@ -79,11 +79,11 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
 - AI / ML Services: FastAPI (recommendation models and AI assistant)
 - Deployment: Railway
 
-## 5. System Architecture
+<!-- ## 5. System Architecture
 
-(Coming soon)
+(Coming soon) -->
 
-## 6. Screenshots / Demo
+## 5. Screenshots / Demo
 1. Login Page
     ![Login Page](./public/screenshots/02-category-page.png)
 
@@ -165,7 +165,7 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
     ![Update Account](./public/screenshots/admin-brand-manage.png)
 16. Admin User Manage Page
     ![Update Account](./public/screenshots/admin-user.png)
-## 7. How to Run Locally
+## 6. How to Run Locally
 
 1. Clone the repository
 
@@ -248,12 +248,12 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    - Admin panel: http://localhost:8000/admin
    - Vendor panel: http://localhost:8000/vendor
 
-## 8. Future Improvements
+## 7. Future Improvements
 
 - Improve product search with semantic search
 - Add more login methods (Google, Facebook OAuth)
 - Add mobile app support
 
-## 9. License
+## 8. License
 
 This project is licensed under the MIT License - see the Laravel framework license for details.
