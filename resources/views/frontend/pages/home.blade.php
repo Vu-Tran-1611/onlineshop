@@ -29,10 +29,6 @@
     {{-- Best product --}}
     @include('frontend.sections.best')
 
-    {{-- BERT4Rec Recommended Products --}}
-    @include('frontend.sections.bert4rec-recommended-for-you')
-
-
 
     {{-- top product --}}
     @include('frontend.sections.top-product')
@@ -40,15 +36,11 @@
     {{-- LightGCN Recommended Products
     @include('frontend.sections.light-gcn-recommended-for-you') --}}
 
-    {{-- ComiRec Recommended Products --}}
-    @include('frontend.sections.comirec-recommended-for-you')
-
-
 
     {{-- New Arrival product --}}
     {{-- @include('frontend.sections.new-arrival') --}}
     {{-- Featured product --}}
-    {{-- @include('frontend.sections.featured-product') --}}
+    @include('frontend.sections.featured-product')
 @endsection
 
 

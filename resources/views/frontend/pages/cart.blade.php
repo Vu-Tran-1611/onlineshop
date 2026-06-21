@@ -19,7 +19,7 @@
 
         @if (\Cart::getTotalQuantity() > 0)
             <a href="/"
-                class="inline-flex items-center gap-2 mb-6 text-sky-600 hover:text-sky-800 transition text-sm font-medium">
+                class="inline-flex items-center gap-2 mb-6 text-sky-600 hover:text-sky-800 transition text-md font-medium">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Home Page
             </a>
@@ -104,6 +104,41 @@
                     </div>
                 </div>
             @endforeach
+
+
+
+            {{-- Checkout Section --}}
+            <div class="w-full mt-6">
+                <div
+                    class="bg-white border border-slate-200 rounded-2xl  flex flex-col md:flex-row justify-between items-center px-8 py-6 gap-6">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" data-select="all" class="accent-sky-700 scale-125" />
+                        <label class="text-slate-700 font-semibold">Select All</label>
+                    </div>
+                    <div class="relative w-full md:w-[320px]">
+                        <input type="text"
+                            class="coupon w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500 focus:outline-none transition"
+                            placeholder="Enter Shop Voucher" />
+                        <button
+                            class="apply absolute right-2 top-2 bottom-2 px-5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg font-semibold shadow hover:scale-105 transition">Apply</button>
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                        <code class="message text-sky-700 text-sm"></code>
+                        <p class="text-slate-700 font-semibold text-lg">Total (<span class="total-quantity">0</span> item): <span
+                                class="total-price text-2xl text-sky-600 font-bold">$0</span></p>
+                    </div>
+                    <button href="{{ route('user.check-out') }}"
+                        class="check-out bg-sky-600 hover:bg-sky-700 text-white px-10 py-3 rounded-xl shadow-lg font-bold text-lg transition hover:scale-105">
+                        <i class="fa-solid fa-credit-card mr-2"></i>Check out
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-20">
+                 {{-- BERT4Rec Recommended Products --}}
+                @include('frontend.sections.bert4rec-recommended-for-you')
+            </div>
+
         @else
             <div class="bg-white flex justify-center flex-col items-center h-[30vh] text-2xl">
                 <p>
@@ -119,34 +154,6 @@
 
 
 
-    {{-- Checkout Section --}}
-    @if (\Cart::getTotalQuantity() > 0)
-        <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-6xl z-40">
-            <div
-                class="backdrop-blur bg-black/40 border border-white/10 rounded-t-2xl shadow-2xl flex flex-col md:flex-row justify-between items-center px-8 py-6 gap-6">
-                <div class="flex items-center gap-3">
-                    <input type="checkbox" data-select="all" class="accent-sky-700 scale-125" />
-                    <label class="text-sky-200 font-semibold">Select All</label>
-                </div>
-                <div class="relative w-full md:w-[320px]">
-                    <input type="text"
-                        class="coupon w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-sky-300 focus:ring-2 focus:ring-sky-500 focus:outline-none transition"
-                        placeholder="Enter Shop Voucher" />
-                    <button
-                        class="apply absolute right-2 top-2 bottom-2 px-5 bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600 text-white rounded-lg font-semibold shadow hover:scale-105 transition">Apply</button>
-                </div>
-                <div class="flex flex-col items-end gap-1">
-                    <code class="message text-sky-700 text-sm"></code>
-                    <p class="text-sky-200 font-semibold text-lg">Total (<span class="total-quantity">0</span> item): <span
-                            class="total-price text-2xl text-sky-600 font-bold">$0</span></p>
-                </div>
-                <button href="{{ route('user.check-out') }}"
-                    class="check-out bg-gradient-to-r from-pink-700 to-sky-700 hover:from-pink-600 hover:to-sky-600 text-white px-10 py-3 rounded-xl shadow-lg font-bold text-lg transition hover:scale-105">
-                    <i class="fa-solid fa-credit-card mr-2"></i>Check out
-                </button>
-            </div>
-        </div>
-    @endif
 @endsection
 @push('scripts')
     <script>

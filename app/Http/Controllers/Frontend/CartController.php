@@ -10,13 +10,30 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ShopProfile;
 use Carbon\Carbon;
 use App\Models\UserProductInteraction;
-use function PHPUnit\Framework\isEmpty;
+use App\Services\RecommendationApiService;
+use App\Models\Product;
 
 class CartController extends Controller
 {
+    public function getInteractions($userID,$interaction_types){
+        return UserProductInteraction::where("user_id", $userID)
+        ->orderBy("created_at", "desc")
+        ->whereIn("interaction_type",$interaction_types)
+        ->get()
+        ->map(function ($interaction) {
+            return [
+                "product_id" => $interaction->product_id,
+                "category_id" => $interaction->product ? $interaction->product->sub_category_id : null,
+                "interaction_type" => $interaction->interaction_type
+            ];
+        })
+        ->toArray();
+
+    }
     // return cart view
     public function index()
     {
+
         $title = "Cart";
         Cart::session("checked")->clearCartConditions();
         Cart::session("checked")->clear();
@@ -26,13 +43,36 @@ class CartController extends Controller
         foreach (Cart::getContent() as $item) {
             $vendors[] = ShopProfile::findOrFail($item->attributes['vendor_id'])->toArray();
         }
+
         $vendorsCollection = collect($vendors);
         $uniqueVendorsCollection = $vendorsCollection->unique("id");
         $uniqueVendorsArray =   $uniqueVendorsCollection->toArray();
+        $bert4RecRecommendedProducts = collect();
+        try{
+            $recommendationService = new RecommendationApiService();
+            $interactionsForBert4Rec = $this->getInteractions($userID, [UserProductInteraction::CART_ADD]);
+            //------------- Bert4rec ----------------
+            $bert4recResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactionsForBert4Rec,"bert4rec", 20);
+            $bert4recRecommendedProductIDs = $bert4recResponse["recommendations"];
+            $bert4RecRecommendedProducts = Product::whereIn("id", $bert4recRecommendedProductIDs)
+            ->where("status", 1)
+            ->where("is_approved", 1)
+            ->get()
+            ->sortBy(function ($product) use ($bert4recRecommendedProductIDs) {
+                return array_search($product->id, $bert4recRecommendedProductIDs);
+            });
+            //------------- Bert4rec ----------------
+        }
+        catch(\Exception $e){
+            $bert4RecRecommendedProducts = collect();
+        }
+
+
         return view("frontend.pages.cart", [
             'vendors' => $uniqueVendorsArray,
             'totalQuantity' => Cart::getTotalQuantity(),
             'title' =>  $title,
+            'bert4RecRecommendedProducts' => $bert4RecRecommendedProducts,
         ]);
     }
 

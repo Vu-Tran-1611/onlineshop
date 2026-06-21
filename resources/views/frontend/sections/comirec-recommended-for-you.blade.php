@@ -1,6 +1,5 @@
 <div class="box-gradient box-gradient-{{ $comirecRecommendedProducts->isNotEmpty() ? 'filled' : 'empty' }}
-    my-8 rounded-2xl shadow-2xl">
-
+    my-8 rounded-2xl shadow-2xl {{ $comirecRecommendedProducts->isNotEmpty() ? '!min-h-[620px]' : '' }}">
     {{-- Content --}}
     <div class="p-6 bg-gradient rounded-2xl bg-white relative z-10"
         style="--box-height: {{ $comirecRecommendedProducts->isNotEmpty() ? '99%' : '95%' }};">
@@ -17,28 +16,70 @@
                 <p>Please login and interact with some of our items to try the recommendations</p>
             </div>
         @else
-            <ul class="grid  grid-cols-5 py-5 gap-5 cursor-pointer ">
-                @include('frontend.partials.filtered-product-list', ['products' => $comirecRecommendedProducts])
-            </ul>
-            <div class="flex justify-center">
-                <a href="{{ route('user.more-products-by-comirec') }}"
-                    class="bg-sky-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-sky-800 transition">
-                    See More
-                </a>
+            <div class="relative py-5">
+                <div class="swiper comirecSwiper px-1">
+                    <ul class="swiper-wrapper cursor-pointer">
+                        @foreach ($comirecRecommendedProducts as $p)
+                            <div class="swiper-slide !h-auto">
+                                @include('frontend.partials.product-card', ['p' => $p])
+                            </div>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <button
+                    class="comirec-prev absolute top-1/2 -translate-y-1/2 left-0 md:-left-4 z-20 h-9 w-9 rounded-full bg-white/95 border border-slate-200 shadow-md text-slate-700 hover:bg-sky-600 hover:text-white transition">
+                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+                <button
+                    class="comirec-next absolute top-1/2 -translate-y-1/2 right-0 md:-right-4 z-20 h-9 w-9 rounded-full bg-white/95 border border-slate-200 shadow-md text-slate-700 hover:bg-sky-600 hover:text-white transition">
+                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                </button>
+
+                <div class="comirec-pagination  text-center"></div>
             </div>
+
+
         @endif
 
 
     </div>
 
-    {{-- Effects --}}
-    <div class="blob-gradient">
-    </div>
+
 </div>
 
 
 @push('scripts')
     <script>
+        new Swiper('.comirecSwiper', {
+            slidesPerView: 1.1,
+            spaceBetween: 14,
+            speed: 700,
+            grabCursor: true,
+            navigation: {
+                nextEl: '.comirec-next',
+                prevEl: '.comirec-prev',
+            },
+            pagination: {
+                el: '.comirec-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 16,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                },
+                1280: {
+                    slidesPerView: 4,
+                    spaceBetween: 20,
+                }
+            }
+        });
+
         // Product button click
         $(".product").on("click", function() {
             const url = $(this).data("url");

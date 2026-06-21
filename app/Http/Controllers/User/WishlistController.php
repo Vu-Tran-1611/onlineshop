@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserProductInteraction;
 use Illuminate\Support\Facades\Cache;
-
+use App\Services\RecommendationApiService;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
 class WishlistController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $wishlists = auth()->user()->wishlists()->with("product")->paginate(10);
@@ -21,10 +21,11 @@ class WishlistController extends Controller
             })->get()->take(20);
         });
 
+
         return view("frontend.pages.profile-wishlist", [
             "wishlists" => $wishlists,
             "title" => "Wishlist",
-            "categories" => $categories
+            "categories" => $categories,
         ]);
     }
 

@@ -12,6 +12,7 @@ class UserProductInteraction extends Model
     const WISHLIST_REMOVE = 'wishlist_remove';
     const CART_ADD = 'cart_add';
     const CART_REMOVE = 'cart_remove';
+    const R5 = 'r5';
 
     use HasFactory;
     protected $fillable = [
@@ -38,6 +39,7 @@ class UserProductInteraction extends Model
             self::WISHLIST_REMOVE,
             self::CART_ADD,
             self::CART_REMOVE,
+            self::R5,
         ];
     }
 }

@@ -67,8 +67,13 @@
             <div class="mt-8 col-span-2">
                 {{ $wishlists->links('vendor.pagination.tailwind') }}
             </div>
+
+
+
         @endif
+
     </div>
+
 @endsection
 
 

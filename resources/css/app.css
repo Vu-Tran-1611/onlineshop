@@ -56,6 +56,10 @@
     background-color: #0b608b !important;
 }
 
+.swal2-container {
+  z-index: 20000 !important;
+}
+
 
 .mySwiper {
     padding-top: 4px;

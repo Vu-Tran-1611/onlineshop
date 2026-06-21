@@ -558,6 +558,12 @@
         </div>
 
 
+        {{-- ComiRec Recommended Products --}}
+        @if (isset($comirecRecommendedProducts) && $comirecRecommendedProducts->isNotEmpty())
+            @include('frontend.sections.comirec-recommended-for-you')
+        @endif
+
+
 
     @endsection
 

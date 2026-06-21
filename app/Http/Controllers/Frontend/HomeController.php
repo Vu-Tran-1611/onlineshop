@@ -90,18 +90,18 @@ class HomeController extends Controller
         $flashSellProducts = FlashSellItem::with("product")->orderBy("created_at","desc")->get();
         $flashSellEndDate = FlashSell::first();
         // Call Recommend API to get recommend product based on user interaction if user is logged in
-        $bert4RecRecommendedProducts = collect();
-        $comirecRecommendedProducts = collect();
+        // $bert4RecRecommendedProducts = collect();
+        // $comirecRecommendedProducts = collect();
         $twoTowerRecommendedProducts = collect();
         if (Auth::check()) {
             try {
-                $interactionsForComirec = self::getInteractions(Auth::id(),["click","wishlist_add"]);
-                $interactionsForBert4Rec = self::getInteractions(Auth::id(),["cart_add","cart_remove"]);
+                // $interactionsForComirec = self::getInteractions(Auth::id(),["click","wishlist_add"]);
+                // $interactionsForBert4Rec = self::getInteractions(Auth::id(),["cart_add","cart_remove"]);
                 $interactionsForTwoTower = self::getInteractions(Auth::id(),["click","wishlist_add","cart_add","R5","R4","R3"]);
                 $numberOfUniqueInteractedProducts = count(array_unique(array_column($interactionsForTwoTower, 'product_id')));
                 if(empty($interactionsForTwoTower) || $numberOfUniqueInteractedProducts < 1){
-                    $bert4RecRecommendedProducts = collect();
-                    $comirecRecommendedProducts = collect();
+                    // $bert4RecRecommendedProducts = collect();
+                    // $comirecRecommendedProducts = collect();
                     $twoTowerRecommendedProducts = collect();
                 }else{
                     $recommendationService = new RecommendationApiService();
@@ -142,30 +142,6 @@ class HomeController extends Controller
                     // });
                     //------------- SASRec ----------------
 
-                    //------------- Bert4rec ----------------
-                    $bert4recResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactionsForBert4Rec,"bert4rec", 10);
-                    $bert4recRecommendedProductIDs = $bert4recResponse["recommendations"];
-                    $bert4RecRecommendedProducts = Product::whereIn("id", $bert4recRecommendedProductIDs)
-                    ->where("status", 1)
-                    ->where("is_approved", 1)
-                    ->get()
-                    ->sortBy(function ($product) use ($bert4recRecommendedProductIDs) {
-                        return array_search($product->id, $bert4recRecommendedProductIDs);
-                    });
-                    //------------- Bert4rec ----------------
-
-                    //------------- Comirec ----------------
-                    $comirecResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactionsForComirec,"comirec", 10);
-                    $comirecRecommendedProductIDs = $comirecResponse["recommendations"];
-                    $comirecRecommendedProducts = Product::whereIn("id", $comirecRecommendedProductIDs)
-                    ->where("status", 1)
-                    ->where("is_approved", 1)
-                    ->get()
-                    ->sortBy(function ($product) use ($comirecRecommendedProductIDs) {
-                        return array_search($product->id, $comirecRecommendedProductIDs);
-                    });
-                    //------------- Comirec ----------------
-
                     //------------- Two Tower ----------------
                     $twoTowerResponse = $recommendationService->getUserRecentRecommendations(Auth::id(),$interactionsForTwoTower,"twotower", 10);
                     $twoTowerRecommendedProductIDs = $twoTowerResponse["recommendations"];
@@ -181,10 +157,8 @@ class HomeController extends Controller
             } catch (\Exception $e) {
                 Log::error("Error fetching user recommendations: " . $e->getMessage());
                 // $matrixFactorizationRecommendedProducts = collect();
-
-
-                $bert4RecRecommendedProducts = collect();
-                $comirecRecommendedProducts = collect();
+                // $bert4RecRecommendedProducts = collect();
+                // $comirecRecommendedProducts = collect();
                 $twoTowerRecommendedProducts = collect();
             }
         }
@@ -203,8 +177,7 @@ class HomeController extends Controller
                 "featuredProducts",
                 "bestProducts",
                 "flashSellEndDate",
-                "bert4RecRecommendedProducts",
-                "comirecRecommendedProducts",
+                // "bert4RecRecommendedProducts",
                 "twoTowerRecommendedProducts"
             )
         );
@@ -221,6 +194,9 @@ class HomeController extends Controller
                 $query->where("status", 1);
             })->get()->take(20);
         });
+
+
+
         // Product Detail
         $product = Product::where("slug", $request->product)->first();
         if ($product) {
@@ -290,13 +266,33 @@ class HomeController extends Controller
                     ->sortBy(function ($product) use ($TFIDFKNNRecommendationIDs) {
                         return array_search($product->id, $TFIDFKNNRecommendationIDs);
                     });
+                $comirecRecommendedProducts = collect();
+                $interactionsForComirec = Auth::check()
+                    ? $this->getInteractions(Auth::id(), [UserProductInteraction::R5, UserProductInteraction::WISHLIST_ADD])
+                    : [];
 
-            }catch(\Exception $e){
-                dd($e->getMessage());
-                ## Asign empty collection to avoid error in view when recommendation API fails
-                // $KNNRecommendProducts = collect();
-                // $TFIDFRecommendProductsV1 = collect();
+                $numberOfUniqueInteractedProducts = count(array_unique(array_column($interactionsForComirec, 'product_id')));
+                if (!empty($interactionsForComirec) && $numberOfUniqueInteractedProducts >= 1) {
+                    //------------- Comirec ----------------
+                    $comirecResponse = (new RecommendationApiService())->getUserRecentRecommendations(
+                        Auth::id(),
+                        $interactionsForComirec,
+                        "comirec",
+                        20
+                    );
+                    $comirecRecommendedProductIDs = $comirecResponse["recommendations"];
+                    $comirecRecommendedProducts = Product::whereIn("id", $comirecRecommendedProductIDs)
+                        ->where("status", 1)
+                        ->where("is_approved", 1)
+                        ->get()
+                        ->sortBy(function ($product) use ($comirecRecommendedProductIDs) {
+                            return array_search($product->id, $comirecRecommendedProductIDs);
+                        });
+                    //------------- Comirec ----------------
+                }
+            } catch(\Exception $e){
                 $TFIDFKNNRecommendProducts = collect();
+                $comirecRecommendedProducts = collect();
             }
             $reviewsQuery = $product->userReviews()->with("user");
             $numberOfReviews = $reviewsQuery->count();
@@ -308,8 +304,6 @@ class HomeController extends Controller
                     ->with('user')
                     ->where('user_id', '!=', $userId);
             }
-
-
 
             $otherReviews = $reviewsQuery->paginate(10);
             $averageRating = round($product->userReviews()->avg('rating'), 1);
@@ -331,13 +325,10 @@ class HomeController extends Controller
                 // "productsBelongsToSameCategory" => $productsBelongsToSameCategory,
 
                 // Recommendations ------------------------------
-                // KNN + Cosine Similarity Recommendations
-                // "KNNRecommendProducts" => $KNNRecommendProducts,
-                // // TFIDF + Cosine Similarity Recommendations
-                // "TFIDFRecommendProductsV1" => $TFIDFRecommendProductsV1,
-
                 // TFIDF + KNN + Cosine Similarity Recommendations
                 "TFIDFKNNRecommendProducts" => $TFIDFKNNRecommendProducts,
+                //  ComiRec Recommendations
+                "comirecRecommendedProducts" => $comirecRecommendedProducts,
                 // Recommendations ------------------------------
 
                 "userReview" => $userReview,
@@ -590,10 +581,6 @@ class HomeController extends Controller
             "isFlashSell" => true
         ]);
     }
-
-
-
-
 
     // View Shop Page
     public function shop(Request $request)
