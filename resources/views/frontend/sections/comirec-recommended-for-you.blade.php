@@ -18,9 +18,9 @@
         @else
             <div class="relative py-5">
                 <div class="swiper comirecSwiper px-1">
-                    <ul class="swiper-wrapper cursor-pointer">
+                    <ul class="swiper-wrapper cursor-pointer items-stretch">
                         @foreach ($comirecRecommendedProducts as $p)
-                            <div class="swiper-slide !h-auto">
+                            <div class="swiper-slide !h-auto flex">
                                 @include('frontend.partials.product-card', ['p' => $p])
                             </div>
                         @endforeach
@@ -74,7 +74,7 @@
                     spaceBetween: 20,
                 },
                 1280: {
-                    slidesPerView: 4,
+                    slidesPerView: 5,
                     spaceBetween: 20,
                 }
             }

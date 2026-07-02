@@ -1,5 +1,5 @@
 <li
-       class=" cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
+    class="w-full h-full cursor-pointer group bg-white rounded-xl overflow-hidden shadow-lg relative hover:shadow-2xl hover:-translate-y-2 transition-all hover:border-sky-600 flex flex-col justify-between leading-6 border border-slate-100">
        <div class="relative">
            <img class="h-64 w-full object-cover group-hover:scale-105 transition-transform duration-300"
                src="{{ isset($p->thumb_image) ? asset($p->thumb_image) : '' }}"/>
@@ -23,8 +23,8 @@
                @endif
            </div> --}}
        </div>
-       <div class="p-4 flex flex-col gap-2">
-           <h1 class="text-base text-slate-800 group-hover:text-sky-700" title="{{ $p->name }}">
+       <div class="p-4 flex flex-1 flex-col gap-2">
+           <h1 class="min-h-[3rem] text-base text-slate-800 group-hover:text-sky-700" title="{{ $p->name }}">
                {{  \Illuminate\Support\Str::limit($p->name, 35, '...') }}
            </h1>
 
