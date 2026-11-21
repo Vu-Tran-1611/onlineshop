@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Ai\ProductSearchController;
+use App\Http\Controllers\Api\Ai\ProductAvailabilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,5 @@ Route::prefix('ai/products')
     ->middleware('throttle:60,1')
     ->group(function () {
         Route::match(['GET', 'POST'], '/search', [ProductSearchController::class, 'search']);
+        Route::match(['GET', 'POST'], '/availability', [ProductAvailabilityController::class, 'show']);
     });
