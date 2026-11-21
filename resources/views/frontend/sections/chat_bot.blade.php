@@ -19,27 +19,33 @@
         role="dialog"
         aria-modal="false"
         aria-label="Ecommerce AI assistant"
-        class="mt-3 hidden h-[min(78vh,720px)] w-[calc(100vw-2.5rem)] max-w-[640px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        class="mt-3 hidden h-[calc(100vh-8rem)] max-h-[960px] w-[calc(100vw-2.5rem)] max-w-[880px] flex-col overflow-hidden rounded-2xl  bg-white shadow-2xl"
     >
-        <header class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3">
+        <header class="flex items-center justify-between bg-slate-800 px-4 py-3">
             <div class="min-w-0">
-                <h2 class="truncate text-lg font-semibold text-slate-900">Shopping Assistant</h2>
-                <p class="text-sm text-slate-600">Ready to help</p>
+                <h2 class="truncate text-lg font-semibold text-white">Shopping Assistant</h2>
+                <p class="text-sm text-slate-200">Ready to help</p>
             </div>
             <button
                 id="bot-chat-close"
                 type="button"
                 aria-label="Close chat"
-                class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-200 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                class="inline-flex h-9 w-9 cursor- items-center justify-center rounded-md text-white transition hover:bg-white hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
             >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="h-5 w-5" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" />
                 </svg>
             </button>
         </header>
 
-        <main class="min-h-0 flex-1 bg-slate-50 px-4 py-3">
-            <ul id="bot-chat-messages" class="flex h-full min-h-64 flex-col gap-3 overflow-y-auto" aria-live="polite"></ul>
+        <main class="relative min-h-0 flex-1 overflow-hidden bg-slate-50 px-4 py-3">
+            {{-- Animated background blobs (decorative) --}}
+            <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+                <div class="absolute -left-16 top-8 h-72 w-72 rounded-full bg-blue-400 opacity-50 blur-3xl motion-safe:animate-blob"></div>
+                <div class="absolute -right-10 top-1/3 h-80 w-80 rounded-full bg-sky-300 opacity-60 blur-3xl motion-safe:animate-blob [animation-delay:-5s]"></div>
+                <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-indigo-300 opacity-50 blur-3xl motion-safe:animate-blob [animation-delay:-10s]"></div>
+            </div>
+            <ul id="bot-chat-messages" class="relative z-10 flex h-full min-h-64 flex-col gap-3 overflow-y-auto" aria-live="polite"></ul>
         </main>
 
         <footer class="border-t border-slate-200 bg-white p-3">
@@ -58,7 +64,7 @@
                     id="bot-chat-send"
                     type="submit"
                     aria-label="Send message"
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white transition hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-700 text-white transition hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
                 >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h16m0 0-6-6m6 6-6 6" />
@@ -103,6 +109,16 @@
             greeted: false,
         };
 
+        // Loading indicator stages (ms after the message is sent)
+        const TYPING_STAGES = [
+            { at: 0, text: 'Assistant is reading your message' },
+            { at: 1500, text: 'Assistant is searching' },
+            { at: 2500, text: 'Assistant is thinking' },
+            { at: 3500, text: 'Assistant is typing' },
+
+        ];
+        let typingStageTimers = [];
+
         function escapeHtml(value) {
             return String(value)
                 .replace(/&/g, '&amp;')
@@ -124,7 +140,7 @@
             const bubbleClass =
                 sender === 'customer'
                     ? 'max-w-[85%] rounded-2xl rounded-br-md bg-blue-600 px-3 py-2 text-base leading-relaxed text-white shadow-sm'
-                    : 'max-w-[90%] rounded-2xl rounded-bl-md bg-gray-100 px-3 py-2 text-base leading-relaxed text-slate-800 shadow-sm';
+                    : 'max-w-[90%] rounded-2xl rounded-bl-md bg-white px-3 py-2 text-base leading-relaxed text-slate-800 shadow-sm';
 
             const $item = $('<li>').addClass(alignmentClass);
             const $bubble = $('<div>').addClass(bubbleClass);
@@ -144,7 +160,7 @@
             const $item = $('<li>').addClass('flex justify-start');
 
             const $bubble = $('<div>').addClass(
-                'max-w-[90%] rounded-2xl rounded-bl-md bg-gray-100 px-3 py-2 text-base leading-relaxed text-slate-800 shadow-sm'
+                'max-w-[90%] rounded-2xl rounded-bl-md bg-white px-3 py-2 text-base leading-relaxed text-slate-800 shadow-sm'
             );
 
             $bubble.html(html || '');
@@ -163,7 +179,7 @@
 
             $bubble
                 .find('img')
-                .addClass('my-2 max-w-full rounded-lg border border-slate-300');
+                .addClass('my-2 max-w-full rounded-lg');
 
             $item.append($bubble);
             $messagesList.append($item);
@@ -177,16 +193,28 @@
             });
 
             const $bubble = $('<div>', {
-                class: 'max-w-[85%] rounded-2xl rounded-bl-md bg-gray-100 px-4 py-3 text-base leading-relaxed text-slate-500 shadow-sm',
+                class: 'max-w-[85%] rounded-2xl rounded-bl-md bg-white px-4 py-3 text-base leading-relaxed text-slate-500 shadow-sm',
             });
 
             const $typing = $('<div>').addClass('flex items-center gap-2');
 
-            $typing.append(
-                $('<span>')
-                    .addClass('text-sm font-medium text-slate-600')
-                    .text('The assistant is typing')
-            );
+            const $label = $('<span>')
+                .addClass('text-sm font-medium text-slate-600 transition-opacity duration-200')
+                .text(TYPING_STAGES[0].text);
+
+            $typing.append($label);
+
+            // Step through the stages while waiting for the reply; stays on the last one.
+            TYPING_STAGES.slice(1).forEach((stage) => {
+                typingStageTimers.push(
+                    setTimeout(() => {
+                        $label.addClass('opacity-0');
+                        setTimeout(() => {
+                            $label.text(stage.text).removeClass('opacity-0');
+                        }, 200);
+                    }, stage.at)
+                );
+            });
 
             const $dots = $('<span>').addClass('inline-flex items-center gap-1');
 
@@ -207,6 +235,8 @@
         }
 
         function removeTypingIndicator() {
+            typingStageTimers.forEach(clearTimeout);
+            typingStageTimers = [];
             $messagesList.find('[data-role="bot-loading"]').remove();
         }
 

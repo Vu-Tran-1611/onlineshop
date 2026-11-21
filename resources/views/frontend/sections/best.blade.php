@@ -1,7 +1,6 @@
 <div class="bg-white p-3 shadow-xl rounded-md my-5">
     <div
-        class="flex items-center gap-6 p-6 bg-gradient-to-r from-sky-700 via-sky-500 to-sky-700 rounded-xl shadow-lg mb-6 border border-slate-200">
-        <i class="fa-solid fa-crown text-yellow-400 text-3xl"></i>
+        class="flex items-center gap-6 p-6 bg-slate-700 rounded-xl shadow-lg mb-6 border border-slate-200">
         <h1 class="text-3xl font-bold text-white tracking-wide uppercase">
             Best Products
         </h1>

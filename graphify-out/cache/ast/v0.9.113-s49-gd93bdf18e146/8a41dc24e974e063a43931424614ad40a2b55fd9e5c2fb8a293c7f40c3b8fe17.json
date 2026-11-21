@@ -1,0 +1,1 @@
+{"nodes": [{"id": "$graphify-root$_app_http_controllers_healthcontroller_php", "label": "HealthController.php", "file_type": "code", "source_file": "app/Http/Controllers/HealthController.php", "source_location": null}], "edges": [], "raw_calls": []}

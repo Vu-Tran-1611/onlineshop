@@ -1,7 +1,6 @@
 <div class="bg-white p-3 shadow-xl rounded-md my-5">
 
     <div class="flex items-center gap-4 mb-4">
-        <span class="inline-block w-2 h-8 bg-gradient-to-b from-sky-500 to-sky-700 rounded-lg shadow"></span>
         <h1 class="text-3xl font-extrabold text-slate-500 tracking-tight drop-shadow-sm">
             Top Picks In This Week
         </h1>

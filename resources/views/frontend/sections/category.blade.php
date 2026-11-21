@@ -1,4 +1,4 @@
-<div class="bg-gradient-to-br from-cyan-800 via-slate-400 to-sky-700 p-6 shadow-2xl rounded-2xl border border-cyan-200">
+<div class="bg-slate-700 p-6 shadow-2xl rounded-2xl border">
 
     <h1 class="text-3xl font-bold p-4 text-white flex items-center gap-2">
         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2"

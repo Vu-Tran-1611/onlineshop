@@ -14,6 +14,16 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            keyframes: {
+                blob: {
+                    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+                    '33%': { transform: 'translate(40px, -50px) scale(1.15)' },
+                    '66%': { transform: 'translate(-30px, 30px) scale(0.9)' },
+                },
+            },
+            animation: {
+                blob: 'blob 14s ease-in-out infinite',
+            },
         },
 
     },

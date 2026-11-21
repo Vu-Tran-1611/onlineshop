@@ -1,5 +1,5 @@
 <div class="box-gradient box-gradient-{{ $twoTowerRecommendedProducts->isNotEmpty() ? 'filled' : 'empty' }}
-    my-8 rounded-2xl shadow-2xl">
+    my-12 rounded-2xl ">
 
     {{-- Content --}}
     <div class="p-6 bg-gradient rounded-2xl bg-white relative z-10"

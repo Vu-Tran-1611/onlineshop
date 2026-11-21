@@ -134,3 +134,5 @@ Route::resource("coupons", CouponController::class);
 Route::put("top-banner/{id}/change-status", [TopBannerController::class, "changeStatus"])->name("top-banner.change-status");
 Route::resource("top-banner", TopBannerController::class);
 // Top Banner -------------------------------------------------
+
+
