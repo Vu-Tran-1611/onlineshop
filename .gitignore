@@ -65,4 +65,4 @@ Thumbs.db
 *.cache
 
 # graphhify
-/.graphhify-out
+/graphify-out/
