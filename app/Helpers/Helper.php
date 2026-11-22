@@ -108,3 +108,15 @@ function getUserOrderAddress()
 }
 
 // Chat -------------------------------------
+
+// Product link ------------------------------
+
+/**
+ * Public link to a product page, always on APP_URL
+ * (e.g. https://demo.fashion-shop.uk in production, http://127.0.0.1:8001 locally),
+ * regardless of which host the request came in on.
+ */
+function productUrl(string $slug): string
+{
+    return rtrim(config('app.url'), '/') . route('product', ['product' => $slug], false);
+}

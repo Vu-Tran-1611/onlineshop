@@ -80,7 +80,7 @@ class ProductSearchService
                     'brand_id' => $product->brand_id,
                     'seo_title' => $product->seo_title,
                     'seo_description' => $product->seo_description,
-                    'url' => url('/product/' . $product->slug),
+                    'url' => productUrl($product->slug),
                 ];
             });
     }
