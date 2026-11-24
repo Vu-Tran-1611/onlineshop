@@ -106,11 +106,12 @@
         // Loading indicator stages (ms after the message is sent)
         const TYPING_STAGES = [
             { at: 0, text: 'Assistant is reading your message' },
-            { at: 1500, text: 'Assistant is searching' },
-            { at: 2500, text: 'Assistant is thinking' },
-            { at: 3500, text: 'Assistant is typing' },
-
+            { at: 2000, text: 'Assistant is searching' },
+            { at: 4000, text: 'Assistant is thinking' },
+            { at: 6000, text: 'Assistant is typing' },
         ];
+        // Match the label's duration-300 fade
+        const STAGE_FADE_MS = 300;
         let typingStageTimers = [];
 
         function escapeHtml(value) {
@@ -192,6 +193,9 @@
         }
 
         function appendTypingIndicator() {
+            // Keep a single indicator
+            removeTypingIndicator();
+
             const $item = $('<li>', {
                 class: 'flex justify-start',
                 'data-role': 'bot-loading',
@@ -204,7 +208,7 @@
             const $typing = $('<div>').addClass('flex items-center gap-2');
 
             const $label = $('<span>')
-                .addClass('text-sm font-medium text-slate-600 transition-opacity duration-200')
+                .addClass('whitespace-nowrap text-sm font-medium text-slate-600 transition-opacity duration-300')
                 .text(TYPING_STAGES[0].text);
 
             $typing.append($label);
@@ -214,9 +218,12 @@
                 typingStageTimers.push(
                     setTimeout(() => {
                         $label.addClass('opacity-0');
-                        setTimeout(() => {
-                            $label.text(stage.text).removeClass('opacity-0');
-                        }, 200);
+                        // Swap text after the fade-out ends
+                        typingStageTimers.push(
+                            setTimeout(() => {
+                                $label.text(stage.text).removeClass('opacity-0');
+                            }, STAGE_FADE_MS)
+                        );
                     }, stage.at)
                 );
             });

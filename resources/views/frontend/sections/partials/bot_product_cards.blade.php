@@ -9,72 +9,74 @@
 
         return \Illuminate\Support\Str::squish(strip_tags(str_replace('<', ' <', $html)));
     };
+
+    // Format a price with thousands separators
+    $money = fn ($value) => '$' . number_format((float) $value, fmod((float) $value, 1) ? 2 : 0);
 @endphp
 
-<ul class="flex flex-col gap-3" aria-label="Suggested products">
+<ul class="flex flex-col gap-4" aria-label="Suggested products">
     @foreach ($products as $p)
         @php
             $onSale = checkSale($p);
             $rating = round((float) $p->averageRating(), 1);
             $reviews = $p->numberOfReviews();
+            $type = getProductType($p);
             $shortText = $descriptionText($p->short_description);
             $longText = $descriptionText($p->long_description);
             $url = route('product', ['product' => $p->slug]);
         @endphp
 
-        <li class="flex gap-4 rounded-xl border border-[#D5D9D9] bg-white p-3 text-[#0F1111]">
+        <li class="flex gap-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-600 hover:shadow-lg">
             <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
-                class="flex h-32 w-32 flex-none items-center justify-center overflow-hidden rounded-lg bg-[#F7F8F8] sm:h-44 sm:w-44">
+                class="relative flex h-36 w-36 flex-none items-center justify-center overflow-hidden rounded-lg bg-slate-50 sm:h-56 sm:w-56">
                 <img src="{{ asset($p->thumb_image) }}" alt="{{ $p->name }}" loading="lazy"
-                    class="h-full w-full object-contain">
+                    class="h-full w-full object-contain transition-transform duration-300 hover:scale-105">
+                @if ($type)
+                    <span class="absolute left-2 top-2 rounded-full bg-sky-600 px-3 py-1 text-xs text-white shadow">{{ $type }}</span>
+                @endif
             </a>
 
-            <div class="min-w-0 flex-1">
+            <div class="flex min-w-0 flex-1 flex-col">
                 <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
-                    class="line-clamp-2 text-base font-medium leading-snug hover:text-[#C7511F] hover:underline">
+                    class="line-clamp-2 text-lg font-semibold leading-snug text-slate-800 hover:text-sky-700">
                     {{ $p->name }}
                 </a>
 
-                <p class="mt-0.5 text-xs text-[#565959]">
+                <p class="mt-0.5 text-sm text-slate-500">
                     {{ $p->brand?->name }}@if ($p->brand && $p->category) · @endif{{ $p->category?->name }}
                 </p>
 
-                <div class="mt-1 flex items-center gap-1 text-xs">
+                <div class="mt-1 flex items-center gap-1 text-sm">
                     @if ($reviews > 0)
-                        <span class="font-medium">{{ $rating }}</span>
                         @for ($i = 1; $i <= 5; $i++)
-                            <i class="fa-star {{ $i <= round($rating) ? 'fa-solid text-[#FFA41C]' : 'fa-regular text-slate-300' }}" aria-hidden="true"></i>
+                            <i class="fa-star {{ $i <= round($rating) ? 'fa-solid text-yellow-400' : 'fa-regular text-slate-300' }}" aria-hidden="true"></i>
                         @endfor
-                        <span class="text-[#007185]">({{ $reviews }})</span>
+                        <span class="ml-1 text-slate-600">{{ $rating }}</span>
+                        <span class="text-slate-400">({{ $reviews }})</span>
                     @else
-                        <span class="text-[#565959]">No reviews yet</span>
+                        <span class="text-slate-400">No reviews yet</span>
                     @endif
                 </div>
 
-                <div class="mt-1 flex flex-wrap items-baseline gap-x-2">
-                    <span class="text-xl font-medium">${{ $onSale ? $p->offer_price : $p->price }}</span>
+                <div class="mt-2 flex flex-wrap items-baseline gap-x-2">
+                    <span class="text-2xl font-bold text-orange-700">{{ $money($onSale ? $p->offer_price : $p->price) }}</span>
                     @if ($onSale)
-                        <span class="text-xs text-[#565959] line-through">${{ $p->price }}</span>
-                        <span class="rounded bg-[#CC0C39] px-1.5 py-0.5 text-xs font-medium text-white">
-                            {{ calculateSalePercent($p) }}% off
+                        <span class="text-sm font-semibold text-gray-400 line-through">{{ $money($p->price) }}</span>
+                        <span class="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700">
+                            -{{ calculateSalePercent($p) }}%
                         </span>
                     @endif
                 </div>
 
                 @if ($shortText !== '')
-                    <p class="mt-1 line-clamp-2 text-sm text-[#0F1111]">{{ $shortText }}</p>
+                    <p class="mt-2 text-sm font-medium text-slate-700">{{ $shortText }}</p>
                 @endif
 
-                <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                    @if ($longText !== '')
-                        <details class="group w-full">
-                            <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-[#007185] hover:text-[#C7511F] hover:underline">
-                                More details
-                                <i class="fa-solid fa-chevron-down text-xs transition group-open:rotate-180" aria-hidden="true"></i>
-                            </summary>
-                            <p class="mt-2 text-sm leading-relaxed text-[#0F1111]">{{ $longText }}</p>
-                        </details>
-                    @endif
+                @if ($longText !== '')
+                    <p class="mt-3 border-t border-slate-100 pt-3 text-sm leading-relaxed text-slate-500">{{ $longText }}</p>
+                @endif
+
+                <div class="mt-4">
                     <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
                         class="inline-flex items-center rounded-lg bg-sky-600 px-4 py-1.5 font-medium text-white transition-all hover:bg-sky-700">
                         View details
