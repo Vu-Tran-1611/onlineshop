@@ -25,6 +25,12 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('api', function (Request $request) {
+            // Give the AI service a higher shared limit
+            $serviceKey = (string) config('services.ai_service.key');
+            if ($serviceKey !== '' && hash_equals($serviceKey, (string) $request->header('X-AI-Service-Key'))) {
+                return Limit::perMinute((int) config('services.ai_service.rate_limit'))->by('ai-service');
+            }
+
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
         $this->routes(function () {

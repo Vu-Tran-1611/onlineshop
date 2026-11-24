@@ -36,6 +36,10 @@ return [
     'fastapi_ai' => [
         'url' => env('FASTAPI_AI_URL'),
     ],
+    'ai_service' => [
+        'key' => env('AI_SERVICE_KEY'),
+        'rate_limit' => env('AI_SERVICE_RATE_LIMIT', 600),
+    ],
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),

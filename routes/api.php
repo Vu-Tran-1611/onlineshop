@@ -21,11 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('ai/products')
-    ->middleware('throttle:60,1')
-    ->group(function () {
-        Route::match(['GET', 'POST'], '/search', [ProductSearchController::class, 'search']);
-        Route::match(['GET', 'POST'], '/availability', [ProductAvailabilityController::class, 'show']);
-    });
+// Rate limited by the "api" limiter in RouteServiceProvider
+Route::prefix('ai/products')->group(function () {
+    Route::match(['GET', 'POST'], '/search', [ProductSearchController::class, 'search']);
+    Route::match(['GET', 'POST'], '/availability', [ProductAvailabilityController::class, 'show']);
+});
 
-Route::get('ai/catalog/filters', [CatalogFilterController::class, 'index'])->middleware('throttle:60,1');
+Route::get('ai/catalog/filters', [CatalogFilterController::class, 'index']);
