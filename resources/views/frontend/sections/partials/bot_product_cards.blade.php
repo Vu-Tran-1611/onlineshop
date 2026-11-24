@@ -24,7 +24,7 @@
 
         <li class="flex gap-4 rounded-xl border border-[#D5D9D9] bg-white p-3 text-[#0F1111]">
             <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
-                class="flex h-28 w-28 flex-none items-center justify-center overflow-hidden rounded-lg bg-[#F7F8F8]">
+                class="flex h-32 w-32 flex-none items-center justify-center overflow-hidden rounded-lg bg-[#F7F8F8] sm:h-44 sm:w-44">
                 <img src="{{ asset($p->thumb_image) }}" alt="{{ $p->name }}" loading="lazy"
                     class="h-full w-full object-contain">
             </a>
@@ -49,7 +49,6 @@
                     @else
                         <span class="text-[#565959]">No reviews yet</span>
                     @endif
-                    <span class="text-[#565959]">· {{ $p->soldCount() }} sold</span>
                 </div>
 
                 <div class="mt-1 flex flex-wrap items-baseline gap-x-2">
@@ -77,8 +76,8 @@
                         </details>
                     @endif
                     <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
-                        class="inline-flex items-center gap-1 rounded-full bg-[#FFD814] px-4 py-1.5 font-medium text-[#0F1111] hover:bg-[#F7CA00]">
-                        View product
+                        class="inline-flex items-center rounded-lg bg-sky-600 px-4 py-1.5 font-medium text-white transition-all hover:bg-sky-700">
+                        View details
                     </a>
                 </div>
             </div>
