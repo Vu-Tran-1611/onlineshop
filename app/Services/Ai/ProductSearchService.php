@@ -7,9 +7,15 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\SubCategory;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class ProductSearchService
 {
+    public function __construct(private readonly CatalogFilterService $catalogFilterService)
+    {
+    }
+
+    // Search products and report filters that match nothing
     public function search(
         ?string $keywords = null,
         ?string $category = null,
@@ -18,27 +24,53 @@ class ProductSearchService
         ?float $minPrice = null,
         ?float $maxPrice = null,
         ?string $productType = null
-    ): Collection
+    ): array
     {
         $categoryIds = $this->resolveCategoryIds($category);
         $subCategoryIds = $this->resolveSubCategoryIds($subcategory, $categoryIds);
         $brandIds = $this->resolveBrandIds($brand);
 
+        $unmatched = $this->unmatchedFilters([
+            'category' => [$category, $categoryIds],
+            'subcategory' => [$subcategory, $subCategoryIds],
+            'brand' => [$brand, $brandIds],
+        ]);
+
+        // Stop when a filter matches nothing
+        if (!empty($unmatched)) {
+            return ['products' => collect(), 'unmatched_filters' => $unmatched];
+        }
+
+        return ['products' => $this->query(
+            $keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType
+        ), 'unmatched_filters' => []];
+    }
+
+    // Query active products with the resolved filters
+    private function query(
+        ?string $keywords,
+        array $categoryIds,
+        array $subCategoryIds,
+        array $brandIds,
+        ?float $minPrice,
+        ?float $maxPrice,
+        ?string $productType
+    ): Collection
+    {
         return Product::query()
+            ->with(['brand:id,name', 'category:id,name', 'subCategory:id,name'])
             ->select([
                 'id',
                 'name',
-                'slug',
-                'thumb_image',
                 'category_id',
                 'sub_category_id',
                 'brand_id',
                 'price',
                 'offer_price',
+                'offer_start_price',
+                'offer_end_price',
                 'product_type',
                 'short_description',
-                'seo_title',
-                'seo_description',
             ])
             ->where('status', 1)
             ->where('is_approved', 1)
@@ -66,23 +98,44 @@ class ProductSearchService
             ->limit(10)
             ->get()
             ->map(function (Product $product) {
+                $onSale = checkSale($product);
+
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'slug' => $product->slug,
-                    'thumb_image' => $product->thumb_image,
-                    'price' => $product->price,
-                    'offer_price' => $product->offer_price,
+                    'brand' => $product->brand?->name,
+                    'category' => $product->category?->name,
+                    'subcategory' => $product->subCategory?->name,
+                    'price' => $onSale ? $product->offer_price : $product->price,
+                    'original_price' => $onSale ? $product->price : null,
                     'product_type' => $product->product_type,
-                    'short_description' => $product->short_description,
-                    'category_id' => $product->category_id,
-                    'sub_category_id' => $product->sub_category_id,
-                    'brand_id' => $product->brand_id,
-                    'seo_title' => $product->seo_title,
-                    'seo_description' => $product->seo_description,
-                    'url' => productUrl($product->slug),
+                    'short_description' => Str::squish(strip_tags(str_replace('<', ' <', (string) $product->short_description))),
                 ];
             });
+    }
+
+    // Build suggestions for filters that matched nothing
+    private function unmatchedFilters(array $filters): array
+    {
+        $catalog = $this->catalogFilterService->filters();
+        $names = [
+            'category' => $catalog['categories'],
+            'subcategory' => array_column($catalog['subcategories'], 'name'),
+            'brand' => $catalog['brands'],
+        ];
+
+        $unmatched = [];
+
+        foreach ($filters as $key => [$value, $ids]) {
+            if ($value && empty($ids)) {
+                $unmatched[$key] = [
+                    'value' => $value,
+                    'suggestions' => $this->catalogFilterService->suggest($value, $names[$key]),
+                ];
+            }
+        }
+
+        return $unmatched;
     }
 
     private function resolveCategoryIds(?string $category): array
@@ -92,6 +145,7 @@ class ProductSearchService
         }
 
         return Category::query()
+            ->where('status', 1)
             ->where(function ($builder) use ($category) {
                 $builder->where('name', 'like',  $category )
                     ->orWhere('slug', 'like',  $category );
@@ -107,6 +161,7 @@ class ProductSearchService
         }
 
         return SubCategory::query()
+            ->where('status', 1)
             ->when(!empty($categoryIds), fn ($builder) => $builder->whereIn('category_id', $categoryIds))
             ->where(function ($builder) use ($subcategory) {
                 $builder->where('name', 'like' ,$subcategory )
@@ -123,6 +178,7 @@ class ProductSearchService
         }
 
         return Brand::query()
+            ->where('status', 1)
             ->where(function ($builder) use ($brand) {
                 $builder->where('name', 'like', '%' . $brand . '%')
                     ->orWhere('slug', 'like', '%' . $brand . '%');

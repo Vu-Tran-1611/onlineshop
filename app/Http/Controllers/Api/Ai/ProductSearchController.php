@@ -25,7 +25,7 @@ class ProductSearchController extends Controller
             'product_type' => ['nullable', 'string', 'max:50'],
         ]);
 
-        $results = $this->productSearchService->search(
+        $result = $this->productSearchService->search(
             keywords: $validated['keywords'] ?? null,
             category: $validated['category'] ?? null,
             subcategory: $validated['subcategory'] ?? null,
@@ -38,8 +38,9 @@ class ProductSearchController extends Controller
         return response()->json([
             'success' => true,
             'query' => $validated,
-            'count' => $results->count(),
-            'data' => $results,
+            'count' => $result['products']->count(),
+            'data' => $result['products'],
+            'unmatched_filters' => (object) $result['unmatched_filters'],
         ]);
     }
 }

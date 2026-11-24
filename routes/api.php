@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Ai\ProductSearchController;
 use App\Http\Controllers\Api\Ai\ProductAvailabilityController;
+use App\Http\Controllers\Api\Ai\CatalogFilterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,5 @@ Route::prefix('ai/products')
         Route::match(['GET', 'POST'], '/search', [ProductSearchController::class, 'search']);
         Route::match(['GET', 'POST'], '/availability', [ProductAvailabilityController::class, 'show']);
     });
+
+Route::get('ai/catalog/filters', [CatalogFilterController::class, 'index'])->middleware('throttle:60,1');

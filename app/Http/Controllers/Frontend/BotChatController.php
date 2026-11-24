@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Throwable;
 
 class BotChatController extends Controller
 {
+    private const MAX_PRODUCTS = 10;
+
     public function chat(Request $request)
     {
         $validated = $request->validate([
@@ -31,36 +35,23 @@ class BotChatController extends Controller
                 ->withQueryParameters([
                     'questions' => $validated['message'],
                 ])
-                ->post($endpoint, [
-                    'message' => $validated['message'],
-                    'questions' => $validated['message'],
-                ])
-            ;
+                ->post($endpoint);
 
             if ($response->successful()) {
-                $answer = $response->json('answer');
-                if (!is_string($answer) || trim($answer) === '') {
-                    $answer = $response->json('response');
-                }
-
-                if (!is_string($answer) || trim($answer) === '') {
-                    $answer = $response->json('message');
-                }
-
-                if (!is_string($answer) || trim($answer) === '') {
-                    $answer = $response->body() ?? '';
-                    $decoded = json_decode((string) $answer, true);
-                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                        $answer = (string) ($decoded['answer'] ?? $decoded['response'] ?? $decoded['message'] ?? '');
-                    }
-                }
-
-                $answer = is_string($answer) ? trim($answer) : '';
+                $answer = trim((string) $response->json('response', ''));
+                $products = $this->loadProducts($response->json('products', []));
 
                 return response()->json([
                     'answer' => $answer,
-                    'answer_html' => Str::markdown($answer),
-                ], $response->status());
+                    // Escape raw HTML from the model
+                    'answer_html' => Str::markdown($answer, [
+                        'html_input' => 'escape',
+                        'allow_unsafe_links' => false,
+                    ]),
+                    'products_html' => $products->isEmpty()
+                        ? ''
+                        : view('frontend.sections.partials.bot_product_cards', compact('products'))->render(),
+                ]);
             }
 
             $details = $response->json();
@@ -78,5 +69,28 @@ class BotChatController extends Controller
                 'error' => $e->getMessage(),
             ], 502);
         }
+    }
+
+    // Load active products in the order the agent chose
+    private function loadProducts(mixed $ids): Collection
+    {
+        $ids = collect(is_array($ids) ? $ids : [])
+            ->filter(fn ($id) => is_numeric($id))
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->take(self::MAX_PRODUCTS)
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return collect();
+        }
+
+        return Product::with(['brand:id,name', 'category:id,name'])
+            ->whereIn('id', $ids)
+            ->where('status', 1)
+            ->where('is_approved', 1)
+            ->get()
+            ->sortBy(fn (Product $product) => $ids->search($product->id))
+            ->values();
     }
 }

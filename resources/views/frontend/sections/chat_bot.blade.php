@@ -19,7 +19,7 @@
         role="dialog"
         aria-modal="false"
         aria-label="Ecommerce AI assistant"
-        class="mt-3 hidden h-[calc(100vh-8rem)] max-h-[960px] w-[calc(100vw-2.5rem)] max-w-[880px] flex-col overflow-hidden rounded-2xl  bg-white shadow-2xl"
+        class="fixed inset-y-0 right-0 hidden h-dvh w-full max-w-[880px] flex-col overflow-hidden bg-white shadow-2xl sm:rounded-l-2xl"
     >
         <header class="flex items-center justify-between bg-slate-800 px-4 py-3">
             <div class="min-w-0">
@@ -38,17 +38,11 @@
             </button>
         </header>
 
-        <main class="relative min-h-0 flex-1 overflow-hidden bg-slate-50 px-4 py-3">
-            {{-- Animated background blobs (decorative) --}}
-            <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-                <div class="absolute -left-16 top-8 h-72 w-72 rounded-full bg-blue-400 opacity-50 blur-3xl motion-safe:animate-blob"></div>
-                <div class="absolute -right-10 top-1/3 h-80 w-80 rounded-full bg-sky-300 opacity-60 blur-3xl motion-safe:animate-blob [animation-delay:-5s]"></div>
-                <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-indigo-300 opacity-50 blur-3xl motion-safe:animate-blob [animation-delay:-10s]"></div>
-            </div>
-            <ul id="bot-chat-messages" class="relative z-10 flex h-full min-h-64 flex-col gap-3 overflow-y-auto" aria-live="polite"></ul>
+        <main class="relative min-h-0 flex-1 overflow-hidden bg-white px-4 py-3">
+            <ul id="bot-chat-messages" class="flex h-full min-h-64 flex-col gap-4 overflow-y-auto" aria-live="polite"></ul>
         </main>
 
-        <footer class="border-t border-slate-200 bg-white p-3">
+        <footer class="border-t border-[#D5D9D9] bg-white p-3">
             <form id="bot-chat-form" class="flex items-center gap-2" autocomplete="off">
                 <label for="bot-chat-input" class="sr-only">Type your message</label>
                 <input
@@ -139,8 +133,8 @@
 
             const bubbleClass =
                 sender === 'customer'
-                    ? 'max-w-[85%] rounded-2xl rounded-br-md bg-blue-600 px-3 py-2 text-base leading-relaxed text-white shadow-sm'
-                    : 'max-w-[90%] rounded-2xl rounded-bl-md bg-white px-3 py-2 text-base leading-relaxed text-slate-800 shadow-sm';
+                    ? 'max-w-[85%] rounded-2xl rounded-br-md bg-[#F0F2F2] px-3 py-2 text-base leading-relaxed text-[#0F1111]'
+                    : 'max-w-[90%] py-1 text-base leading-relaxed text-[#0F1111]';
 
             const $item = $('<li>').addClass(alignmentClass);
             const $bubble = $('<div>').addClass(bubbleClass);
@@ -160,7 +154,7 @@
             const $item = $('<li>').addClass('flex justify-start');
 
             const $bubble = $('<div>').addClass(
-                'max-w-[90%] rounded-2xl rounded-bl-md bg-white px-3 py-2 text-base leading-relaxed text-slate-800 shadow-sm'
+                'max-w-[90%] py-1 text-base leading-relaxed text-[#0F1111]'
             );
 
             $bubble.html(html || '');
@@ -186,6 +180,17 @@
             $messagesList.scrollTop($messagesList.prop('scrollHeight'));
         }
 
+        // Append server-rendered product cards
+        function appendProductCards(html) {
+            if (!html) {
+                return;
+            }
+
+            const $item = $('<li>').addClass('w-full').html(html);
+            $messagesList.append($item);
+            $messagesList.scrollTop($messagesList.prop('scrollHeight'));
+        }
+
         function appendTypingIndicator() {
             const $item = $('<li>', {
                 class: 'flex justify-start',
@@ -193,7 +198,7 @@
             });
 
             const $bubble = $('<div>', {
-                class: 'max-w-[85%] rounded-2xl rounded-bl-md bg-white px-4 py-3 text-base leading-relaxed text-slate-500 shadow-sm',
+                class: 'max-w-[85%] py-2 text-base leading-relaxed text-slate-500',
             });
 
             const $typing = $('<div>').addClass('flex items-center gap-2');
@@ -356,6 +361,7 @@
                 success: function (response) {
                     if (response?.answer_html) {
                         appendBotHtmlMessage(response.answer_html);
+                        appendProductCards(response.products_html);
                         return;
                     }
 
