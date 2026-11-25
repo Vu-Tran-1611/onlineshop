@@ -213,9 +213,15 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    PUSHER_APP_SECRET=your_pusher_secret
    PUSHER_APP_CLUSTER=your_cluster
 
-   # FastAPI services
-   PYTHON_API_URL=http://localhost:8000
-   FASTAPI_AI_URL=http://localhost:8001
+   # Queue (RabbitMQ)
+   QUEUE_CONNECTION=rabbitmq
+   RABBITMQ_HOST=localhost
+   RABBITMQ_PORT=5672
+
+   # FastAPI services (ml-recommendation-service)
+   PYTHON_API_URL=http://127.0.0.1:8000/api
+   AI_SERVICE_KEY=same_value_as_ml_service_AI_SERVICE_KEY
+   AI_SERVICE_RATE_LIMIT=600
 
    # Mail
    MAIL_MAILER=smtp
@@ -230,23 +236,36 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    php artisan migrate --seed
    ```
 
-6. Start the development server
+6. Start RabbitMQ
+
+   Open Docker Desktop. The `onlineshop_rabbitmq` container starts on its own (ports 5672 and 15672).
+
+7. Start the servers, each in its own terminal
 
    ```bash
-   php artisan serve
+   # Website
+   php artisan serve --port=8001
+
+   # AI API for the ML service
+   php artisan serve --port=8004
+
+   # Queue worker (emails use the "emails" queue)
+   php artisan queue:work rabbitmq --queue=default,emails
    ```
 
-7. Start the queue worker
+   `php artisan serve` handles one request at a time. The chatbot request on 8001 waits for the ML service, which calls Laravel back for product search, so the ML service needs its own server on 8004 (`LARAVEL_API_URL=http://localhost:8004` in the ML service `.env`).
+
+   Then start the ML service from `ml-recommendation-service`:
 
    ```bash
-   php artisan queue:work rabbitmq --queue=default
+   uvicorn app.main:app --reload
    ```
 
 8. Access the application
 
-   - Frontend: http://localhost:8000
-   - Admin panel: http://localhost:8000/admin
-   - Vendor panel: http://localhost:8000/vendor
+   - Frontend: http://127.0.0.1:8001
+   - Admin panel: http://127.0.0.1:8001/admin
+   - Vendor panel: http://127.0.0.1:8001/vendor
 
 ## 7. Future Improvements
 
