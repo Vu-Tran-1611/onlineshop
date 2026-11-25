@@ -12,7 +12,8 @@ use Throwable;
 
 class BotChatController extends Controller
 {
-    private const MAX_PRODUCTS = 10;
+    // Match MAX_PRODUCTS in the ML product search agent
+    private const MAX_PRODUCTS = 12;
 
     public function chat(Request $request)
     {
