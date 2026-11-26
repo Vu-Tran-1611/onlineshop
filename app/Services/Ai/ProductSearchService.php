@@ -6,13 +6,18 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\SubCategory;
+use App\Services\Search\ProductSearchIndex;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class ProductSearchService
 {
-    public function __construct(private readonly CatalogFilterService $catalogFilterService)
-    {
+    private const LIMIT = 10;
+
+    public function __construct(
+        private readonly CatalogFilterService $catalogFilterService,
+        private readonly ProductSearchIndex $searchIndex,
+    ) {
     }
 
     // Search products and report filters that match nothing
@@ -57,21 +62,70 @@ class ProductSearchService
         ?string $productType
     ): Collection
     {
+        $products = $this->searchIndex->enabled()
+            ? $this->queryIndex($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType)
+            : $this->queryDatabase($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType);
+
+        return $products->map(function (Product $product) {
+            $onSale = checkSale($product);
+
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'brand' => $product->brand?->name,
+                'category' => $product->category?->name,
+                'subcategory' => $product->subCategory?->name,
+                'price' => $onSale ? $product->offer_price : $product->price,
+                'original_price' => $onSale ? $product->price : null,
+                'product_type' => $product->product_type,
+                'short_description' => Str::squish(strip_tags(str_replace('<', ' <', (string) $product->short_description))),
+            ];
+        })->values();
+    }
+
+    // Search the Meilisearch index, keeping its relevance order
+    private function queryIndex(
+        ?string $keywords,
+        array $categoryIds,
+        array $subCategoryIds,
+        array $brandIds,
+        ?float $minPrice,
+        ?float $maxPrice,
+        ?string $productType
+    ): Collection
+    {
+        $filters = array_filter([
+            $categoryIds ? ProductSearchIndex::in('category_id', $categoryIds) : null,
+            $subCategoryIds ? ProductSearchIndex::in('sub_category_id', $subCategoryIds) : null,
+            $brandIds ? ProductSearchIndex::in('brand_id', $brandIds) : null,
+            $minPrice !== null ? '(' . ProductSearchIndex::activePrice('>=', $minPrice) . ')' : null,
+            $maxPrice !== null ? '(' . ProductSearchIndex::activePrice('<=', $maxPrice) . ')' : null,
+            $productType ? 'product_type = ' . json_encode($productType) : null,
+        ]);
+
+        // Show newest first when there is nothing to rank by
+        $sort = trim((string) $keywords) === '' ? ['id:desc'] : [];
+        $ids = $this->searchIndex->ids($keywords, $filters, $sort, self::LIMIT);
+
+        return Product::with(['brand:id,name', 'category:id,name', 'subCategory:id,name'])
+            ->whereIn('id', $ids)
+            ->get()
+            ->sortBy(fn (Product $product) => array_search($product->id, $ids));
+    }
+
+    // Search MySQL with LIKE when no search index is configured
+    private function queryDatabase(
+        ?string $keywords,
+        array $categoryIds,
+        array $subCategoryIds,
+        array $brandIds,
+        ?float $minPrice,
+        ?float $maxPrice,
+        ?string $productType
+    ): Collection
+    {
         return Product::query()
             ->with(['brand:id,name', 'category:id,name', 'subCategory:id,name'])
-            ->select([
-                'id',
-                'name',
-                'category_id',
-                'sub_category_id',
-                'brand_id',
-                'price',
-                'offer_price',
-                'offer_start_price',
-                'offer_end_price',
-                'product_type',
-                'short_description',
-            ])
             ->where('status', 1)
             ->where('is_approved', 1)
             ->when(!empty($categoryIds), fn ($builder) => $builder->whereIn('category_id', $categoryIds))
@@ -95,23 +149,8 @@ class ProductSearchService
                 });
             })
             ->orderByDesc('id')
-            ->limit(10)
-            ->get()
-            ->map(function (Product $product) {
-                $onSale = checkSale($product);
-
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'brand' => $product->brand?->name,
-                    'category' => $product->category?->name,
-                    'subcategory' => $product->subCategory?->name,
-                    'price' => $onSale ? $product->offer_price : $product->price,
-                    'original_price' => $onSale ? $product->price : null,
-                    'product_type' => $product->product_type,
-                    'short_description' => Str::squish(strip_tags(str_replace('<', ' <', (string) $product->short_description))),
-                ];
-            });
+            ->limit(self::LIMIT)
+            ->get();
     }
 
     // Build suggestions for filters that matched nothing

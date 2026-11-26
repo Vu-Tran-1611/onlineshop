@@ -89,6 +89,9 @@
                     <select id="price-order"
                         class="w-full price-order-filter rounded-lg border border-slate-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
                         name="order">
+                        <option value="" {{ !in_array(request('order'), ['asc', 'desc']) ? 'selected' : '' }}>
+                            Relevance
+                        </option>
                         <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>
                             Price: Low to High
                         </option>

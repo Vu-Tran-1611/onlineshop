@@ -14,9 +14,53 @@ use App\Models\ProductVariant;
 use App\Models\UserReviews;
 use App\Models\OrderProduct;
 use App\Models\UserProductInteraction;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
+use Laravel\Scout\Searchable;
+
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
+
+    // Build the document sent to the search index
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing(['brand:id,name', 'category:id,name', 'subCategory:id,name']);
+
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'brand' => $this->brand?->name,
+            'category' => $this->category?->name,
+            'subcategory' => $this->subCategory?->name,
+            'short_description' => $this->plainText($this->short_description),
+            'long_description' => $this->plainText($this->long_description),
+            'sku' => $this->sku,
+            'category_id' => $this->category_id,
+            'sub_category_id' => $this->sub_category_id,
+            'brand_id' => $this->brand_id,
+            // Sale dates as timestamps so the active price is checked at search time
+            'price' => (float) $this->price,
+            'offer_price' => (float) $this->offer_price,
+            'offer_start' => $this->offer_start_price ? strtotime($this->offer_start_price . ' 00:00:00') : 0,
+            'offer_end' => $this->offer_end_price ? strtotime($this->offer_end_price . ' 23:59:59') : 0,
+            'product_type' => $this->product_type,
+            'status' => (int) $this->status,
+            'is_approved' => (int) $this->is_approved,
+        ];
+    }
+
+    // Eager load relations when importing all products
+    protected function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query->with(['brand:id,name', 'category:id,name', 'subCategory:id,name']);
+    }
+
+    // Strip HTML and keep words separated
+    private function plainText(?string $html): string
+    {
+        return Str::squish(strip_tags(str_replace('<', ' <', (string) $html)));
+    }
 
     protected $fillable = [
         "name",

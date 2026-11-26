@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Log;
 use App\Jobs\StoreProductInteractionJob;
 use App\Models\UserProductInteraction;
 use App\Models\KnowledgeBaseDocument;
+use App\Services\Search\ProductSearchIndex;
 class HomeController extends Controller
 {
     public function getInteractions($userID,$interaction_types){
@@ -432,19 +433,34 @@ class HomeController extends Controller
         $allCategories = Cache::remember('categories', 60 * 60, function () {
             return Category::where("status", 1)->with('subCategories')->get()->take(20);
         });
-        $keyword = $request->keyword;
+        $keyword = trim((string) $request->keyword);
         $categorySlug = $request->category ? $request->category : "";
         $from = $request->from ? $request->from : 0;
         $to = $request->to ? $request->to : 10000000;
-        $order = $request->order ? $request->order : "asc";
+        // Default to relevance when searching, otherwise price low to high
+        $order = in_array($request->order, ["asc", "desc"]) ? $request->order : null;
         $priceRange = [$from, $to];
         $brandsSlugsArray =  $request->brand;
-        $products = Product::query()
-            ->where(function ($query) use ($keyword) {
-                $query->where("name", "LIKE", "%$keyword%")
+
+        // Use the search index for keywords when it is configured
+        $searchIndex = app(ProductSearchIndex::class);
+        $matchedIds = ($keyword !== "" && $searchIndex->enabled()) ? $searchIndex->ids($keyword) : null;
+
+        // Limit a product query to the keyword matches
+        $matchKeyword = function ($query) use ($keyword, $matchedIds) {
+            if ($matchedIds !== null) {
+                $query->whereIn("products.id", $matchedIds ?: [0]);
+                return;
+            }
+            $query->where(function ($q) use ($keyword) {
+                $q->where("name", "LIKE", "%$keyword%")
                     ->orWhere("short_description", "LIKE", "%$keyword%")
                     ->orWhere("long_description", "LIKE", "%$keyword%");
-            })
+            });
+        };
+
+        $products = Product::query()
+            ->where($matchKeyword)
             ->whereBetween("price", $priceRange)
             ->where("is_approved", 1)
             ->where("status", 1)
@@ -462,27 +478,24 @@ class HomeController extends Controller
                 });
             })
             ->with(["category", "brand"])
-            ->orderBy("price", $order)
+            ->when(
+                $order === null && !empty($matchedIds),
+                // Keep the search index relevance order
+                fn ($query) => $query->orderByRaw("FIELD(products.id, " . implode(",", array_map("intval", $matchedIds)) . ")"),
+                fn ($query) => $query->orderBy("price", $order ?? "asc")
+            )
             ->paginate(12);
 
 
         // Get categories and brands that have products matching the search keyword
-        $relatedCategories = Category::whereHas("products", function ($query) use ($keyword) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where("name", "LIKE", "%$keyword%")
-                    ->orWhere("short_description", "LIKE", "%$keyword%")
-                    ->orWhere("long_description", "LIKE", "%$keyword%");
-            })
+        $relatedCategories = Category::whereHas("products", function ($query) use ($matchKeyword) {
+            $query->where($matchKeyword)
                 ->where("status", 1)
                 ->where("is_approved", 1);
         })->with("subCategories")->get();
 
-        $brands = Brand::whereHas("products", function ($query) use ($keyword) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where("name", "LIKE", "%$keyword%")
-                    ->orWhere("short_description", "LIKE", "%$keyword%")
-                    ->orWhere("long_description", "LIKE", "%$keyword%");
-            })
+        $brands = Brand::whereHas("products", function ($query) use ($matchKeyword) {
+            $query->where($matchKeyword)
                 ->where("status", 1)
                 ->where("is_approved", 1);
         })->get();

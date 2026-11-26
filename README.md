@@ -223,6 +223,12 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    AI_SERVICE_KEY=same_value_as_ml_service_AI_SERVICE_KEY
    AI_SERVICE_RATE_LIMIT=600
 
+   # Search (Meilisearch). Leave SCOUT_DRIVER unset to fall back to MySQL LIKE search
+   SCOUT_DRIVER=meilisearch
+   SCOUT_QUEUE=true
+   MEILISEARCH_HOST=http://127.0.0.1:7700
+   MEILISEARCH_KEY=your_local_master_key
+
    # Mail
    MAIL_MAILER=smtp
    MAIL_HOST=your_mail_host
@@ -236,9 +242,26 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    php artisan migrate --seed
    ```
 
-6. Start RabbitMQ
+6. Start RabbitMQ and Meilisearch
 
-   Open Docker Desktop. The `onlineshop_rabbitmq` container starts on its own (ports 5672 and 15672).
+   Open Docker Desktop. The `onlineshop_rabbitmq` and `onlineshop_meilisearch` containers start on their own.
+
+   First time only, create the Meilisearch container (data is kept in the `onlineshop_meili_data` volume):
+
+   ```bash
+   docker run -d --name onlineshop_meilisearch --restart unless-stopped -p 7700:7700 \
+     -v onlineshop_meili_data:/meili_data -e MEILI_MASTER_KEY=your_local_master_key \
+     getmeili/meilisearch:v1.58.0
+   ```
+
+   Then push the index settings and import the products (the queue worker must be running):
+
+   ```bash
+   php artisan scout:sync-index-settings
+   php artisan scout:import "App\Models\Product"
+   ```
+
+   Product changes are synced to Meilisearch through the queue. After changing PHP code, restart the queue worker so it loads the new code.
 
 7. Start the servers, each in its own terminal
 
