@@ -144,10 +144,10 @@ return [
             \App\Models\Product::class => [
                 // Earlier fields rank higher
                 'searchableAttributes' => [
-                    'name', 'brand', 'subcategory', 'category', 'short_description', 'long_description',
+                    'name', 'brand', 'subcategory', 'category', 'short_description', 'long_description', 'sku', 'gender',
                 ],
                 'filterableAttributes' => [
-                    'status', 'is_approved', 'category_id', 'sub_category_id', 'brand_id', 'product_type',
+                    'status', 'is_approved', 'category_id', 'sub_category_id', 'brand_id', 'product_type', 'gender',
                     'price', 'offer_price', 'offer_start', 'offer_end',
                 ],
                 'sortableAttributes' => ['price', 'id'],

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Ai;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
+use Illuminate\Validation\Rule;
 use App\Services\Ai\ProductSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +25,7 @@ class ProductSearchController extends Controller
             'min_price' => ['nullable', 'numeric', 'min:0'],
             'max_price' => ['nullable', 'numeric', 'min:0'],
             'product_type' => ['nullable', 'string', 'max:50'],
+            'gender' => ['nullable', Rule::in(Product::GENDERS)],
         ]);
 
         $result = $this->productSearchService->search(
@@ -33,6 +36,7 @@ class ProductSearchController extends Controller
             minPrice: $validated['min_price'] ?? null,
             maxPrice: $validated['max_price'] ?? null,
             productType: $validated['product_type'] ?? null,
+            gender: $validated['gender'] ?? null,
         );
 
         return response()->json([

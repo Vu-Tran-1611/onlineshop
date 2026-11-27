@@ -37,6 +37,14 @@ class ProductSearchIndex
         return "(({$onSale}) AND offer_price {$operator} {$value}) OR (NOT ({$onSale}) AND price {$operator} {$value})";
     }
 
+    // Build a gender filter, e.g. men also matches unisex
+    public static function gender(?string $gender): ?string
+    {
+        $values = \App\Models\Product::gendersFor($gender);
+
+        return $values ? 'gender IN [' . implode(', ', array_map('json_encode', $values)) . ']' : null;
+    }
+
     // Build an "IN" filter for numeric IDs
     public static function in(string $field, array $ids): string
     {

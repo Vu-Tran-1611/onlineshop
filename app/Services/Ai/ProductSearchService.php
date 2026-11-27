@@ -28,7 +28,8 @@ class ProductSearchService
         ?string $brand = null,
         ?float $minPrice = null,
         ?float $maxPrice = null,
-        ?string $productType = null
+        ?string $productType = null,
+        ?string $gender = null
     ): array
     {
         $categoryIds = $this->resolveCategoryIds($category);
@@ -47,7 +48,7 @@ class ProductSearchService
         }
 
         return ['products' => $this->query(
-            $keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType
+            $keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType, $gender
         ), 'unmatched_filters' => []];
     }
 
@@ -59,12 +60,13 @@ class ProductSearchService
         array $brandIds,
         ?float $minPrice,
         ?float $maxPrice,
-        ?string $productType
+        ?string $productType,
+        ?string $gender
     ): Collection
     {
         $products = $this->searchIndex->enabled()
-            ? $this->queryIndex($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType)
-            : $this->queryDatabase($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType);
+            ? $this->queryIndex($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType, $gender)
+            : $this->queryDatabase($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType, $gender);
 
         return $products->map(function (Product $product) {
             $onSale = checkSale($product);
@@ -78,6 +80,7 @@ class ProductSearchService
                 'price' => $onSale ? $product->offer_price : $product->price,
                 'original_price' => $onSale ? $product->price : null,
                 'product_type' => $product->product_type,
+                'gender' => $product->gender,
                 'short_description' => Str::squish(strip_tags(str_replace('<', ' <', (string) $product->short_description))),
             ];
         })->values();
@@ -91,7 +94,8 @@ class ProductSearchService
         array $brandIds,
         ?float $minPrice,
         ?float $maxPrice,
-        ?string $productType
+        ?string $productType,
+        ?string $gender
     ): Collection
     {
         $filters = array_filter([
@@ -105,7 +109,21 @@ class ProductSearchService
 
         // Show newest first when there is nothing to rank by
         $sort = trim((string) $keywords) === '' ? ['id:desc'] : [];
-        $ids = $this->searchIndex->ids($keywords, $filters, $sort, self::LIMIT);
+
+        // Put products made for the gender first, then unisex, then untagged ones
+        $ids = [];
+        $buckets = Product::gendersFor($gender);
+        foreach ($buckets ? array_merge($buckets, ['untagged']) : [null] as $value) {
+            $genderFilter = match ($value) {
+                null => [],
+                'untagged' => ['gender IS NULL'],
+                default => ['gender = ' . json_encode($value)],
+            };
+            $remaining = self::LIMIT - count($ids);
+            if ($remaining > 0) {
+                $ids = array_merge($ids, $this->searchIndex->ids($keywords, array_merge($filters, $genderFilter), $sort, $remaining));
+            }
+        }
 
         return Product::with(['brand:id,name', 'category:id,name', 'subCategory:id,name'])
             ->whereIn('id', $ids)
@@ -121,7 +139,8 @@ class ProductSearchService
         array $brandIds,
         ?float $minPrice,
         ?float $maxPrice,
-        ?string $productType
+        ?string $productType,
+        ?string $gender
     ): Collection
     {
         return Product::query()
@@ -138,6 +157,10 @@ class ProductSearchService
                 $builder->whereRaw('COALESCE(offer_price, price) <= ?', [$maxPrice]);
             })
             ->when($productType, fn ($builder) => $builder->where('product_type', $productType))
+            // Keep untagged products, they are not specified for anyone
+            ->when(Product::gendersFor($gender), fn ($builder, $values) => $builder->where(
+                fn ($query) => $query->whereIn('gender', $values)->orWhereNull('gender')
+            ))
             ->when($keywords, function ($builder) use ($keywords) {
                 $builder->where(function ($subQuery) use ($keywords) {
                     $subQuery->where('name', 'like', '%' . $keywords . '%')

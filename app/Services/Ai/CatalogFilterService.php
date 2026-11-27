@@ -4,6 +4,7 @@ namespace App\Services\Ai;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -28,6 +29,11 @@ class CatalogFilterService
                     ->all(),
                 'brands' => Brand::where('status', 1)->orderBy('name')->pluck('name')->all(),
                 'product_types' => array_values(array_filter(array_keys(getAllType()))),
+                'genders' => Product::GENDERS,
+                // Categories where products are tagged with a gender
+                'gender_categories' => Category::where('status', 1)
+                    ->whereHas('products', fn ($query) => $query->whereNotNull('gender'))
+                    ->orderBy('name')->pluck('name')->all(),
             ];
         });
     }

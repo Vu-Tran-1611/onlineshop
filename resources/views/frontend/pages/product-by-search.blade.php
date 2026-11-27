@@ -67,6 +67,21 @@
 
 
 
+                {{-- Gender Filter --}}
+                <div class="mb-6 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <h3 class="text-sm font-semibold text-slate-700 mb-3">For</h3>
+                    <div class="space-y-2">
+                        @foreach (['' => 'All'] + array_combine(\App\Models\Product::GENDERS, array_map('ucfirst', \App\Models\Product::GENDERS)) as $value => $label)
+                            <label class="flex items-center gap-2 p-2 rounded-lg hover:bg-white transition cursor-pointer">
+                                <input type="radio" name="gender" value="{{ $value }}"
+                                    {{ (string) request('gender') === (string) $value ? 'checked' : '' }}
+                                    class="h-4 w-4 text-sky-600 border-gray-300 focus:ring-sky-500">
+                                <span class="text-sm text-slate-700">{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
                 {{-- Price Range Filter --}}
                 <div class="mb-6 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
 

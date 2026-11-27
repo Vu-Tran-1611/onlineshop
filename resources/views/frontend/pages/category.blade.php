@@ -92,7 +92,7 @@
                             <div>
                                 <label class="font-semibold">Brand</label>
                                 @foreach ($paras as $key => $p)
-                                    @if ($key != 'brand_slug' && $key != 'page')
+                                    @if ($key != 'brand_slug' && $key != 'page' && $key != 'gender')
                                         <input type="hidden" name="{{ $key }}" value="{{ $p }}" />
                                     @endif
                                 @endforeach
@@ -106,6 +106,23 @@
                                     </div>
                                 @endforeach
                             </div>
+
+                            {{-- Gender --}}
+                            @if (!empty($genderOptions))
+                                <div class="my-3">
+                                    <label class="font-semibold">For</label>
+                                    <div class="flex gap-2 items-center my-2">
+                                        <input type="radio" name="gender" value="" {{ empty($activeGender) ? 'checked' : '' }}>
+                                        <label>All</label>
+                                    </div>
+                                    @foreach ($genderOptions as $option)
+                                        <div class="flex gap-2 items-center my-2">
+                                            <input type="radio" name="gender" value="{{ $option }}" {{ $activeGender === $option ? 'checked' : '' }}>
+                                            <label>{{ ucfirst($option) }}</label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
 
                             {{-- Price --}}
                             <div class="">

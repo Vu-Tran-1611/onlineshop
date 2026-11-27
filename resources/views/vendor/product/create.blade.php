@@ -69,6 +69,15 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
+                                    <label for="">For</label>
+                                    <select name="gender" class="form-control">
+                                        <option value="">Not specified</option>
+                                        @foreach (\App\Models\Product::GENDERS as $gender)
+                                            <option value="{{ $gender }}" {{ old('gender') == $gender ? 'selected' : '' }}>{{ ucfirst($gender) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="">Quantity</label>
                                     <input value="{{ old('qty') }}" name="qty" type="number" class="form-control">
                                 </div>

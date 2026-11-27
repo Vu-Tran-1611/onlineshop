@@ -363,6 +363,9 @@ class HomeController extends Controller
                     $brandSlugsID[] = Brand::where("slug", $value)->pluck("id")->toArray();
                 }
             }
+            // If gender was chosen
+            $gender = in_array($request->gender, Product::GENDERS) ? $request->gender : null;
+
             // If type was chosen
             $type = "";
             if ($request->type) $type = $request->type;
@@ -408,10 +411,18 @@ class HomeController extends Controller
                 ->when($type, function ($query) use ($type) {
                     $query->where("product_type", $type);
                 })
+                ->when(Product::gendersFor($gender), fn ($query, $values) => $query->whereIn("gender", $values))
                 ->where("is_approved", 1)
                 ->where("status", 1)
                 ->orderBy("price", $order)
                 ->paginate(12);
+
+            // Offer gender filters only when this category has tagged products
+            $genderOptions = Product::where("category_id", $category->id)
+                ->where("status", 1)->where("is_approved", 1)
+                ->whereNotNull("gender")->distinct()->pluck("gender")->all();
+            $genderOptions = array_values(array_intersect(Product::GENDERS, $genderOptions));
+
             return view("frontend.pages.category", [
                 "categories" => $allCategories,
                 "category" => $category,
@@ -420,6 +431,8 @@ class HomeController extends Controller
                 "activeSub" =>  $activeSub,
                 "slug" => $category->slug,
                 "brands" => $brands,
+                "genderOptions" => $genderOptions,
+                "activeGender" => $gender,
             ]);
         }
     }
@@ -441,6 +454,7 @@ class HomeController extends Controller
         $order = in_array($request->order, ["asc", "desc"]) ? $request->order : null;
         $priceRange = [$from, $to];
         $brandsSlugsArray =  $request->brand;
+        $gender = in_array($request->gender, Product::GENDERS) ? $request->gender : null;
 
         // Use the search index for keywords when it is configured
         $searchIndex = app(ProductSearchIndex::class);
@@ -477,6 +491,7 @@ class HomeController extends Controller
                     $q->whereIn("slug", $brandsSlugsArray);
                 });
             })
+            ->when(Product::gendersFor($gender), fn ($query, $values) => $query->whereIn("gender", $values))
             ->with(["category", "brand"])
             ->when(
                 $order === null && !empty($matchedIds),

@@ -22,6 +22,19 @@ class Product extends Model
 {
     use HasFactory, Searchable;
 
+    // Who a product is for
+    public const GENDERS = ['men', 'women', 'kids', 'unisex'];
+
+    // Return the gender values a filter should match (men and women include unisex)
+    public static function gendersFor(?string $gender): array
+    {
+        return match ($gender) {
+            'men', 'women' => [$gender, 'unisex'],
+            'kids', 'unisex' => [$gender],
+            default => [],
+        };
+    }
+
     // Build the document sent to the search index
     public function toSearchableArray(): array
     {
@@ -39,6 +52,7 @@ class Product extends Model
             'category_id' => $this->category_id,
             'sub_category_id' => $this->sub_category_id,
             'brand_id' => $this->brand_id,
+            'gender' => $this->gender,
             // Sale dates as timestamps so the active price is checked at search time
             'price' => (float) $this->price,
             'offer_price' => (float) $this->offer_price,
@@ -70,6 +84,7 @@ class Product extends Model
         "category_id",
         "sub_category_id",
         "brand_id",
+        "gender",
         "qty",
         "short_description",
         "long_description",

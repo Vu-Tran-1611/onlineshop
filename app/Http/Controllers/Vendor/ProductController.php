@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Vendor;
 use App\DataTables\ProductDataTable;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\Product;
 use App\Traits\UploadTrait;
 use App\Models\Category;
@@ -48,6 +49,7 @@ class ProductController extends Controller
             'thumb_image' => ["image", "required"],
             "category_id" => ["required"],
             "brand_id" => ["required"],
+            "gender" => ["nullable", Rule::in(Product::GENDERS)],
             "qty" => ["required", "integer"],
             "short_description" => ["required"],
             "long_description" => ["required"],
@@ -64,6 +66,7 @@ class ProductController extends Controller
             "category_id" => $request->category_id,
             "sub_category_id" => $request->sub_category_id,
             "brand_id" => $request->brand_id,
+            "gender" => $request->gender ?: null,
             "qty" => $request->qty,
             "short_description" => $request->short_description,
             "long_description" => $request->long_description,
@@ -123,6 +126,7 @@ class ProductController extends Controller
             'thumb_image' => ["image"],
             "category_id" => ["required"],
             "brand_id" => ["required"],
+            "gender" => ["nullable", Rule::in(Product::GENDERS)],
             "qty" => ["required", "integer"],
             "short_description" => ["required"],
             "long_description" => ["required"],
@@ -138,6 +142,7 @@ class ProductController extends Controller
             "category_id" => $request->category_id,
             "sub_category_id" => $request->sub_category_id,
             "brand_id" => $request->brand_id,
+            "gender" => $request->gender ?: null,
             "qty" => $request->qty,
             "short_description" => $request->short_description,
             "long_description" => $request->long_description,
