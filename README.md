@@ -294,12 +294,33 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    - Admin panel: http://127.0.0.1:8001/admin
    - Vendor panel: http://127.0.0.1:8001/vendor
 
-## 7. Future Improvements
+## 7. Production (Railway)
 
-- Improve product search with semantic search
+| Service | Role |
+|---|---|
+| `onlineshop` | Website (`$PORT`) and AI API for the ML service (port 8081) |
+| `onlineshop-worker` | Queue worker (`php artisan queue:work rabbitmq --queue=default,emails`), restart policy ALWAYS. Variables reference `onlineshop` |
+| `Meilisearch` | Search index (`getmeili/meilisearch:v1.58.0`), volume at `/meili_data`, private network only |
+| `MySQL`, `RabbitMQ` | Database and queue broker |
+| `ecommerce-recommendation-system` | ML service (recommendations and chatbot) |
+
+Search settings on `onlineshop`: `SCOUT_DRIVER=meilisearch`, `SCOUT_QUEUE=true`, `MEILISEARCH_HOST` and `MEILISEARCH_KEY` (references to the Meilisearch service), `OPENAI_API_KEY` (reference to the ML service). Removing `SCOUT_DRIVER` falls back to MySQL search.
+
+Rebuild the search index (the config is cached in the container, so clear it first):
+
+```bash
+railway ssh --service onlineshop "php artisan config:clear && SCOUT_QUEUE=false php artisan scout:sync-index-settings && SCOUT_QUEUE=false php artisan scout:import 'App\\Models\\Product'; php artisan config:cache"
+```
+
+Production's migration history is missing `create_knowledge_base_documents_table`, so run new migrations with `--path`.
+
+## 8. Future Improvements
+
+- Clickable subcategory badges in the chatbot
+- Conversation memory for the chatbot
 - Add more login methods (Google, Facebook OAuth)
 - Add mobile app support
 
-## 8. License
+## 9. License
 
 This project is licensed under the MIT License - see the Laravel framework license for details.
