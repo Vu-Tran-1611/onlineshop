@@ -17,6 +17,9 @@ class ProductSearchService
     // Weight of meaning vs keywords in hybrid search (chat questions are descriptive)
     private const SEMANTIC_RATIO = 0.5;
 
+    // Candidates fetched for gender searches before reordering by gender group
+    private const GENDER_CANDIDATES = 40;
+
     public function __construct(
         private readonly CatalogFilterService $catalogFilterService,
         private readonly ProductSearchIndex $searchIndex,
@@ -108,30 +111,35 @@ class ProductSearchService
             $minPrice !== null ? '(' . ProductSearchIndex::activePrice('>=', $minPrice) . ')' : null,
             $maxPrice !== null ? '(' . ProductSearchIndex::activePrice('<=', $maxPrice) . ')' : null,
             $productType ? 'product_type = ' . json_encode($productType) : null,
+            // Men/women also include unisex; untagged products are kept for the chatbot
+            ProductSearchIndex::gender($gender, includeUntagged: true),
         ]);
 
         // Show newest first when there is nothing to rank by
         $sort = trim((string) $keywords) === '' ? ['id:desc'] : [];
 
-        // Put products made for the gender first, then unisex, then untagged ones
-        $ids = [];
-        $buckets = Product::gendersFor($gender);
-        foreach ($buckets ? array_merge($buckets, ['untagged']) : [null] as $value) {
-            $genderFilter = match ($value) {
-                null => [],
-                'untagged' => ['gender IS NULL'],
-                default => ['gender = ' . json_encode($value)],
-            };
-            $remaining = self::LIMIT - count($ids);
-            if ($remaining > 0) {
-                $ids = array_merge($ids, $this->searchIndex->ids($keywords, array_merge($filters, $genderFilter), $sort, $remaining, self::SEMANTIC_RATIO));
-            }
-        }
+        // One search; fetch extra candidates when gender groups will be reordered
+        $limit = $gender ? self::GENDER_CANDIDATES : self::LIMIT;
+        $ids = $this->searchIndex->ids($keywords, $filters, $sort, $limit, self::SEMANTIC_RATIO);
 
-        return Product::with(['brand:id,name', 'category:id,name', 'subCategory:id,name'])
+        $products = Product::with(['brand:id,name', 'category:id,name', 'subCategory:id,name'])
             ->whereIn('id', $ids)
-            ->get()
-            ->sortBy(fn (Product $product) => array_search($product->id, $ids));
+            ->get();
+
+        // Order by gender group (made for it, unisex, untagged), then by search relevance
+        return $products
+            ->sortBy(fn (Product $product) => [$this->genderRank($product, $gender), array_search($product->id, $ids)])
+            ->take(self::LIMIT);
+    }
+
+    // Rank a product's gender for a gender search: 0 = exact, 1 = unisex, 2 = untagged
+    private function genderRank(Product $product, ?string $gender): int
+    {
+        return match (true) {
+            $gender === null, $product->gender === $gender => 0,
+            $product->gender === 'unisex' => 1,
+            default => 2,
+        };
     }
 
     // Search MySQL with LIKE when no search index is configured

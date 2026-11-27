@@ -11,7 +11,7 @@ class ProductSearchIndex
     // Embedder name in config/scout.php
     private const EMBEDDER = 'products';
 
-    // Hide results below this relevance (0-1) in hybrid search
+    // Default cutoff: hide hybrid results below this relevance (0-1)
     private const SCORE_THRESHOLD = 0.3;
 
     // Check if the Meilisearch index is configured
@@ -22,12 +22,14 @@ class ProductSearchIndex
 
     // Return IDs of active products matching the keywords and filters, most relevant first.
     // A semantic ratio (0-1) turns on hybrid search: 0 = keywords only, 1 = meaning only.
+    // The score threshold hides weaker hybrid results.
     public function ids(
         ?string $keywords,
         array $filters = [],
         array $sort = [],
         int $limit = 1000,
-        ?float $semanticRatio = null
+        ?float $semanticRatio = null,
+        float $scoreThreshold = self::SCORE_THRESHOLD
     ): array {
         $keywords = trim((string) $keywords);
         $filter = implode(' AND ', array_merge(['status = 1', 'is_approved = 1'], $filters));
@@ -46,7 +48,7 @@ class ProductSearchIndex
                 'hybrid' => ['embedder' => self::EMBEDDER, 'semanticRatio' => $semanticRatio],
                 // Keywords must all match; the semantic side covers partial meaning
                 'matchingStrategy' => 'all',
-                'rankingScoreThreshold' => self::SCORE_THRESHOLD,
+                'rankingScoreThreshold' => $scoreThreshold,
             ]);
         } catch (Throwable $e) {
             // Fall back to keyword search when embedding fails (e.g. OpenAI is down)
@@ -73,12 +75,17 @@ class ProductSearchIndex
         return "(({$onSale}) AND offer_price {$operator} {$value}) OR (NOT ({$onSale}) AND price {$operator} {$value})";
     }
 
-    // Build a gender filter, e.g. men also matches unisex
-    public static function gender(?string $gender): ?string
+    // Build a gender filter, e.g. men also matches unisex; optionally keep untagged products
+    public static function gender(?string $gender, bool $includeUntagged = false): ?string
     {
         $values = \App\Models\Product::gendersFor($gender);
+        if (!$values) {
+            return null;
+        }
 
-        return $values ? 'gender IN [' . implode(', ', array_map('json_encode', $values)) . ']' : null;
+        $filter = 'gender IN [' . implode(', ', array_map('json_encode', $values)) . ']';
+
+        return $includeUntagged ? "({$filter} OR gender IS NULL)" : $filter;
     }
 
     // Build an "IN" filter for numeric IDs

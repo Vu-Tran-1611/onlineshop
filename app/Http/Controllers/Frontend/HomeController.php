@@ -27,6 +27,9 @@ class HomeController extends Controller
     // Weight of meaning vs keywords in the search bar
     private const SEARCH_SEMANTIC_RATIO = 0.3;
 
+    // Lower cutoff than the chatbot: people type full phrases with filler words here
+    private const SEARCH_SCORE_THRESHOLD = 0.15;
+
     public function getInteractions($userID,$interaction_types){
         return UserProductInteraction::where("user_id", $userID)
         ->orderBy("created_at", "desc")
@@ -433,7 +436,7 @@ class HomeController extends Controller
         $searchIndex = app(ProductSearchIndex::class);
         // Lower meaning weight than the chatbot: people type product words here
         $matchedIds = ($keyword !== "" && $searchIndex->enabled())
-            ? $searchIndex->ids($keyword, semanticRatio: self::SEARCH_SEMANTIC_RATIO)
+            ? $searchIndex->ids($keyword, semanticRatio: self::SEARCH_SEMANTIC_RATIO, scoreThreshold: self::SEARCH_SCORE_THRESHOLD)
             : null;
 
         // Limit a product query to the keyword matches
