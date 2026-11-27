@@ -502,49 +502,11 @@
         {{-- You may also like   --}}
         {{-- KNN + Cosine Similarity --}}
 
-        {{-- <div>
-            <div class="flex items-center gap-3 my-8">
-                <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
-                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
-
-                    KNN with numerical and categorical features
-                </h1>
-                <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
-            </div>
-            <div class="grid gap-4 pt-5 grid-cols-5">
-                @include('frontend.partials.filtered-product-list', [
-                    // 'products' => $productsBelongsToSameCategory,
-                    'products' => $KNNRecommendProducts,
-                ])
-            </div>
-        </div> --}}
-
-
-        {{-- TFIDF + Cosine Similarity --}}
-        {{-- <div>
-            <div class="flex items-center gap-3 my-8">
-                <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
-                <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
-
-                    KNN with text features
-                </h1>
-                <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
-            </div>
-            <div class="grid gap-4 pt-5 grid-cols-5">
-                @include('frontend.partials.filtered-product-list', [
-                    // 'products' => $productsBelongsToSameCategory,
-                    'products' => $TFIDFRecommendProductsV1,
-                ])
-            </div>
-        </div> --}}
-
-
-        {{-- TFIDF + KNN + Cosine Similarity --}}
+        {{-- Similar products (ML service: similar_products) --}}
         <div>
             <div class="flex items-center gap-3 my-8">
                 <span class="block w-10 h-1 bg-gradient-to-r from-sky-400 to-sky-700 rounded"></span>
                 <h1 class="text-slate-700 uppercase text-2xl font-bold tracking-wide">
-                    {{-- TFIDF + KNN + Cosine Similarity --}}
                     You May Also Like These Products
                 </h1>
                 <span class="block flex-1 h-1 bg-gradient-to-l from-sky-400 to-sky-700 rounded"></span>
@@ -552,7 +514,7 @@
             <div class="grid gap-4 pt-5 grid-cols-5">
                 @include('frontend.partials.filtered-product-list', [
                     // 'products' => $productsBelongsToSameCategory,
-                    'products' => $TFIDFKNNRecommendProducts,
+                    'products' => $similarProducts,
                 ])
             </div>
         </div>

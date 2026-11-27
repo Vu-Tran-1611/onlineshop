@@ -227,45 +227,15 @@ class HomeController extends Controller
             //Call recommendation API to get recommended products based on the current product
             try{
 
-                // // KNN + Cosine Similarity Recommendations
-                // $KNNRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "knn_euclidean", 10);
-                // $KNNRecommendationIDs = $KNNRecommendations["recommendations"];
-                // $KNNRecommendProducts = Product::whereIn("id", $KNNRecommendationIDs)
-                //     ->where("status", 1)
-                //     ->where("is_approved", 1)
-                //     ->get()
-                //     ->sortBy(function ($product) use ($KNNRecommendationIDs) {
-                //         return array_search($product->id, $KNNRecommendationIDs);
-                //     });
-
-
-
-
-                // // TFIDF + Cosine Similarity Recommendations
-                // // V1
-                // $version = "v2";
-                // $TFIDFRecommendProductsV1 = collect();
-                // $TFIDFRecommendationsV1 = (new RecommendationApiService())->getRecommendations($product->id, "tfidf_cosine", 10,$version);
-                // $TFIDFRecommendationIDs = $TFIDFRecommendationsV1["recommendations"];
-                // $TFIDFRecommendProductsV1 = Product::whereIn("id", $TFIDFRecommendationIDs)
-                //     ->where("status", 1)
-                //     ->where("is_approved", 1)
-                //     ->get()
-                //     ->sortBy(function ($product) use ($TFIDFRecommendationIDs) {
-                //         return array_search($product->id, $TFIDFRecommendationIDs);
-                //     });
-
-
-                // //TFIDF + KNN + Cosine Similarity Recommendations
-                $TFIDFKNNRecommendProducts = collect();
-                $TFIDFKNNRecommendations = (new RecommendationApiService())->getRecommendations($product->id, "tfidf_knn_cosine", 10);
-                $TFIDFKNNRecommendationIDs = $TFIDFKNNRecommendations["recommendations"];
-                $TFIDFKNNRecommendProducts = Product::whereIn("id", $TFIDFKNNRecommendationIDs)
+                // Similar products (content-based model in the ML service)
+                $similarProducts = collect();
+                $similarProductIDs = (new RecommendationApiService())->getRecommendations($product->id, "similar_products", 10)["recommendations"];
+                $similarProducts = Product::whereIn("id", $similarProductIDs)
                     ->where("status", 1)
                     ->where("is_approved", 1)
                     ->get()
-                    ->sortBy(function ($product) use ($TFIDFKNNRecommendationIDs) {
-                        return array_search($product->id, $TFIDFKNNRecommendationIDs);
+                    ->sortBy(function ($product) use ($similarProductIDs) {
+                        return array_search($product->id, $similarProductIDs);
                     });
                 $comirecRecommendedProducts = collect();
                 $interactionsForComirec = Auth::check()
@@ -292,7 +262,7 @@ class HomeController extends Controller
                     //------------- Comirec ----------------
                 }
             } catch(\Exception $e){
-                $TFIDFKNNRecommendProducts = collect();
+                $similarProducts = collect();
                 $comirecRecommendedProducts = collect();
             }
             $reviewsQuery = $product->userReviews()->with("user");
@@ -326,8 +296,8 @@ class HomeController extends Controller
                 // "productsBelongsToSameCategory" => $productsBelongsToSameCategory,
 
                 // Recommendations ------------------------------
-                // TFIDF + KNN + Cosine Similarity Recommendations
-                "TFIDFKNNRecommendProducts" => $TFIDFKNNRecommendProducts,
+                // Similar products (ML service: similar_products)
+                "similarProducts" => $similarProducts,
                 //  ComiRec Recommendations
                 "comirecRecommendedProducts" => $comirecRecommendedProducts,
                 // Recommendations ------------------------------
