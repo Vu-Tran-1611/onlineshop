@@ -171,6 +171,14 @@ class ProductSearchService
                         ->orWhere('sku', 'like', '%' . $keywords . '%');
                 });
             })
+            // Put products made for the gender first, then unisex, then untagged ones
+            ->when(
+                Product::gendersFor($gender),
+                fn ($builder) => $builder->orderByRaw(
+                    "CASE WHEN gender = ? THEN 0 WHEN gender = 'unisex' THEN 1 ELSE 2 END",
+                    [$gender]
+                )
+            )
             ->orderByDesc('id')
             ->limit(self::LIMIT)
             ->get();
