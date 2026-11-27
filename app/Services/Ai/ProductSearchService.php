@@ -14,6 +14,9 @@ class ProductSearchService
 {
     private const LIMIT = 10;
 
+    // Weight of meaning vs keywords in hybrid search (chat questions are descriptive)
+    private const SEMANTIC_RATIO = 0.5;
+
     public function __construct(
         private readonly CatalogFilterService $catalogFilterService,
         private readonly ProductSearchIndex $searchIndex,
@@ -121,7 +124,7 @@ class ProductSearchService
             };
             $remaining = self::LIMIT - count($ids);
             if ($remaining > 0) {
-                $ids = array_merge($ids, $this->searchIndex->ids($keywords, array_merge($filters, $genderFilter), $sort, $remaining));
+                $ids = array_merge($ids, $this->searchIndex->ids($keywords, array_merge($filters, $genderFilter), $sort, $remaining, self::SEMANTIC_RATIO));
             }
         }
 

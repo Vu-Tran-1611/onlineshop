@@ -24,6 +24,9 @@ use App\Models\KnowledgeBaseDocument;
 use App\Services\Search\ProductSearchIndex;
 class HomeController extends Controller
 {
+    // Weight of meaning vs keywords in the search bar
+    private const SEARCH_SEMANTIC_RATIO = 0.3;
+
     public function getInteractions($userID,$interaction_types){
         return UserProductInteraction::where("user_id", $userID)
         ->orderBy("created_at", "desc")
@@ -428,7 +431,10 @@ class HomeController extends Controller
 
         // Use the search index for keywords when it is configured
         $searchIndex = app(ProductSearchIndex::class);
-        $matchedIds = ($keyword !== "" && $searchIndex->enabled()) ? $searchIndex->ids($keyword) : null;
+        // Lower meaning weight than the chatbot: people type product words here
+        $matchedIds = ($keyword !== "" && $searchIndex->enabled())
+            ? $searchIndex->ids($keyword, semanticRatio: self::SEARCH_SEMANTIC_RATIO)
+            : null;
 
         // Limit a product query to the keyword matches
         $matchKeyword = function ($query) use ($keyword, $matchedIds) {

@@ -153,7 +153,19 @@ return [
                 'sortableAttributes' => ['price', 'id'],
                 // Allow 1 typo from 4 letters ("loso" -> "lotso")
                 'typoTolerance' => [
-                    'minWordSizeForTypos' => ['oneTypo' => 4, 'twoTypos' => 8],
+                    'minWordSizeForTypos' => ['oneTypo' => 4, 'twoTypos' => 9],
+                ],
+                // Meilisearch embeds each product with OpenAI for semantic search
+                'embedders' => [
+                    'products' => [
+                        'source' => 'openAi',
+                        'apiKey' => env('OPENAI_API_KEY'),
+                        'model' => 'text-embedding-3-small',
+                        'documentTemplate' => 'A {{doc.category}} product ({{doc.subcategory}}{% if doc.gender %}, for {{doc.gender}}{% endif %}) '
+                            . 'named {{doc.name}} by {{doc.brand}}. {{doc.short_description}}',
+                        // Long description is left out: it diluted meaning in tests (keyword search still uses it)
+                        'documentTemplateMaxBytes' => 400,
+                    ],
                 ],
             ],
             // 'users' => [

@@ -228,6 +228,8 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    SCOUT_QUEUE=true
    MEILISEARCH_HOST=http://127.0.0.1:7700
    MEILISEARCH_KEY=your_local_master_key
+   # Used by Meilisearch to embed products for hybrid (keyword + meaning) search
+   OPENAI_API_KEY=your_openai_api_key
 
    # Mail
    MAIL_MAILER=smtp
@@ -260,6 +262,8 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    php artisan scout:sync-index-settings
    php artisan scout:import "App\Models\Product"
    ```
+
+   `scout:sync-index-settings` also sends the OpenAI embedder, and Meilisearch then embeds every product for hybrid search. Run it again after changing `config/scout.php`.
 
    Product changes are synced to Meilisearch through the queue. After changing PHP code, restart the queue worker so it loads the new code.
 
