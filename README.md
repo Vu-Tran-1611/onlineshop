@@ -64,6 +64,8 @@ Recommendation results are cached per user (15-minute TTL) and refreshed when in
 
 The platform connects to a FastAPI AI assistant that uses an LLM, LangChain tool-calling logic, and RAG over store-policy documents to answer product and customer-support questions. The assistant is accessible via a chat widget on the frontend and is backed by a knowledge base of policy documents stored in the database.
 
+Conversations are kept in Redis (`app/Services/Chat/ChatMemoryService.php`) for 7 days after the last message. The browser holds only an encrypted, httpOnly `bot_conversation` cookie with the conversation UUID, so the chat survives reloads and page changes. The last 10 messages go to the AI with each request, the chat box redraws the history when opened, and "New chat" deletes it. A conversation started as a guest is claimed by the account that logs in, and other accounts cannot load it.
+
 ### AI Product Search API
 
 A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query products by keyword, category, sub-category, brand, price range, and product type. The endpoint is throttled at 60 requests per minute.
@@ -244,9 +246,15 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
    php artisan migrate --seed
    ```
 
-6. Start RabbitMQ and Meilisearch
+6. Start RabbitMQ, Meilisearch and Redis
 
-   Open Docker Desktop. The `onlineshop_rabbitmq` and `onlineshop_meilisearch` containers start on their own.
+   Open Docker Desktop. The `onlineshop_rabbitmq`, `onlineshop_meilisearch` and `onlineshop_redis` containers start on their own.
+
+   First time only, create the Redis container for chat memory (port 6380, set `REDIS_CLIENT=predis`, `REDIS_HOST=127.0.0.1`, `REDIS_PORT=6380` in `.env`):
+
+   ```bash
+   docker run -d --name onlineshop_redis --restart unless-stopped -p 6380:6379 redis:7-alpine
+   ```
 
    First time only, create the Meilisearch container (data is kept in the `onlineshop_meili_data` volume):
 
@@ -301,10 +309,13 @@ A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query pro
 | `onlineshop` | Website (`$PORT`) and AI API for the ML service (port 8081) |
 | `onlineshop-worker` | Queue worker (`php artisan queue:work rabbitmq --queue=default,emails`), restart policy ALWAYS. Variables reference `onlineshop` |
 | `Meilisearch` | Search index (`getmeili/meilisearch:v1.58.0`), volume at `/meili_data`, private network only |
+| `Redis` | Chat memory (`redis:8.2`), volume at `/data`, private network only |
 | `MySQL`, `RabbitMQ` | Database and queue broker |
 | `ecommerce-recommendation-system` | ML service (recommendations and chatbot) |
 
 Search settings on `onlineshop`: `SCOUT_DRIVER=meilisearch`, `SCOUT_QUEUE=true`, `MEILISEARCH_HOST` and `MEILISEARCH_KEY` (references to the Meilisearch service), `OPENAI_API_KEY` (reference to the ML service). Removing `SCOUT_DRIVER` falls back to MySQL search.
+
+Chat memory settings on `onlineshop`: `REDIS_CLIENT=predis`, `REDIS_HOST`, `REDIS_PORT` and `REDIS_PASSWORD` (references to the Redis service). If Redis is down the chat still answers, without memory.
 
 Rebuild the search index (the config is cached in the container, so clear it first):
 
@@ -317,7 +328,6 @@ Production's migration history is missing `create_knowledge_base_documents_table
 ## 8. Future Improvements
 
 - Clickable subcategory badges in the chatbot
-- Conversation memory for the chatbot
 - Add more login methods (Google, Facebook OAuth)
 - Add mobile app support
 
