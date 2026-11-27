@@ -17,8 +17,11 @@ class ProductSearchService
     // Weight of meaning vs keywords in hybrid search (chat questions are descriptive)
     private const SEMANTIC_RATIO = 0.5;
 
-    // Candidates fetched for gender searches before reordering by gender group
-    private const GENDER_CANDIDATES = 40;
+    // Candidates fetched before reordering by gender group or price
+    private const CANDIDATES = 40;
+
+    // Price sort options for the search API
+    public const SORTS = ['price_asc', 'price_desc'];
 
     public function __construct(
         private readonly CatalogFilterService $catalogFilterService,
@@ -35,7 +38,8 @@ class ProductSearchService
         ?float $minPrice = null,
         ?float $maxPrice = null,
         ?string $productType = null,
-        ?string $gender = null
+        ?string $gender = null,
+        ?string $sort = null
     ): array
     {
         $categoryIds = $this->resolveCategoryIds($category);
@@ -54,7 +58,7 @@ class ProductSearchService
         }
 
         return ['products' => $this->query(
-            $keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType, $gender
+            $keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType, $gender, $sort
         ), 'unmatched_filters' => []];
     }
 
@@ -67,12 +71,23 @@ class ProductSearchService
         ?float $minPrice,
         ?float $maxPrice,
         ?string $productType,
-        ?string $gender
+        ?string $gender,
+        ?string $sort = null
     ): Collection
     {
-        $products = $this->searchIndex->enabled()
+        $candidates = $this->searchIndex->enabled()
             ? $this->queryIndex($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType, $gender)
             : $this->queryDatabase($keywords, $categoryIds, $subCategoryIds, $brandIds, $minPrice, $maxPrice, $productType, $gender);
+
+        // Sort by the price customers pay today, keeping gender groups first
+        if (in_array($sort, self::SORTS, true)) {
+            $direction = $sort === 'price_desc' ? -1 : 1;
+            $candidates = $candidates->sortBy(fn (Product $product) => [
+                $this->genderRank($product, $gender),
+                $direction * (float) (checkSale($product) ? $product->offer_price : $product->price),
+            ]);
+        }
+        $products = $candidates->take(self::LIMIT);
 
         return $products->map(function (Product $product) {
             $onSale = checkSale($product);
@@ -118,9 +133,8 @@ class ProductSearchService
         // Show newest first when there is nothing to rank by
         $sort = trim((string) $keywords) === '' ? ['id:desc'] : [];
 
-        // One search; fetch extra candidates when gender groups will be reordered
-        $limit = $gender ? self::GENDER_CANDIDATES : self::LIMIT;
-        $ids = $this->searchIndex->ids($keywords, $filters, $sort, $limit, self::SEMANTIC_RATIO);
+        // One search; fetch extra candidates so they can be reordered by gender group or price
+        $ids = $this->searchIndex->ids($keywords, $filters, $sort, self::CANDIDATES, self::SEMANTIC_RATIO);
 
         $products = Product::with(['brand:id,name', 'category:id,name', 'subCategory:id,name'])
             ->whereIn('id', $ids)
@@ -128,8 +142,7 @@ class ProductSearchService
 
         // Order by gender group (made for it, unisex, untagged), then by search relevance
         return $products
-            ->sortBy(fn (Product $product) => [$this->genderRank($product, $gender), array_search($product->id, $ids)])
-            ->take(self::LIMIT);
+            ->sortBy(fn (Product $product) => [$this->genderRank($product, $gender), array_search($product->id, $ids)]);
     }
 
     // Rank a product's gender for a gender search: 0 = exact, 1 = unisex, 2 = untagged
@@ -191,7 +204,7 @@ class ProductSearchService
                 )
             )
             ->orderByDesc('id')
-            ->limit(self::LIMIT)
+            ->limit(self::CANDIDATES)
             ->get();
     }
 

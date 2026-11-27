@@ -26,6 +26,7 @@ class ProductSearchController extends Controller
             'max_price' => ['nullable', 'numeric', 'min:0'],
             'product_type' => ['nullable', 'string', 'max:50'],
             'gender' => ['nullable', Rule::in(Product::GENDERS)],
+            'sort' => ['nullable', Rule::in(ProductSearchService::SORTS)],
         ]);
 
         $result = $this->productSearchService->search(
@@ -37,6 +38,7 @@ class ProductSearchController extends Controller
             maxPrice: $validated['max_price'] ?? null,
             productType: $validated['product_type'] ?? null,
             gender: $validated['gender'] ?? null,
+            sort: $validated['sort'] ?? null,
         );
 
         return response()->json([

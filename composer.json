@@ -23,6 +23,7 @@
         "laravel/scout": "^11.9",
         "laravel/tinker": "^2.8",
         "meilisearch/meilisearch-php": "^1.17",
+        "predis/predis": "^3.8",
         "pusher/pusher-php-server": "^7.2",
         "stripe/stripe-php": "^16.6",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "14.0",

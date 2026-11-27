@@ -26,6 +26,18 @@
                 <h2 class="truncate text-lg font-semibold text-white">Shopping Assistant</h2>
                 <p class="text-sm text-slate-200">Ready to help</p>
             </div>
+            <div class="flex items-center gap-2">
+            <button
+                id="bot-chat-new"
+                type="button"
+                aria-label="Start a new chat"
+                class="inline-flex h-9 items-center gap-1 rounded-md px-3 text-sm font-medium text-white ring-1 ring-white/40 transition hover:bg-white hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+            >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
+                </svg>
+                New chat
+            </button>
             <button
                 id="bot-chat-close"
                 type="button"
@@ -36,6 +48,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" />
                 </svg>
             </button>
+            </div>
         </header>
 
         <main class="relative min-h-0 flex-1 overflow-hidden bg-white px-4 py-3">
@@ -73,6 +86,8 @@
     <script>
     (() => {
         const API_URL = @json(route('frontend.bot-chat'));
+        const HISTORY_URL = @json(route('frontend.bot-chat.history'));
+        const RESET_URL = @json(route('frontend.bot-chat.reset'));
         const LARAVEL_ASSET_BASE_URL = @json(rtrim(asset('/'), '/'));
 
         const $launcher = $('#bot-chat-launcher');
@@ -82,6 +97,7 @@
         const $input = $('#bot-chat-input');
         const $messagesList = $('#bot-chat-messages');
         const $sendButton = $('#bot-chat-send');
+        const $newChatButton = $('#bot-chat-new');
 
         if (
             !$launcher.length ||
@@ -100,7 +116,8 @@
 
         const state = {
             open: false,
-            greeted: false,
+            // History is loaded once per page, the first time the panel opens
+            loaded: false,
         };
 
         // Loading indicator stages (ms after the message is sent)
@@ -293,12 +310,51 @@
 
             $(document).trigger('bot-chat:open');
 
-            if (!state.greeted) {
-                appendMessage(initialGreeting, 'bot');
-                state.greeted = true;
+            if (!state.loaded) {
+                state.loaded = true;
+                loadHistory();
             }
 
             $input.trigger('focus');
+        }
+
+        // Redraw the saved conversation, or greet when there is none
+        function loadHistory() {
+            $.ajax({
+                url: HISTORY_URL,
+                method: 'GET',
+                success: function (response) {
+                    const messages = response?.messages || [];
+                    if (!messages.length) {
+                        appendMessage(initialGreeting, 'bot');
+                        return;
+                    }
+                    messages.forEach(function (message) {
+                        if (message.role === 'user') {
+                            appendMessage(message.content, 'customer');
+                            return;
+                        }
+                        appendBotHtmlMessage(message.answer_html);
+                        appendProductCards(message.products_html);
+                    });
+                },
+                error: function () {
+                    appendMessage(initialGreeting, 'bot');
+                },
+            });
+        }
+
+        // Delete the conversation and start over
+        function startNewChat() {
+            $.ajax({
+                url: RESET_URL,
+                method: 'POST',
+                complete: function () {
+                    $messagesList.empty();
+                    appendMessage(initialGreeting, 'bot');
+                    $input.trigger('focus');
+                },
+            });
         }
 
         function closePanel(options = {}) {
@@ -337,6 +393,10 @@
             }
 
             openPanel();
+        });
+
+        $newChatButton.on('click', function () {
+            startNewChat();
         });
 
         $closeButton.on('click', function () {
