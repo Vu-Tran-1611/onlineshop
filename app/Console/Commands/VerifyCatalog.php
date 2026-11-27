@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Product;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class VerifyCatalog extends Command
 {
@@ -119,6 +120,11 @@ class VerifyCatalog extends Command
             }
         }
 
+        // Skip gender before the column is added
+        if (!Schema::hasColumn('products', 'gender')) {
+            $this->line(PHP_EOL . '<comment>Gender</comment>: column not added yet');
+            return;
+        }
         $genders = DB::table('products')->select('gender', DB::raw('count(*) as total'))->groupBy('gender')->pluck('total', 'gender');
         $this->line(PHP_EOL . '<comment>Gender</comment>: ' . collect($genders)->map(fn ($n, $g) => ($g ?: 'null') . "={$n}")->implode(', '));
     }
