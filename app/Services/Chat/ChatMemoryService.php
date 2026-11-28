@@ -17,10 +17,10 @@ class ChatMemoryService
     public const TTL_MINUTES = 60 * 24 * 7;
 
     // Keep at most this many messages per conversation
-    private const MAX_STORED_MESSAGES = 40;
+    private const MAX_STORED_MESSAGES = 100;
 
     // Send the AI only the most recent messages
-    private const HISTORY_FOR_AI = 10;
+    private const HISTORY_FOR_AI = 20;
 
     // Create a new random conversation ID
     public function newId(): string

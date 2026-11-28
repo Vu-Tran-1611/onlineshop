@@ -64,7 +64,7 @@ Recommendation results are cached per user (15-minute TTL) and refreshed when in
 
 The platform connects to a FastAPI AI assistant that uses an LLM, LangChain tool-calling logic, and RAG over store-policy documents to answer product and customer-support questions. The assistant is accessible via a chat widget on the frontend and is backed by a knowledge base of policy documents stored in the database.
 
-Conversations are kept in Redis (`app/Services/Chat/ChatMemoryService.php`) for 7 days after the last message. The browser holds only an encrypted, httpOnly `bot_conversation` cookie with the conversation UUID, so the chat survives reloads and page changes. The last 10 messages go to the AI with each request, the chat box redraws the history when opened, and "New chat" deletes it. A conversation started as a guest is claimed by the account that logs in, and other accounts cannot load it.
+Conversations are kept in Redis (`app/Services/Chat/ChatMemoryService.php`) for 7 days after the last message. The browser holds only an encrypted, httpOnly `bot_conversation` cookie with the conversation UUID, so the chat survives reloads and page changes. Redis keeps the last 100 messages and the last 20 go to the AI with each request, the chat box redraws the history when opened, and "New chat" deletes it. A conversation started as a guest is claimed by the account that logs in, and other accounts cannot load it.
 
 ### AI Product Search API
 
