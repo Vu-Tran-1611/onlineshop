@@ -76,7 +76,7 @@ class ChatMemoryService
         }
     }
 
-    // Return the last messages as role/content pairs for the AI, with shown products
+    // Return the last messages as role/content pairs for the AI, with shown products and badges
     public function historyForAi(?array $conversation): array
     {
         $messages = array_slice($conversation['messages'] ?? [], -self::HISTORY_FOR_AI);
@@ -85,6 +85,9 @@ class ChatMemoryService
             $content = $message['content'];
             if (!empty($message['products_note'])) {
                 $content .= "\n[Shown products: {$message['products_note']}]";
+            }
+            if (!empty($message['badges_note'])) {
+                $content .= "\n[Offered subcategories: {$message['badges_note']}]";
             }
 
             return ['role' => $message['role'], 'content' => $content];

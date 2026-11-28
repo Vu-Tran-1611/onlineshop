@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\SubCategory;
+use App\Services\Ai\ProductSearchService;
 use App\Services\Chat\ChatMemoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,8 +22,10 @@ class BotChatController extends Controller
     // Match MAX_PRODUCTS in the ML product search agent
     private const MAX_PRODUCTS = 12;
 
-    public function __construct(private readonly ChatMemoryService $memory)
-    {
+    public function __construct(
+        private readonly ChatMemoryService $memory,
+        private readonly ProductSearchService $productSearch,
+    ) {
     }
 
     // Answer a message using the conversation history
@@ -53,10 +58,11 @@ class BotChatController extends Controller
             if ($response->successful()) {
                 $answer = trim((string) $response->json('response', ''));
                 $products = $this->loadProducts($response->json('products', []));
+                $badgeCategories = $this->loadBadgeCategories('name', $response->json('narrow_categories', []));
 
                 $this->memory->append($conversationId, Auth::id(), $conversation, [
                     $this->message('user', $validated['message']),
-                    $this->message('assistant', $answer, $products),
+                    $this->message('assistant', $answer, $products, $badgeCategories),
                 ]);
                 $this->queueConversationCookie($conversationId);
 
@@ -64,6 +70,7 @@ class BotChatController extends Controller
                     'answer' => $answer,
                     'answer_html' => $this->renderAnswer($answer),
                     'products_html' => $this->renderProducts($products),
+                    'badges_html' => $this->renderBadges($badgeCategories),
                 ]);
             }
 
@@ -92,16 +99,60 @@ class BotChatController extends Controller
 
         $messages = array_map(function (array $message) {
             $products = $this->loadProducts($message['product_ids'] ?? []);
+            $badgeCategories = $this->loadBadgeCategories('id', $message['badge_category_ids'] ?? []);
 
             return [
                 'role' => $message['role'],
                 'content' => $message['content'],
                 'answer_html' => $message['role'] === 'assistant' ? $this->renderAnswer($message['content']) : null,
                 'products_html' => $this->renderProducts($products),
+                'badges_html' => $this->renderBadges($badgeCategories),
             ];
         }, $conversation['messages'] ?? []);
 
         return response()->json(['messages' => $messages]);
+    }
+
+    // Show a clicked subcategory badge without asking the AI, and save it to the conversation
+    public function browse(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|integer',
+            'sub_category_id' => 'nullable|integer',
+        ]);
+
+        $category = Category::where('status', 1)->find($validated['category_id']);
+        $subCategory = isset($validated['sub_category_id'])
+            ? SubCategory::where('status', 1)->where('category_id', $category?->id)->find($validated['sub_category_id'])
+            : null;
+
+        if (!$category || (isset($validated['sub_category_id']) && !$subCategory)) {
+            return response()->json(['message' => 'Category not found.'], 404);
+        }
+
+        $found = $this->productSearch->search(category: $category->name, subcategory: $subCategory?->name);
+        $products = $this->loadProducts($found['products']->pluck('id')->all());
+
+        // Same text as the button the user clicked, so the history reads the same
+        $question = $subCategory ? "Show me {$subCategory->name}" : "Show me All {$category->name}";
+        $label = $subCategory ? "{$subCategory->name} from {$category->name}" : "{$category->name} products";
+        $answer = $products->isEmpty()
+            ? "Sorry, there are no {$label} right now."
+            : "Here are some {$label}.";
+
+        [$conversationId, $conversation] = $this->resolveConversation($request);
+        $this->memory->append($conversationId, Auth::id(), $conversation, [
+            $this->message('user', $question),
+            $this->message('assistant', $answer, $products),
+        ]);
+        $this->queueConversationCookie($conversationId);
+
+        return response()->json([
+            'answer' => $answer,
+            'answer_html' => $this->renderAnswer($answer),
+            'products_html' => $this->renderProducts($products),
+            'badges_html' => '',
+        ]);
     }
 
     // Delete the conversation and forget its cookie
@@ -147,10 +198,11 @@ class BotChatController extends Controller
         );
     }
 
-    // Build a stored message; assistant messages keep the products they showed
-    private function message(string $role, string $content, ?Collection $products = null): array
+    // Build a stored message; assistant messages keep the products and badges they showed
+    private function message(string $role, string $content, ?Collection $products = null, ?Collection $badgeCategories = null): array
     {
         $products ??= collect();
+        $badgeCategories ??= collect();
 
         return [
             'role' => $role,
@@ -163,6 +215,13 @@ class BotChatController extends Controller
                 $product->name,
                 checkSale($product) ? $product->offer_price : $product->price,
                 $product->id
+            ))->implode('; ') ?: null,
+            'badge_category_ids' => $badgeCategories->pluck('id')->all(),
+            // Offered subcategories, so a typed "jeans" can be understood
+            'badges_note' => $badgeCategories->map(fn (Category $category) => sprintf(
+                '%s: %s',
+                $category->name,
+                $category->subCategories->pluck('name')->implode(', ')
             ))->implode('; ') ?: null,
             'at' => now()->toIso8601String(),
         ];
@@ -183,6 +242,36 @@ class BotChatController extends Controller
         return $products->isEmpty()
             ? ''
             : view('frontend.sections.partials.bot_product_cards', compact('products'))->render();
+    }
+
+    // Render subcategory badges, or nothing when there are none
+    private function renderBadges(Collection $categories): string
+    {
+        return $categories->isEmpty()
+            ? ''
+            : view('frontend.sections.partials.bot_badges', compact('categories'))->render();
+    }
+
+    // Load active categories by name or ID, with their subcategories that have products
+    private function loadBadgeCategories(string $column, mixed $values): Collection
+    {
+        $values = collect(is_array($values) ? $values : [])->filter(fn ($value) => is_scalar($value))->unique()->values();
+        if ($values->isEmpty()) {
+            return collect();
+        }
+
+        $hasProducts = fn ($query) => $query->where('status', 1)->where('is_approved', 1);
+
+        return Category::where('status', 1)
+            ->whereIn($column, $values)
+            ->with(['subCategories' => fn ($query) => $query
+                ->where('status', 1)
+                ->whereHas('products', $hasProducts)
+                ->orderBy('id')])
+            ->get()
+            ->filter(fn (Category $category) => $category->subCategories->isNotEmpty())
+            ->sortBy(fn (Category $category) => $values->search($category->{$column}))
+            ->values();
     }
 
     // Load active products in the order the agent chose

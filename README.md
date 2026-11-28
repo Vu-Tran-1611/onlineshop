@@ -66,6 +66,8 @@ The platform connects to a FastAPI AI assistant that uses an LLM, LangChain tool
 
 Conversations are kept in Redis (`app/Services/Chat/ChatMemoryService.php`) for 7 days after the last message. The browser holds only an encrypted, httpOnly `bot_conversation` cookie with the conversation UUID, so the chat survives reloads and page changes. Redis keeps the last 100 messages and the last 20 go to the AI with each request, the chat box redraws the history when opened, and "New chat" deletes it. A conversation started as a guest is claimed by the account that logs in, and other accounts cannot load it.
 
+For a whole category with no details ("do you have clothes?", "cosmetics"), the assistant asks which kind and the chat box shows the category's subcategories as buttons, built from the database. A click calls `POST /bot-chat/browse`, which searches that subcategory directly in Laravel (no AI call) and saves it to the conversation, so follow-ups like "which one is cheaper?" work.
+
 ### AI Product Search API
 
 A REST endpoint (`/api/ai/products/search`) allows the AI assistant to query products by keyword, category, sub-category, brand, price range, and product type. The endpoint is throttled at 60 requests per minute.

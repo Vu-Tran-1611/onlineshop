@@ -64,6 +64,7 @@ Route::get('/knowledge-base/{documentSlug}', [HomeController::class, 'knowledgeB
 Route::post('/bot-chat', [BotChatController::class, 'chat'])->name('frontend.bot-chat');
 Route::get('/bot-chat/history', [BotChatController::class, 'history'])->name('frontend.bot-chat.history');
 Route::post('/bot-chat/reset', [BotChatController::class, 'reset'])->name('frontend.bot-chat.reset');
+Route::post('/bot-chat/browse', [BotChatController::class, 'browse'])->middleware('throttle:30,1')->name('frontend.bot-chat.browse');
 
 // PDF Download Routes
 require __DIR__ . '/pdf-download.php';

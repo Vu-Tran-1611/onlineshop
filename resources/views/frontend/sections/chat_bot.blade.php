@@ -88,6 +88,7 @@
         const API_URL = @json(route('frontend.bot-chat'));
         const HISTORY_URL = @json(route('frontend.bot-chat.history'));
         const RESET_URL = @json(route('frontend.bot-chat.reset'));
+        const BROWSE_URL = @json(route('frontend.bot-chat.browse'));
         const LARAVEL_ASSET_BASE_URL = @json(rtrim(asset('/'), '/'));
 
         const $launcher = $('#bot-chat-launcher');
@@ -118,6 +119,8 @@
             open: false,
             // History is loaded once per page, the first time the panel opens
             loaded: false,
+            // Block a second request while one is running
+            busy: false,
         };
 
         // Loading indicator stages (ms after the message is sent)
@@ -209,6 +212,24 @@
             $messagesList.scrollTop($messagesList.prop('scrollHeight'));
         }
 
+        // Append server-rendered subcategory badges
+        function appendBadges(html) {
+            if (!html) {
+                return;
+            }
+
+            const $item = $('<li>').addClass('w-full').html(html);
+            $messagesList.append($item);
+            $messagesList.scrollTop($messagesList.prop('scrollHeight'));
+        }
+
+        // Show an assistant reply with its product cards and badges
+        function appendBotReply(reply) {
+            appendBotHtmlMessage(reply.answer_html);
+            appendProductCards(reply.products_html);
+            appendBadges(reply.badges_html);
+        }
+
         function appendTypingIndicator() {
             // Keep a single indicator
             removeTypingIndicator();
@@ -270,6 +291,8 @@
         }
 
         function setRequestState(isLoading) {
+            state.busy = isLoading;
+            $messagesList.find('[data-bot-badge]').prop('disabled', isLoading);
             $input.prop('disabled', isLoading);
             $sendButton.prop('disabled', isLoading);
             $sendButton.toggleClass('opacity-60 cursor-not-allowed', isLoading);
@@ -334,8 +357,7 @@
                             appendMessage(message.content, 'customer');
                             return;
                         }
-                        appendBotHtmlMessage(message.answer_html);
-                        appendProductCards(message.products_html);
+                        appendBotReply(message);
                     });
                 },
                 error: function () {
@@ -403,6 +425,38 @@
             closePanel();
         });
 
+        // Show a clicked subcategory directly, without asking the AI
+        $messagesList.on('click', '[data-bot-badge]', function () {
+            if (state.busy) {
+                return;
+            }
+
+            const $badge = $(this);
+            appendMessage('Show me ' + $badge.text().trim(), 'customer');
+            setRequestState(true);
+            appendTypingIndicator();
+
+            $.ajax({
+                url: BROWSE_URL,
+                method: 'POST',
+                data: {
+                    category_id: $badge.data('category-id'),
+                    sub_category_id: $badge.data('sub-category-id'),
+                },
+                success: function (response) {
+                    appendBotReply(response);
+                },
+                error: function () {
+                    appendMessage('Sorry, I could not load these products. Please try again.', 'bot');
+                },
+                complete: function () {
+                    removeTypingIndicator();
+                    setRequestState(false);
+                    $messagesList.scrollTop($messagesList.prop('scrollHeight'));
+                },
+            });
+        });
+
         $form.on('submit', function (event) {
             event.preventDefault();
 
@@ -427,8 +481,7 @@
                 },
                 success: function (response) {
                     if (response?.answer_html) {
-                        appendBotHtmlMessage(response.answer_html);
-                        appendProductCards(response.products_html);
+                        appendBotReply(response);
                         return;
                     }
 
